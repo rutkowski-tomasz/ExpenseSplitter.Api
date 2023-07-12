@@ -12,6 +12,11 @@ public class User
 
     public static User Create(string nickname)
     {
+        if (string.IsNullOrWhiteSpace(nickname))
+        {
+            throw new ArgumentException($"{nameof(nickname)} can't be empty or whitespace");
+        }
+        
         var user = new User()
         {
             Id = new UserId(Guid.NewGuid()),

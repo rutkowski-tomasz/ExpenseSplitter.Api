@@ -22,6 +22,11 @@ public class Participant
 
     public static Participant Create(SettlementId settlementId, UserId userId, string nickname)
     {
+        if (string.IsNullOrWhiteSpace(nickname))
+        {
+            throw new ArgumentException($"{nameof(nickname)} can't be empty or whitespace");
+        }
+
         var participant = new Participant()
         {
             ParticipantId = new ParticipantId(Guid.NewGuid()),

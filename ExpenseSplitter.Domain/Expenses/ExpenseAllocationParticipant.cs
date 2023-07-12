@@ -21,6 +21,11 @@ public class ExpenseAllocationParticipant
 		decimal part
 	)
 	{
+		if (part <= 0)
+		{
+			throw new ArgumentException($"{nameof(part)} must be a positive number");
+		}
+
 		var expenseAllocationParticipant = new ExpenseAllocationParticipant()
 		{
 			ExpenseAllocationId = expenseAllocationId,

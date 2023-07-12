@@ -31,6 +31,11 @@ public class Settlement
 
     public void AddParticipant(UserId userId, string nickname)
     {
+        if (participants.Any(x => x.UserId == userId))
+        {
+            throw new InvalidOperationException($"User with ID {userId} is already added");
+        }
+
         var participant = Participant.Create(Id, userId, nickname);
 
         participants.Add(participant);

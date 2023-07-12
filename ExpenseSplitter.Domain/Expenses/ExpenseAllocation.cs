@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Domain.Settlements;
+using ExpenseSplitter.Domain.Users;
 
 namespace ExpenseSplitter.Domain.Expenses;
 
@@ -31,6 +32,11 @@ public class ExpenseAllocation
 
     public void AddExpenseAllocationPartipant(ParticipantId participantId, decimal part)
     {
+        if (expenseAllocationParticipants.Any(x => x.ParticipantId == participantId))
+        {
+            throw new InvalidOperationException($"Participant with ID {participantId} is already added");
+        }
+
         var expenseAllocationParticipant = ExpenseAllocationParticipant.Create(Id, participantId, part);
 
         expenseAllocationParticipants.Add(expenseAllocationParticipant);
