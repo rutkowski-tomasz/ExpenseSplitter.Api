@@ -1,40 +1,42 @@
+using ExpenseSplitter.Domain.Abstractions;
 using ExpenseSplitter.Domain.Participants;
 using ExpenseSplitter.Domain.Settlements;
 
 namespace ExpenseSplitter.Domain.Expenses;
 
-class Expense
+class Expense : Entity<ExpenseId>
 {
-    private Expense()
+    private Expense(
+        ExpenseId id,
+        SettlementId settlementId,
+        string name,
+        ParticipantId payingParticipantId
+        
+    ) : base(id)
     {
-
+        SettlementId = settlementId;
+        Name = name;
+        PayingParticipantId = payingParticipantId;
     }
-
-    public ExpenseId Id { get; private set; }
 
     public SettlementId SettlementId { get; private set; }
 
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; }
 
-    public ParticipantId PayingParticipantId { get; set; }
-
-    public string Currency { get; private set; } = string.Empty;
+    public ParticipantId PayingParticipantId { get; private set; }
 
     public static Expense Create(
         SettlementId settlementId,
         string name,
-        ParticipantId payingParticipantId,
-        string currency
+        ParticipantId payingParticipantId
     )
     {
-        var expense = new Expense()
-        {
-            SettlementId = settlementId,
-            Id = new ExpenseId(Guid.NewGuid()),
-            PayingParticipantId = payingParticipantId,
-            Name = name,
-            Currency = currency,
-        };
+        var expense = new Expense(
+            ExpenseId.New(),
+            settlementId,
+            name,
+            payingParticipantId
+        );
 
         return expense;
     }

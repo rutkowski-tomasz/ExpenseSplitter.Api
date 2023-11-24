@@ -50,6 +50,7 @@ TODO
 - Users entity 
 - Participant entity
 - Unit tests
+- Currency support
 
 ## 🧑🏻‍💼 Application Layer
 

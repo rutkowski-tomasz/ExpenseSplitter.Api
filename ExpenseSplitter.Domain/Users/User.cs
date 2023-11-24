@@ -1,10 +1,18 @@
-﻿namespace ExpenseSplitter.Domain.Users;
+﻿using ExpenseSplitter.Domain.Abstractions;
 
-public class User
+namespace ExpenseSplitter.Domain.Users;
+
+public class User : Entity<UserId>
 {
-    public UserId Id { get; private set; }
-
-    public string Nickname { get; private set; } = string.Empty;
+    private User(
+        UserId id,
+        string nickname
+    ) : base(id)
+    {
+        Nickname = nickname;
+    }
+    
+    public string Nickname { get; private set; }
 
     public static User Create(string nickname)
     {
@@ -12,12 +20,8 @@ public class User
         {
             throw new ArgumentException($"{nameof(nickname)} can't be empty or whitespace");
         }
-        
-        var user = new User()
-        {
-            Id = new UserId(Guid.NewGuid()),
-            Nickname = nickname,
-        };
+
+        var user = new User(UserId.New(), nickname);
 
         return user;
     }

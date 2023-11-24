@@ -1,4 +1,6 @@
-﻿using System;
-namespace ExpenseSplitter.Domain.Settlements;
+﻿namespace ExpenseSplitter.Domain.Settlements;
 
-public record SettlementId(Guid Value);
+public record SettlementId(Guid Value)
+{
+    public static SettlementId New() => new(Guid.NewGuid());
+}

@@ -1,23 +1,21 @@
-﻿namespace ExpenseSplitter.Domain.Settlements;
+﻿using ExpenseSplitter.Domain.Abstractions;
 
-public class Settlement
+namespace ExpenseSplitter.Domain.Settlements;
+
+public class Settlement : Entity<SettlementId>
 {
-    private Settlement()
+    private Settlement(
+        SettlementId id,
+        string name
+    ) : base(id)
     {
-
     }
 
-	public SettlementId Id { get; private set; }
-
-	public string Name { get; private set; } = string.Empty;
+	public string Name { get; private set; }
 
     public static Settlement Create(string name)
     {
-        var settlement = new Settlement()
-        {
-            Id = new SettlementId(Guid.NewGuid()),
-            Name = name,
-        };
+        var settlement = new Settlement(SettlementId.New(), name);
 
         return settlement;
     }
