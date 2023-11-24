@@ -32,48 +32,48 @@ TODO
 ## 🎯 Project general
 
 - Models diagram
-- Repository description
+- ✅ Repository description
 - Integrate with Depedabot
 - Integrate with CI
 - docker support 
 
 ## 📃 Domain Layer
 
-- DDD abstractions: Entity, ValueObject, DomainEvent
-- Unit of work
-- Results and Error
-- Define domain model
-- Strongly typed IDs
-- Expense entity
-- ExpenseParticipant entity
-- Settlement entity
-- Users entity 
-- Participant entity
+- ✅ DDD abstractions: Entity, ValueObject, DomainEvent
+- ✅ Unit of work
+- ✅ Results and Error
+- ✅ Define domain model
+- ✅ Strongly typed IDs
+- ✅ Expense entity
+- ✅ ExpenseParticipant entity
+- ✅ Settlement entity
+- ✅ Users entity 
+- ✅ Participant entity
 - Unit tests
 - Currency support
 
 ## 🧑🏻‍💼 Application Layer
 
-- MediatR setup
-- ICommand, IQuery, ICommandHandler, IQueryHandler
+- ✅ MediatR setup
+- ✅ ICommand, IQuery, ICommandHandler, IQueryHandler
 - Logging for ICommandHandler
 - Validators 
 - Unit tests
 
 ## 🖼️ Presentation Layer
 
-- Minimal API
+- ✅ Minimal API
 - Docker support
-- Swagger
+- ✅ Swagger
 - Exception handling middleware
 - DB seeding
 - Authorization
 
 ## 🧑🏻‍🔧 Infrastructure Layer
 
-- EF Core - DbContext, Entity mapping
+- ✅ EF Core - DbContext, Entity mapping
 - DB migrations
-- Repositories for each Domain entity
+- ✅ Repositories for each Domain entity
 - Outbox pattern
 - Authentication
 - Architecture tests
