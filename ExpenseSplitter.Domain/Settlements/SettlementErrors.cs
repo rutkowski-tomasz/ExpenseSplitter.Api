@@ -8,4 +8,9 @@ public class SettlementErrors
         "Settlement.EmptyName",
         "Can't create settlement with empty name"
     );
+
+    public static Error NotFound = new(
+        "Settlement.NotFound",
+        "The settlement with the specified identifier was not found"
+    );
 }
