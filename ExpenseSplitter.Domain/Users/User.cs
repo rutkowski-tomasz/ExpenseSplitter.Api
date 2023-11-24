@@ -2,7 +2,7 @@
 
 namespace ExpenseSplitter.Domain.Users;
 
-public class User : Entity<UserId>
+public sealed class User : Entity<UserId>
 {
     private User(
         UserId id,

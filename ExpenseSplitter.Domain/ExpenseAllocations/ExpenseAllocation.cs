@@ -4,7 +4,7 @@ using ExpenseSplitter.Domain.Participants;
 
 namespace ExpenseSplitter.Domain.ExpenseAllocations;
 
-public class ExpenseAllocation : Entity<ExpenseAllocationId>
+public sealed class ExpenseAllocation : Entity<ExpenseAllocationId>
 {
     private ExpenseAllocation(
         ExpenseAllocationId id,

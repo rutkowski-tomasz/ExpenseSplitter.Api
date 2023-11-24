@@ -4,7 +4,7 @@ using ExpenseSplitter.Domain.Users;
 
 namespace ExpenseSplitter.Domain.Participants;
 
-public class Participant : Entity<ParticipantId>
+public sealed class Participant : Entity<ParticipantId>
 {
     private Participant(
         ParticipantId id,

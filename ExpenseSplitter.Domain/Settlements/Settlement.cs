@@ -2,13 +2,14 @@
 
 namespace ExpenseSplitter.Domain.Settlements;
 
-public class Settlement : Entity<SettlementId>
+public sealed class Settlement : Entity<SettlementId>
 {
     private Settlement(
         SettlementId id,
         string name
     ) : base(id)
     {
+        Name = name;
     }
 
 	public string Name { get; private set; }

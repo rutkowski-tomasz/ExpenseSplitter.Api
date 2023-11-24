@@ -4,7 +4,7 @@ using ExpenseSplitter.Domain.Settlements;
 
 namespace ExpenseSplitter.Domain.Expenses;
 
-class Expense : Entity<ExpenseId>
+public sealed class Expense : Entity<ExpenseId>
 {
     private Expense(
         ExpenseId id,
