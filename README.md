@@ -29,8 +29,8 @@ TODO
 
 - Models diagram
 - ✅ Repository description
-- Integrate with Depedabot
-- Integrate with CI
+- ✅ Integrate with Depedabot
+- ✅ Integrate with CI
 - ✅ docker support 
 
 ## 📃 Domain Layer
