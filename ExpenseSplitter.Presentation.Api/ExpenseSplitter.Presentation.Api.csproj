@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ExpenseSplitter.Application\ExpenseSplitter.Application.csproj" />
+      <ProjectReference Include="..\ExpenseSplitter.Infrastructure\ExpenseSplitter.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

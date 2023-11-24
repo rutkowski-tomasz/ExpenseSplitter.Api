@@ -1,9 +1,14 @@
+using ExpenseSplitter.Application;
+using ExpenseSplitter.Infrastructure;
 using ExpenseSplitter.Presentation.Api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 
