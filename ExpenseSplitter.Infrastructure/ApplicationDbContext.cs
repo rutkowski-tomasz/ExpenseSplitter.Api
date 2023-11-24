@@ -5,6 +5,10 @@ namespace ExpenseSplitter.Infrastructure;
 
 public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
+    public ApplicationDbContext(DbContextOptions options) : base(options)
+    {
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
@@ -14,7 +18,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var result = await SaveChangesAsync(cancellationToken);
+        var result = await base.SaveChangesAsync(cancellationToken);
 
         return result;
     }
