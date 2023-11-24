@@ -1,3 +1,5 @@
+using ExpenseSplitter.Presentation.Api.Endpoints;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -13,6 +15,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.MapSettlementEndpoints();
 
 app.Run();
