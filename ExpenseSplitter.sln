@@ -3,31 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Domain", "ExpenseSplitter.Domain\ExpenseSplitter.Domain.csproj", "{0D325E15-6D72-49B4-A75A-307B8E4A1AC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseSplitter.Domain", "ExpenseSplitter.Domain\ExpenseSplitter.Domain.csproj", "{0D325E15-6D72-49B4-A75A-307B8E4A1AC2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2E225C2B-3060-48D5-9555-3C6ADC481107}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Application", "ExpenseSplitter.Application\ExpenseSplitter.Application.csproj", "{3F42F84E-E42A-4056-A72A-D85CECF46531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseSplitter.Application", "ExpenseSplitter.Application\ExpenseSplitter.Application.csproj", "{3F42F84E-E42A-4056-A72A-D85CECF46531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Infrastructure", "ExpenseSplitter.Infrastructure\ExpenseSplitter.Infrastructure.csproj", "{031205E9-8C95-4D6C-BA47-30DD6C827885}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseSplitter.Infrastructure", "ExpenseSplitter.Infrastructure\ExpenseSplitter.Infrastructure.csproj", "{031205E9-8C95-4D6C-BA47-30DD6C827885}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24F665EB-15E0-4AF2-818D-BECE1BF0C281}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{380D94B8-7BB8-4109-8DF2-07606C6BCB0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Presentation.Api", "ExpenseSplitter.Presentation.Api\ExpenseSplitter.Presentation.Api.csproj", "{BD76C46C-DE51-4B8C-B585-BCA3140D5833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseSplitter.Presentation.Api", "ExpenseSplitter.Presentation.Api\ExpenseSplitter.Presentation.Api.csproj", "{BD76C46C-DE51-4B8C-B585-BCA3140D5833}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{5FF67CF3-03A3-4A18-9948-F7F1896A617B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0D325E15-6D72-49B4-A75A-307B8E4A1AC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -46,11 +45,21 @@ Global
 		{BD76C46C-DE51-4B8C-B585-BCA3140D5833}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD76C46C-DE51-4B8C-B585-BCA3140D5833}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD76C46C-DE51-4B8C-B585-BCA3140D5833}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF67CF3-03A3-4A18-9948-F7F1896A617B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF67CF3-03A3-4A18-9948-F7F1896A617B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF67CF3-03A3-4A18-9948-F7F1896A617B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF67CF3-03A3-4A18-9948-F7F1896A617B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3F42F84E-E42A-4056-A72A-D85CECF46531} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
 		{0D325E15-6D72-49B4-A75A-307B8E4A1AC2} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
+		{3F42F84E-E42A-4056-A72A-D85CECF46531} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
 		{031205E9-8C95-4D6C-BA47-30DD6C827885} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
 		{BD76C46C-DE51-4B8C-B585-BCA3140D5833} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A95D8BAA-2DEC-4A2B-970E-1B484BB37945}
 	EndGlobalSection
 EndGlobal

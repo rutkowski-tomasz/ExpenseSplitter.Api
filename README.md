@@ -39,7 +39,7 @@ TODO
 
 ## 📃 Domain Layer
 
-- ✅ DDD abstractions: Entity, ValueObject, DomainEvent
+- DDD abstractions: Entity, ValueObject, DomainEvent
 - ✅ Unit of work
 - ✅ Results and Error
 - ✅ Define domain model
@@ -63,7 +63,6 @@ TODO
 ## 🖼️ Presentation Layer
 
 - ✅ Minimal API
-- Docker support
 - ✅ Swagger
 - Exception handling middleware
 - DB seeding
