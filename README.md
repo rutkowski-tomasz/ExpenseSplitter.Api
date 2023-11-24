@@ -79,3 +79,11 @@ TODO
 - Authentication
 - Architecture tests
 - Unit tests
+
+# Development
+
+## Create migration
+
+```sh
+dotnet ef migrations add --startup-project ExpenseSplitter.Presentation.Api --project ExpenseSplitter.Infrastructure InitialCreate
+```
