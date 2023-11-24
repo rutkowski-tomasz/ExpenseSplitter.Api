@@ -35,11 +35,11 @@ TODO
 - ✅ Repository description
 - Integrate with Depedabot
 - Integrate with CI
-- docker support 
+- 🔄 docker support 
 
 ## 📃 Domain Layer
 
-- DDD abstractions: Entity, ValueObject, DomainEvent
+- ✅ DDD abstractions: Entity, ValueObject, DomainEvent
 - ✅ Unit of work
 - ✅ Results and Error
 - ✅ Define domain model
@@ -51,6 +51,8 @@ TODO
 - ✅ Participant entity
 - Unit tests
 - Currency support
+- DomainEvents raising and handling
+- Solve primitive obsession
 
 ## 🧑🏻‍💼 Application Layer
 
@@ -65,13 +67,13 @@ TODO
 - ✅ Minimal API
 - ✅ Swagger
 - Exception handling middleware
-- DB seeding
+- 🔄 DB seeding
 - Authorization
 
 ## 🧑🏻‍🔧 Infrastructure Layer
 
 - ✅ EF Core - DbContext, Entity mapping
-- DB migrations
+- 🔄 DB migrations
 - ✅ Repositories for each Domain entity
 - Outbox pattern
 - Authentication
