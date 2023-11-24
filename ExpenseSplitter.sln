@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Infrastructure", "ExpenseSplitter.Infrastructure\ExpenseSplitter.Infrastructure.csproj", "{031205E9-8C95-4D6C-BA47-30DD6C827885}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24F665EB-15E0-4AF2-818D-BECE1BF0C281}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{380D94B8-7BB8-4109-8DF2-07606C6BCB0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,10 @@ Global
 		{031205E9-8C95-4D6C-BA47-30DD6C827885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{031205E9-8C95-4D6C-BA47-30DD6C827885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{031205E9-8C95-4D6C-BA47-30DD6C827885}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3F42F84E-E42A-4056-A72A-D85CECF46531} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
+		{0D325E15-6D72-49B4-A75A-307B8E4A1AC2} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
+		{031205E9-8C95-4D6C-BA47-30DD6C827885} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
 	EndGlobalSection
 EndGlobal
