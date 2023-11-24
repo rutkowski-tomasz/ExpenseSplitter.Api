@@ -6,7 +6,7 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 
 # 🦩 Features / patterns
 
-1. Bold split into: Domain, Application, Infrastructure and Presentation layer
+1. Bold split into: Domain, Application, Infrastructure and Presentation layers
 2. DDD elements: Entities, ValueObjects, DomainEvents, DomainServices
 3. Minimal API
 4. Swagger

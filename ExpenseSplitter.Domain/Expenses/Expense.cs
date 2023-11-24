@@ -1,3 +1,4 @@
+using ExpenseSplitter.Domain.Participants;
 using ExpenseSplitter.Domain.Settlements;
 
 namespace ExpenseSplitter.Domain.Expenses;
@@ -19,8 +20,6 @@ class Expense
 
     public string Currency { get; private set; } = string.Empty;
 
-    private readonly HashSet<ExpenseAllocation> expenseAllocations = new();
-
     public static Expense Create(
         SettlementId settlementId,
         string name,
@@ -38,12 +37,5 @@ class Expense
         };
 
         return expense;
-    }
-
-    public void AddExpenseAllocation(decimal value)
-    {
-        var expenseAllocation = ExpenseAllocation.Create(Id, value);
-
-        expenseAllocations.Add(expenseAllocation);
     }
 }

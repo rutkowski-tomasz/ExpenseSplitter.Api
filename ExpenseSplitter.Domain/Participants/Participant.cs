@@ -1,7 +1,7 @@
-﻿using ExpenseSplitter.Domain.Expenses;
+﻿using ExpenseSplitter.Domain.Settlements;
 using ExpenseSplitter.Domain.Users;
 
-namespace ExpenseSplitter.Domain.Settlements;
+namespace ExpenseSplitter.Domain.Participants;
 
 public class Participant
 {
@@ -17,8 +17,6 @@ public class Participant
     public UserId UserId { get; private set; }
 
     public string Nickname { get; private set; } = string.Empty;
-
-    private readonly HashSet<ExpenseAllocationParticipant> expenseAllocationParticipants = new();
 
     public static Participant Create(SettlementId settlementId, UserId userId, string nickname)
     {
