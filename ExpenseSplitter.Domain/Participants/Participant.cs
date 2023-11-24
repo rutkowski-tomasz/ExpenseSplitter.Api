@@ -41,11 +41,3 @@ public sealed class Participant : Entity<ParticipantId>
         return participant;
     }
 }
-
-public class ParticipantErrors
-{
-    public static Error NicknameEmpty = new(
-        "Participant.NicknameEmpty",
-        "Can't create participant with empty nickname"
-    );
-}
