@@ -1,4 +1,6 @@
-﻿using ExpenseSplitter.Application.Settlements.GetSettlement;
+﻿using ExpenseSplitter.Application.Settlements.CreateSettlement;
+using ExpenseSplitter.Application.Settlements.GetSettlement;
+using ExpenseSplitter.Presentation.Api.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -11,6 +13,7 @@ public static class SettlementEndpoints
         var routeGroupBuilder = builder.MapGroup("api/settlements");
 
         routeGroupBuilder.MapGet("{id}", GetSettlement);
+        routeGroupBuilder.MapPost("", CreateSettlement);
 
         return builder;
     }
@@ -26,5 +29,18 @@ public static class SettlementEndpoints
         var result = await sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.NotFound();
+    }
+
+    public static async Task<Results<Ok<Guid>, BadRequest>> CreateSettlement(
+        CreateSettlementRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new CreateSettlementCommand(request.Name);
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
     }
 }

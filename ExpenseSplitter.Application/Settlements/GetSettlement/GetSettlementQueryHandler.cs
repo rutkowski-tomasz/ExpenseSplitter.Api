@@ -4,7 +4,7 @@ using ExpenseSplitter.Domain.Settlements;
 
 namespace ExpenseSplitter.Application.Settlements.GetSettlement;
 
-public class GetSettlementQueryHandler : IQueryHandler<GetSettlementQuery, GetSettlementResponse>
+internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQuery, GetSettlementResponse>
 {
     private readonly ISettlementRepository settlementRepository;
 
