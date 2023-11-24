@@ -14,11 +14,11 @@ public class User : Entity<UserId>
     
     public string Nickname { get; private set; }
 
-    public static User Create(string nickname)
+    public static Result<User> Create(string nickname)
     {
         if (string.IsNullOrWhiteSpace(nickname))
         {
-            throw new ArgumentException($"{nameof(nickname)} can't be empty or whitespace");
+            return Result.Failure<User>(UserErrors.EmptyNickname);
         }
 
         var user = new User(UserId.New(), nickname);

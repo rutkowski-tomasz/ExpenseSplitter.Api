@@ -24,11 +24,11 @@ public class Participant : Entity<ParticipantId>
 
     public string Nickname { get; private set; }
 
-    public static Participant Create(SettlementId settlementId, UserId userId, string nickname)
+    public static Result<Participant> Create(SettlementId settlementId, UserId userId, string nickname)
     {
         if (string.IsNullOrWhiteSpace(nickname))
         {
-            throw new ArgumentException($"{nameof(nickname)} can't be empty or whitespace");
+            return Result.Failure<Participant>(ParticipantErrors.NicknameEmpty);
         }
 
         var participant = new Participant(
@@ -40,4 +40,12 @@ public class Participant : Entity<ParticipantId>
 
         return participant;
     }
+}
+
+public class ParticipantErrors
+{
+    public static Error NicknameEmpty = new(
+        "Participant.NicknameEmpty",
+        "Can't create participant with empty nickname"
+    );
 }

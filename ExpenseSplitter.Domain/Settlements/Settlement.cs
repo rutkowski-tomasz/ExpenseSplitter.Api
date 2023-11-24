@@ -13,8 +13,13 @@ public class Settlement : Entity<SettlementId>
 
 	public string Name { get; private set; }
 
-    public static Settlement Create(string name)
+    public static Result<Settlement> Create(string name)
     {
+        if (string.IsNullOrEmpty(name))
+        {
+            return Result.Failure<Settlement>(SettlementErrors.EmptyName);
+        }
+        
         var settlement = new Settlement(SettlementId.New(), name);
 
         return settlement;
