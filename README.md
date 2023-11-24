@@ -8,20 +8,16 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 
 1. Bold split into: Domain, Application, Infrastructure and Presentation layers
 2. DDD elements: Entities, ValueObjects, DomainEvents, DomainServices
-3. Minimal API
-4. Swagger
-5. Docker support
-6. Database migration and seeding
-7. Outbox pattern
-8. Authentication and Authorization
-9. CQRS pattern
-10. Command/query validators
-11. Result driven communication
-12. Unit of work
-13. Strongly typed IDs
-14. Dependency Injection pattern
-15. CI integration
-16. Automated unit and integration tests
+3. Minimal API with Swagger documentation
+4. Docker support with docker-compose orchestration
+5. Database migration and seeding
+6. Outbox pattern
+7. Authentication and Authorization
+8. CQRS pattern with custom validators and behaviors
+9. Result driven communication
+10. Primitive obsession solved, strongly typed IDs
+11. Dependency Injection pattern
+12. Automated tests with CI Integration
 
 # 🛹 Model diagram
 
@@ -35,7 +31,7 @@ TODO
 - ✅ Repository description
 - Integrate with Depedabot
 - Integrate with CI
-- 🔄 docker support 
+- ✅ docker support 
 
 ## 📃 Domain Layer
 
@@ -73,12 +69,17 @@ TODO
 ## 🧑🏻‍🔧 Infrastructure Layer
 
 - ✅ EF Core - DbContext, Entity mapping
-- 🔄 DB migrations
+- ✅ DB migrations
 - ✅ Repositories for each Domain entity
 - Outbox pattern
-- Authentication
+- Authentication & Authorization
 - Architecture tests
 - Unit tests
+
+## Ideas
+- Trace ID
+- code coverage
+- badges
 
 # Development
 
