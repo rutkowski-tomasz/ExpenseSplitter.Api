@@ -1,4 +1,6 @@
-﻿# 💵 ExpenseSplitter
+﻿[![Continuous integration](https://github.com/rutkowski-tomasz/ExpenseSplitter/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/rutkowski-tomasz/ExpenseSplitter/actions/workflows/continuous-integration.yml)
+
+# 💵 ExpenseSplitter
 
 🚧 This is still being developed and some features are not yet implemented 🚧
 
