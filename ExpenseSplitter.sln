@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpenseSplitter.Presentatio
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{5FF67CF3-03A3-4A18-9948-F7F1896A617B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Domain.Tests", "ExpenseSplitter.Domain.Tests\ExpenseSplitter.Domain.Tests.csproj", "{DF61FDE0-ADD4-4D78-A140-F24E76031887}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Domain.UnitTests", "ExpenseSplitter.Domain.Tests\ExpenseSplitter.Domain.UnitTests.csproj", "{DF61FDE0-ADD4-4D78-A140-F24E76031887}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

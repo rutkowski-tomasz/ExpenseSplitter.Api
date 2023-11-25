@@ -20,6 +20,25 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="AutoFixture" Version="4.18.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Settlements\" />
+    <None Remove="Participants\" />
+    <None Remove="Expenses\" />
+    <None Remove="ExpenseAllocations\" />
+    <None Remove="Users\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Settlements\" />
+    <Folder Include="Participants\" />
+    <Folder Include="Expenses\" />
+    <Folder Include="ExpenseAllocations\" />
+    <Folder Include="Users\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExpenseSplitter.Domain\ExpenseSplitter.Domain.csproj" />
+  </ItemGroup>
 </Project>
