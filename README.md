@@ -47,7 +47,7 @@ TODO
 - ✅ Settlement entity
 - ✅ Users entity 
 - ✅ Participant entity
-- Unit tests
+- ✅ Unit tests
 - Currency support
 - DomainEvents raising and handling
 - Solve primitive obsession
@@ -56,7 +56,7 @@ TODO
 
 - ✅ MediatR setup
 - ✅ ICommand, IQuery, ICommandHandler, IQueryHandler
-- Logging for ICommandHandler
+- ✅ Logging for ICommandHandler
 - Validators 
 - Unit tests
 
@@ -80,8 +80,8 @@ TODO
 
 ## Ideas
 - Trace ID
-- code coverage
-- badges
+- ✅ code coverage
+- ✅ workflow badge
 
 # Development
 
