@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Domain.Abstractions;
+using ExpenseSplitter.Domain.Settlements.Events;
 
 namespace ExpenseSplitter.Domain.Settlements;
 
@@ -23,6 +24,7 @@ public sealed class Settlement : Entity<SettlementId>
         
         var settlement = new Settlement(SettlementId.New(), name);
 
+        settlement.RaiseDomainEvent(new SettlementCreatedDomainEvent(settlement.Id));
         return settlement;
     }
 }

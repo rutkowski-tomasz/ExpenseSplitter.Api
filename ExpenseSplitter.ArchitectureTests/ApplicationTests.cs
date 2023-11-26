@@ -92,5 +92,19 @@ public class ApplicationTests
 
         result.IsSuccessful.Should().BeTrue();
     }
+
+    [Fact]
+    public void DomainEventHandlers_ShouldHaveDomainEventHandlerEnding()
+    {
+        var result = Types
+            .InAssembly(Assemblies.Application)
+            .That()
+            .ImplementInterface(typeof(IDomainEventHandler<>))
+            .Should()
+            .HaveNameEndingWith("DomainEventHandler")
+            .GetResult();
+
+        result.IsSuccessful.Should().BeTrue();
+    }
 }
 

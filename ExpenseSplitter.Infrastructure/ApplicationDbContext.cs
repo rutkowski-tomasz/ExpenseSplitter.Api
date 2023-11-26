@@ -1,12 +1,19 @@
 ﻿using ExpenseSplitter.Domain.Abstractions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Infrastructure;
 
 public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
+    private readonly IPublisher publisher;
+
+    public ApplicationDbContext(
+        DbContextOptions options,
+        IPublisher publisher
+    ) : base(options)
     {
+        this.publisher = publisher;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,6 +27,27 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     {
         var result = await base.SaveChangesAsync(cancellationToken);
 
+        await PublishDomainEvents();
+
         return result;
+    }
+
+    private async Task PublishDomainEvents()
+    {
+        var domainEvents = ChangeTracker
+            .Entries<IEntity>()
+            .Select(entry => entry.Entity)
+            .SelectMany(entity =>
+            {
+                var domainEvents = entity.GetDomainEvents();
+                entity.ClearDomainEvents();
+                return domainEvents;
+            })
+            .ToList();
+
+        foreach (var domainEvent in domainEvents)
+        {
+            await publisher.Publish(domainEvent);
+        }
     }
 }

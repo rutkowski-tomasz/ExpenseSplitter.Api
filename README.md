@@ -29,10 +29,9 @@ TODO
 
 ## 🎯 Project general
 
-- Models diagram
 - ✅ Repository description
 - ✅ Integrate with Depedabot
-- ✅ Integrate with CI
+- ✅ Continuous integration, badge, code coverage
 - ✅ docker & docker-compose support 
 
 ## 📃 Domain Layer
@@ -41,8 +40,6 @@ TODO
 - ✅ Model entities: Expense, ExpenseAllocation, Participant, Settlement, User
 - ✅ Results and Error
 - ✅ Strongly typed IDs
-- Currency support
-- DomainEvents raising and handling
 - Solve primitive obsession
 
 ## 🧑🏻‍💼 Application Layer
@@ -55,20 +52,18 @@ TODO
 
 - ✅ Minimal API with Swagger documentation
 - 🔄 DB seeding
-- Authorization
+- Trace ID
 
 ## 🧑🏻‍🔧 Infrastructure Layer
 
-- ✅ EF Core - DbContext, Entity mapping, DB migrations
-- ✅ Repositories for each Domain entity
+- ✅ EF Core - DbContext, Entity mapping, DB migrations, Repositories
 - Outbox pattern
 - Authentication & Authorization
 - ✅ Architecture tests
 
-## Ideas
-- Trace ID
-- ✅ code coverage
-- ✅ workflow badge
+## 📈 Business use-cases
+
+- Currency support
 
 # Development
 
