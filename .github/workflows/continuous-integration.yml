@@ -21,6 +21,7 @@ jobs:
       - name: Restore coverage history
         uses: dawidd6/action-download-artifact@v2
         with:
+          github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
           name: CoverageHistory
           path: CoverageHistory
         continue-on-error: true
