@@ -19,7 +19,7 @@ public class ExceptionHandlingMiddlewareTests
     }
 
     [Fact]
-    public async Task InvokeAsync_WhenNoException_ShouldNotChangeResponse()
+    public async Task InvokeAsync_ShouldNotChangeResponse_WhenNoException()
     {
         var context = new DefaultHttpContext();
 
@@ -29,7 +29,7 @@ public class ExceptionHandlingMiddlewareTests
     }
 
     [Fact]
-    public async Task InvokeAsync_WhenValidationExceptionOccurs_ShouldReturnBadRequest()
+    public async Task InvokeAsync_ShouldReturnBadRequest_WhenValidationExceptionOccurs()
     {
         var context = new DefaultHttpContext();
         var validationException = new ValidationException(new List<ValidationError> {
@@ -43,7 +43,7 @@ public class ExceptionHandlingMiddlewareTests
     }
 
     [Fact]
-    public async Task InvokeAsync_WhenGenericExceptionOccurs_ShouldReturnInternalServerError()
+    public async Task InvokeAsync_ShouldReturnInternalServerError_WhenGenericExceptionOccurs()
     {
         var context = new DefaultHttpContext();
         _nextMock.Setup(n => n(context)).ThrowsAsync(new Exception());
