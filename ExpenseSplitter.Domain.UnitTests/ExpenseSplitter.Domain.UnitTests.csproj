@@ -30,6 +30,7 @@
     <None Remove="Expenses\" />
     <None Remove="ExpenseAllocations\" />
     <None Remove="Users\" />
+    <None Remove="Abstractions\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settlements\" />
@@ -37,6 +38,7 @@
     <Folder Include="Expenses\" />
     <Folder Include="ExpenseAllocations\" />
     <Folder Include="Users\" />
+    <Folder Include="Abstractions\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExpenseSplitter.Domain\ExpenseSplitter.Domain.csproj" />
