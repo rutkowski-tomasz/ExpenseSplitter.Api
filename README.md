@@ -52,7 +52,7 @@ TODO
 
 - ✅ Minimal API with Swagger documentation
 - 🔄 DB seeding
-- Trace ID
+- ✅ Trace ID middleware
 
 ## 🧑🏻‍🔧 Infrastructure Layer
 
