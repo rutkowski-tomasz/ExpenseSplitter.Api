@@ -33,50 +33,37 @@ TODO
 - ✅ Repository description
 - ✅ Integrate with Depedabot
 - ✅ Integrate with CI
-- ✅ docker support 
+- ✅ docker & docker-compose support 
 
 ## 📃 Domain Layer
 
 - ✅ DDD abstractions: Entity, ValueObject, DomainEvent
-- ✅ Unit of work
+- ✅ Model entities: Expense, ExpenseAllocation, Participant, Settlement, User
 - ✅ Results and Error
-- ✅ Define domain model
 - ✅ Strongly typed IDs
-- ✅ Expense entity
-- ✅ ExpenseParticipant entity
-- ✅ Settlement entity
-- ✅ Users entity 
-- ✅ Participant entity
-- ✅ Unit tests
 - Currency support
 - DomainEvents raising and handling
 - Solve primitive obsession
 
 ## 🧑🏻‍💼 Application Layer
 
-- ✅ MediatR setup
-- ✅ ICommand, IQuery, ICommandHandler, IQueryHandler
+- ✅ MediatR with ICommand, IQuery, ICommandHandler, IQueryHandler abstractions
 - ✅ Logging for ICommandHandler
-- Validators 
-- ✅ Unit tests
+- ✅ Validators with handling middleware
 
 ## 🖼️ Presentation Layer
 
-- ✅ Minimal API
-- ✅ Swagger
-- Exception handling middleware
+- ✅ Minimal API with Swagger documentation
 - 🔄 DB seeding
 - Authorization
 
 ## 🧑🏻‍🔧 Infrastructure Layer
 
-- ✅ EF Core - DbContext, Entity mapping
-- ✅ DB migrations
+- ✅ EF Core - DbContext, Entity mapping, DB migrations
 - ✅ Repositories for each Domain entity
 - Outbox pattern
 - Authentication & Authorization
-- Architecture tests
-- Unit tests
+- ✅ Architecture tests
 
 ## Ideas
 - Trace ID
