@@ -27,9 +27,13 @@
 
   <ItemGroup>
     <None Remove="Settlements\" />
+    <None Remove="Abstractions\" />
+    <None Remove="Abstractions\Behaviors\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settlements\" />
+    <Folder Include="Abstractions\" />
+    <Folder Include="Abstractions\Behaviors\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExpenseSplitter.Application\ExpenseSplitter.Application.csproj" />
