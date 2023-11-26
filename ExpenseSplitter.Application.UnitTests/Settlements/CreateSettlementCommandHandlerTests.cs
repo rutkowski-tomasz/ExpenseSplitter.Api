@@ -22,6 +22,20 @@ public class CreateSettlementCommandHandlerTests
     }
 
     [Fact]
+    public async Task Validate_ShouldFail_WhenNameIsEmpty()
+    {
+        var command = new Fixture()
+            .Build<CreateSettlementCommand>()
+            .With(x => x.Name, string.Empty)
+            .Create();
+
+        var validator = new CreateSettlementCommandValidator();
+        var result = await validator.ValidateAsync(command);
+
+        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.Name));
+    }
+
+    [Fact]
     public async Task Handle_ShouldAddNewSettlementToRepository()
     {
         var command = new Fixture().Create<CreateSettlementCommand>();

@@ -1,9 +1,10 @@
 ﻿using ExpenseSplitter.Infrastructure;
+using ExpenseSplitter.Presentation.Api.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Presentation.Api.Extensions;
 
-public static class MigrationExtensions
+public static class ApplicationBuilderExtensions
 {
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
@@ -13,4 +14,10 @@ public static class MigrationExtensions
 
         dbContext.Database.Migrate();
     }
+
+    public static void UseCustomExceptionHandler(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+    }
 }
+
