@@ -29,9 +29,11 @@
 
   <ItemGroup>
     <None Remove="Middleware\" />
+    <None Remove="Endpoints\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Middleware\" />
+    <Folder Include="Endpoints\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExpenseSplitter.Presentation.Api\ExpenseSplitter.Presentation.Api.csproj" />
