@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Application.UnitTests.Abstractions.Behaviors;
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
 public class LoggingBehaviorTests
 {
     private readonly Mock<ILogger<TestCommand>> loggerMock;
@@ -60,7 +61,6 @@ public class LoggingBehaviorTests
 
         await act.Should().ThrowAsync<Exception>();
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
@@ -76,7 +76,6 @@ public class LoggingBehaviorTests
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
         loggerMock.VerifyNoOtherCalls();
     }
