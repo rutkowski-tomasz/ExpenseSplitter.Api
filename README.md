@@ -58,7 +58,7 @@ TODO
 - ✅ ICommand, IQuery, ICommandHandler, IQueryHandler
 - ✅ Logging for ICommandHandler
 - Validators 
-- Unit tests
+- ✅ Unit tests
 
 ## 🖼️ Presentation Layer
 
