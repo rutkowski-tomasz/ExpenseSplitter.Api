@@ -23,6 +23,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseTraceIdMiddleware();
+
 app.UseCustomExceptionHandler();
 
 app.MapSettlementEndpoints();

@@ -19,5 +19,9 @@ public static class ApplicationBuilderExtensions
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();
     }
-}
 
+    public static void UseTraceIdMiddleware(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<TraceIdMiddleware>();
+    }
+}
