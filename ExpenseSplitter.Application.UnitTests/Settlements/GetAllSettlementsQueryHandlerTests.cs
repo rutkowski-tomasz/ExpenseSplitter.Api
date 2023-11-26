@@ -17,7 +17,11 @@ public class GetAllSettlementsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldMapSettlementsToDto()
     {
-        var settlements = new Fixture().CreateMany<Settlement>(2);
+        var settlements = new Fixture()
+            .Build<Settlement>()
+            .FromFactory((string name) => Settlement.Create(name).Value)
+            .CreateMany(2);
+
         settlementRepositoryMock
             .Setup(x => x.GetAllAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(settlements);
