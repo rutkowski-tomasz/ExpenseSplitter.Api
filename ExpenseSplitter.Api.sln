@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Infrast
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Infrastructure.UnitTests", "test\ExpenseSplitter.Api.Infrastructure.UnitTests\ExpenseSplitter.Api.Infrastructure.UnitTests.csproj", "{2F4C147D-698F-4BE5-94D5-385605F821FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.IntegrationTests", "test\ExpenseSplitter.Api.IntegrationTests\ExpenseSplitter.Api.IntegrationTests.csproj", "{33104D66-DA5D-46CD-B194-72C74B29912B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33104D66-DA5D-46CD-B194-72C74B29912B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33104D66-DA5D-46CD-B194-72C74B29912B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33104D66-DA5D-46CD-B194-72C74B29912B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33104D66-DA5D-46CD-B194-72C74B29912B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{4ADBA8C5-3ECB-4B0B-B25F-000D5D8FAF54} = {380D94B8-7BB8-4109-8DF2-07606C6BCB0A}
 		{625A1E1E-9A96-41C5-A54B-02DAD4C092E7} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
 		{2F4C147D-698F-4BE5-94D5-385605F821FD} = {380D94B8-7BB8-4109-8DF2-07606C6BCB0A}
+		{33104D66-DA5D-46CD-B194-72C74B29912B} = {380D94B8-7BB8-4109-8DF2-07606C6BCB0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A95D8BAA-2DEC-4A2B-970E-1B484BB37945}
