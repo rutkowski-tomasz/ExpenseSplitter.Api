@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Users.LoginUser;
+﻿using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
+using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Presentation.Models;
 using MediatR;
@@ -15,6 +16,8 @@ public static class UserEndpoints
         routeGroupBuilder.MapPost("register", Register).AllowAnonymous();
 
         routeGroupBuilder.MapPost("login", Login).AllowAnonymous();
+
+        routeGroupBuilder.MapPost("me", GetLoggedInUser).RequireAuthorization();
 
         return builder;
     }
@@ -43,6 +46,18 @@ public static class UserEndpoints
     )
     {
         var command = new LoginUserCommand(request.Email, request.Password);
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+    }
+    
+    public static async Task<Results<Ok<GetLoggedInUserResponse>, BadRequest>> GetLoggedInUser(
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new GetLoggedInUserQuery();
 
         var result = await sender.Send(command, cancellationToken);
 

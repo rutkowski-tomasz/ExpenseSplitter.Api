@@ -13,4 +13,9 @@ public class UserErrors
         "User.InvalidCredentials",
         "The provided credentials were invalid"
     );
+
+    public static Error NotFound = new(
+        "User.NotFound",
+        "The user with the specified identifier was not found"
+    );
 }
