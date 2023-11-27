@@ -2,7 +2,7 @@
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 
-namespace ExpenseSplitter.Domain.Tests.ExpenseAllocations;
+namespace ExpenseSplitter.Api.Domain.UnitTests.ExpenseAllocations;
 
 public class ExpenseAllocationTests
 {
@@ -17,6 +17,8 @@ public class ExpenseAllocationTests
 
         expenseAllocation.Should().NotBeNull();
         expenseAllocation.Value.Should().Be(value);
+        expenseAllocation.ExpenseId.Should().Be(expenseId);
+        expenseAllocation.ParticipantId.Should().Be(participantId);
     }
 }
 

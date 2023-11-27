@@ -13,7 +13,7 @@ public class DependencyInjectionTests
     {
         var services = new ServiceCollection();
 
-        var result = DependencyInjection.AddApplication(services);
+        services.AddApplication();
 
         services.Should().Contain(x => x.ServiceType == typeof(IPublisher));
         services.Should().Contain(x => x.ImplementationType == typeof(ValidationBehavior<,>));
@@ -25,7 +25,7 @@ public class DependencyInjectionTests
     {
         var services = new ServiceCollection();
 
-        DependencyInjection.AddApplication(services);
+        services.AddApplication();
 
         services.Should().Contain(x => x.ServiceType == typeof(IValidator<CreateSettlementCommand>));
     }

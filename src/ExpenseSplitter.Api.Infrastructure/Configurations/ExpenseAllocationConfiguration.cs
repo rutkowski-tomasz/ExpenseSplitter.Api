@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using System.Diagnostics.CodeAnalysis;
 using ExpenseSplitter.Api.Domain.ExpenseAllocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ExpenseSplitter.Api.Infrastructure.Configurations;
 
+[ExcludeFromCodeCoverage]
 internal sealed class ExpenseAllocationConfiguration : IEntityTypeConfiguration<ExpenseAllocation>
 {
     public void Configure(EntityTypeBuilder<ExpenseAllocation> builder)

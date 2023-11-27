@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
+﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Presentation.Models;
@@ -9,6 +10,7 @@ namespace ExpenseSplitter.Api.Presentation.Endpoints;
 
 public static class UserEndpoints
 {
+    [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
     {
         var routeGroupBuilder = builder.MapGroup("api/user");

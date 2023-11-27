@@ -15,6 +15,7 @@ public class UserTests
 
         user.IsSuccess.Should().BeTrue();
         user.Value.Nickname.Should().Be(nickname);
+        user.Value.Email.Should().Be(email);
     }
 
     [Fact]
@@ -27,5 +28,18 @@ public class UserTests
         user.IsFailure.Should().BeTrue();
         user.Error.Code.Should().Be(UserErrors.EmptyNickname.Code);
     }
-}
+    
+    [Fact]
+    public void SetIdentityId_Should()
+    {
+        var user = new Fixture()
+            .Build<User>()
+            .FromFactory((string nickname, string email) => User.Create(nickname, email).Value)
+            .Create();
 
+        var identityId = new Fixture().Create<string>();
+        user.SetIdentityId(identityId);
+
+        user.IdentityId.Should().Be(identityId);
+    }
+}

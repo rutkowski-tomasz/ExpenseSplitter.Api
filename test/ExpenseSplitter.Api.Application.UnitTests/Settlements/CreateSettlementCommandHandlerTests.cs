@@ -7,13 +7,12 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 public class CreateSettlementCommandHandlerTests
 {
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
-    private readonly Mock<IUnitOfWork> unitOfWorkMock;
     private readonly CreateSettlementCommandHandler handler;
 
     public CreateSettlementCommandHandlerTests()
     {
         settlementRepositoryMock = new Mock<ISettlementRepository>();
-        unitOfWorkMock = new Mock<IUnitOfWork>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
 
         handler = new CreateSettlementCommandHandler(
             settlementRepositoryMock.Object,

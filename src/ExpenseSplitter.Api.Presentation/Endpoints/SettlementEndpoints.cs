@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
+﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Presentation.Models;
@@ -9,6 +10,7 @@ namespace ExpenseSplitter.Api.Presentation.Endpoints;
 
 public static class SettlementEndpoints
 {
+    [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapSettlementEndpoints(this IEndpointRouteBuilder builder)
     {
         var routeGroupBuilder = builder.MapGroup("api/settlements").RequireAuthorization();

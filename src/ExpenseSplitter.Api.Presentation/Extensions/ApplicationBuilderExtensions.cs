@@ -1,9 +1,11 @@
-﻿using ExpenseSplitter.Api.Presentation.Middleware;
+﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Presentation.Middleware;
 using ExpenseSplitter.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Presentation.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class ApplicationBuilderExtensions
 {
     public static void ApplyMigrations(this IApplicationBuilder app)

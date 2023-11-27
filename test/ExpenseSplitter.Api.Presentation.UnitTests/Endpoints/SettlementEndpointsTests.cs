@@ -7,7 +7,7 @@ using ExpenseSplitter.Api.Presentation.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ExpenseSplitter.Api.Presentation.Tests.Endpoints;
+namespace ExpenseSplitter.Api.Presentation.UnitTests.Endpoints;
 
 public class SettlementEndpointsTests
 {
@@ -61,6 +61,6 @@ public class SettlementEndpointsTests
 
         var castedResult = result.Result as Ok<Guid>;
         castedResult!.StatusCode.Should().Be(200);
-        castedResult.Value!.Should().Be(settlementId);
+        castedResult.Value.Should().Be(settlementId);
     }
 }

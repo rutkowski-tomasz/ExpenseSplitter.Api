@@ -1,6 +1,6 @@
 ﻿using ExpenseSplitter.Api.Domain.Settlements;
 
-namespace ExpenseSplitter.Domain.Tests.Settlements;
+namespace ExpenseSplitter.Api.Domain.UnitTests.Settlements;
 
 public class SettlementTests
 {

@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		README.md = README.md
+		.runsettings = .runsettings
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24F665EB-15E0-4AF2-818D-BECE1BF0C281}"
@@ -27,9 +28,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Archite
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Domain.UnitTests", "test\ExpenseSplitter.Api.Domain.UnitTests\ExpenseSplitter.Api.Domain.UnitTests.csproj", "{37A14232-624C-4636-B672-ECE6953D2A4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Presentation.Tests", "test\ExpenseSplitter.Api.Presentation.Tests\ExpenseSplitter.Api.Presentation.Tests.csproj", "{4ADBA8C5-3ECB-4B0B-B25F-000D5D8FAF54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Presentation.UnitTests", "test\ExpenseSplitter.Api.Presentation.UnitTests\ExpenseSplitter.Api.Presentation.UnitTests.csproj", "{4ADBA8C5-3ECB-4B0B-B25F-000D5D8FAF54}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Infrastructure", "src\ExpenseSplitter.Api.Infrastructure\ExpenseSplitter.Api.Infrastructure.csproj", "{625A1E1E-9A96-41C5-A54B-02DAD4C092E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpenseSplitter.Api.Infrastructure.UnitTests", "test\ExpenseSplitter.Api.Infrastructure.UnitTests\ExpenseSplitter.Api.Infrastructure.UnitTests.csproj", "{2F4C147D-698F-4BE5-94D5-385605F821FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +76,10 @@ Global
 		{625A1E1E-9A96-41C5-A54B-02DAD4C092E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{625A1E1E-9A96-41C5-A54B-02DAD4C092E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{625A1E1E-9A96-41C5-A54B-02DAD4C092E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F4C147D-698F-4BE5-94D5-385605F821FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +93,7 @@ Global
 		{37A14232-624C-4636-B672-ECE6953D2A4F} = {380D94B8-7BB8-4109-8DF2-07606C6BCB0A}
 		{4ADBA8C5-3ECB-4B0B-B25F-000D5D8FAF54} = {380D94B8-7BB8-4109-8DF2-07606C6BCB0A}
 		{625A1E1E-9A96-41C5-A54B-02DAD4C092E7} = {24F665EB-15E0-4AF2-818D-BECE1BF0C281}
+		{2F4C147D-698F-4BE5-94D5-385605F821FD} = {380D94B8-7BB8-4109-8DF2-07606C6BCB0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A95D8BAA-2DEC-4A2B-970E-1B484BB37945}

@@ -1,9 +1,11 @@
-﻿using ExpenseSplitter.Api.Domain.Settlements;
+﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Domain.Settlements;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ExpenseSplitter.Api.Infrastructure.Configurations;
 
+[ExcludeFromCodeCoverage]
 public class SettlementConfiguration : IEntityTypeConfiguration<Settlement>
 {
     public void Configure(EntityTypeBuilder<Settlement> builder)

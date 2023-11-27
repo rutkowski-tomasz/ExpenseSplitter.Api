@@ -20,11 +20,12 @@ public class GetAllSettlementsQueryHandlerTests
         var settlements = new Fixture()
             .Build<Settlement>()
             .FromFactory((string name) => Settlement.Create(name).Value)
-            .CreateMany(2);
+            .CreateMany(2)
+            .ToArray();
 
         settlementRepositoryMock
             .Setup(x => x.GetAllAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlements);
+            .ReturnsAsync(settlements.ToList());
 
         var query = new Fixture().Create<GetAllSettlementsQuery>();
 

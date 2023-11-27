@@ -2,7 +2,7 @@
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.Users;
 
-namespace ExpenseSplitter.Domain.Tests.Participants;
+namespace ExpenseSplitter.Api.Domain.UnitTests.Participants;
 
 public class ParticipantTests
 {
@@ -17,6 +17,8 @@ public class ParticipantTests
 
         participant.IsSuccess.Should().BeTrue();
         participant.Value.Nickname.Should().Be(nickname);
+        participant.Value.SettlementId.Should().Be(settlementId);
+        participant.Value.UserId.Should().Be(userId);
     }
 
     [Fact]

@@ -1,10 +1,11 @@
-﻿using ExpenseSplitter.Api.Domain.Abstractions;
+﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
-public sealed class ApplicationDbContext : DbContext, IUnitOfWork
+public class ApplicationDbContext : DbContext, IUnitOfWork
 {
     private readonly IPublisher publisher;
 
@@ -16,6 +17,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
         this.publisher = publisher;
     }
 
+    [ExcludeFromCodeCoverage]
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

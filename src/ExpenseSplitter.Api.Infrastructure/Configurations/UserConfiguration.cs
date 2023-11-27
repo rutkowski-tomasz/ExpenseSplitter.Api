@@ -1,9 +1,11 @@
-﻿using ExpenseSplitter.Api.Domain.Users;
+﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ExpenseSplitter.Api.Infrastructure.Configurations;
 
+[ExcludeFromCodeCoverage]
 internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
