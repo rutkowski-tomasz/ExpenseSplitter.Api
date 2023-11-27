@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Presentation.Middleware;
+﻿using System.Runtime.InteropServices.JavaScript;
+using ExpenseSplitter.Api.Presentation.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -6,15 +7,15 @@ namespace ExpenseSplitter.Api.Presentation.Tests.Middleware;
 
 public class TraceIdMiddlewareTests
 {
-    private readonly Mock<RequestDelegate> _nextMock;
-    private readonly Mock<ILogger<TraceIdMiddleware>> _loggerMock;
-    private readonly TraceIdMiddleware _middleware;
+    private readonly Mock<RequestDelegate> nextMock;
+    private readonly Mock<ILogger<TraceIdMiddleware>> loggerMock;
+    private readonly TraceIdMiddleware middleware;
 
     public TraceIdMiddlewareTests()
     {
-        _nextMock = new Mock<RequestDelegate>();
-        _loggerMock = new Mock<ILogger<TraceIdMiddleware>>();
-        _middleware = new TraceIdMiddleware(_nextMock.Object, _loggerMock.Object);
+        nextMock = new Mock<RequestDelegate>();
+        loggerMock = new Mock<ILogger<TraceIdMiddleware>>();
+        middleware = new TraceIdMiddleware(nextMock.Object, loggerMock.Object);
     }
 
     [Fact]
@@ -23,7 +24,7 @@ public class TraceIdMiddlewareTests
         var context = new DefaultHttpContext();
         context.Request.Headers.Clear();
 
-        await _middleware.InvokeAsync(context);
+        await middleware.InvokeAsync(context);
 
         context.Items.Should().ContainKey("traceId");
         context.Response.Headers.Should().ContainKey("traceId");
@@ -39,9 +40,9 @@ public class TraceIdMiddlewareTests
         var existingTraceId = Guid.NewGuid().ToString();
         context.Request.Headers["traceId"] = existingTraceId;
 
-        await _middleware.InvokeAsync(context);
+        await middleware.InvokeAsync(context);
 
         context.Items["traceId"].Should().Be(existingTraceId);
-        context.Response.Headers["traceId"].Should().BeEquivalentTo(new List<string> { existingTraceId });
+        context.Response.Headers["traceId"].ToArray().Should().BeEquivalentTo(existingTraceId);
     }
 }

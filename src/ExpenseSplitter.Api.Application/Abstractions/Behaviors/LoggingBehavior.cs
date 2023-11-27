@@ -8,11 +8,11 @@ public class LoggingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
 {
-    private readonly ILogger<TRequest> _logger;
+    private readonly ILogger<TRequest> logger;
 
     public LoggingBehavior(ILogger<TRequest> logger)
     {
-        _logger = logger;
+        this.logger = logger;
     }
 
     public async Task<TResponse> Handle(
@@ -24,17 +24,17 @@ public class LoggingBehavior<TRequest, TResponse>
 
         try
         {
-            _logger.LogInformation("Executing command {Command}", name);
+            logger.LogInformation("Executing command {Command}", name);
 
             var result = await next();
 
-            _logger.LogInformation("Command {Command} processed successfully", name);
+            logger.LogInformation("Command {Command} processed successfully", name);
 
             return result;
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Command {Command} processing failed", name);
+            logger.LogError(exception, "Command {Command} processing failed", name);
 
             throw;
         }

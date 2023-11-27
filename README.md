@@ -70,5 +70,5 @@ TODO
 ## Create migration
 
 ```sh
-dotnet ef migrations add --startup-project ExpenseSplitter.Presentation.Api --project ExpenseSplitter.Infrastructure InitialCreate
+dotnet ef migrations add --startup-project src/ExpenseSplitter.Api.Presentation --project src/ExpenseSplitter.Api.Infrastructure ...
 ```
