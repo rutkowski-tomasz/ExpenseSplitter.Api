@@ -1,0 +1,51 @@
+﻿using ExpenseSplitter.Api.Application.Users.LoginUser;
+using ExpenseSplitter.Api.Application.Users.RegisterUser;
+using ExpenseSplitter.Api.Presentation.Models;
+using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
+
+namespace ExpenseSplitter.Api.Presentation.Endpoints;
+
+public static class UserEndpoints
+{
+    public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
+    {
+        var routeGroupBuilder = builder.MapGroup("api/user");
+
+        routeGroupBuilder.MapPost("register", Register).AllowAnonymous();
+
+        routeGroupBuilder.MapPost("login", Login).AllowAnonymous();
+
+        return builder;
+    }
+
+    public static async Task<Results<Ok<Guid>, BadRequest>> Register(
+        RegisterUserRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new RegisterUserCommand(
+            request.Email,
+            request.Nickname,
+            request.Password
+        );
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+    }
+
+    public static async Task<Results<Ok<LoginUserResponse>, BadRequest>> Login(
+        LoginUserRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new LoginUserCommand(request.Email, request.Password);
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+    }
+}

@@ -11,7 +11,7 @@ public static class SettlementEndpoints
 {
     public static IEndpointRouteBuilder MapSettlementEndpoints(this IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = builder.MapGroup("api/settlements");
+        var routeGroupBuilder = builder.MapGroup("api/settlements").RequireAuthorization();
 
         routeGroupBuilder.MapGet("", GetAllSettlements);
         routeGroupBuilder.MapGet("{id}", GetSettlement);

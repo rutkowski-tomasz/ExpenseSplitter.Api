@@ -9,6 +9,7 @@ services:
       dockerfile: ExpenseSplitter.Api.Presentation/Dockerfile
     depends_on:
       - expensesplitter-db
+      - expensesplitter-idp
 
   expensesplitter-db:
     image: postgres:latest
@@ -21,3 +22,16 @@ services:
       - ./.containers/expensesplitter-db:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  expensesplitter-idp:
+    image: jboss/keycloak:latest
+    container_name: expensesplitter-idp
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_IMPORT=/tmp/expensesplitter-idp-realm-export.json
+    volumes:
+      - ./.containers/expensesplitter-idp:/opt/jboss/keycloak/standalone/data
+      - ./.files/expensesplitter-idp-realm-export.json:/tmp/expensesplitter-idp-realm-export.json
+    ports:
+      - 18080:8080

@@ -27,6 +27,12 @@ app.UseTraceIdMiddleware();
 
 app.UseCustomExceptionHandler();
 
-app.MapSettlementEndpoints();
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app
+    .MapSettlementEndpoints()
+    .MapUserEndpoints();
 
 app.Run();

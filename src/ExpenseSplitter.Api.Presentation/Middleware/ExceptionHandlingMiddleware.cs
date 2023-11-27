@@ -5,26 +5,26 @@ namespace ExpenseSplitter.Api.Presentation.Middleware;
 
 public class ExceptionHandlingMiddleware
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly RequestDelegate next;
+    private readonly ILogger<ExceptionHandlingMiddleware> logger;
 
     public ExceptionHandlingMiddleware(
         RequestDelegate next,
         ILogger<ExceptionHandlingMiddleware> logger)
     {
-        _next = next;
-        _logger = logger;
+        this.next = next;
+        this.logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
+            logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
             var exceptionDetails = GetExceptionDetails(exception);
 

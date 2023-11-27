@@ -8,4 +8,9 @@ public class UserErrors
         "User.EmptyNickname",
         "Can't create user with empty nickname"
     );
+
+    public static Error InvalidCredentials = new(
+        "User.InvalidCredentials",
+        "The provided credentials were invalid"
+    );
 }
