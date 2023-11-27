@@ -24,12 +24,12 @@ jobs:
           github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
           name: CoverageHistory
           path: CoverageHistory
-        continue-on-error: true
+        # econtinue-on-error: true
 
       - name: ReportGenerator
         uses: danielpalme/ReportGenerator-GitHub-Action@5
         with:
-          reports: '*Test*/TestResults/*/coverage.cobertura.xml'
+          reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
           targetdir: 'CoverageReports'
           historydir: 'CoverageHistory'
           reporttypes: 'HtmlInline;Cobertura'

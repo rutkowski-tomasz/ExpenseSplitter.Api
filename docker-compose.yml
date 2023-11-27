@@ -5,17 +5,19 @@ services:
     image: ${DOCKER_REGISTRY-}expensesplitter-api
     container_name: expensesplitter-api
     build:
-      context: .
-      dockerfile: ExpenseSplitter.Presentation.Api/Dockerfile
+      context: src
+      dockerfile: ExpenseSplitter.Api.Presentation/Dockerfile
+    depends_on:
+      - expensesplitter-db
 
   expensesplitter-db:
     image: postgres:latest
     container_name: expensesplitter-db
     environment:
       - POSTGRES_DB=expensesplitter
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
     volumes:
-      - ./.containers/database:/var/lib/postgresql/data
+      - ./.containers/expensesplitter-db:/var/lib/postgresql/data
     ports:
       - 5432:5432
