@@ -58,12 +58,30 @@ TODO
 
 - ✅ EF Core - DbContext, Entity mapping, DB migrations, Repositories
 - Outbox pattern
-- Authentication & Authorization
+- ✅ Authentication & Authorization
 - ✅ Architecture tests
 
 ## 📈 Business use-cases
 
-- Currency support
+1. ✅ Register - POST /auth/register
+2. ✅ Login - POST /auth/login
+3. Logout - POST /auth/logout
+4. Create settlement (with participants, generate InviteCode) - POST /settlements
+5. Join settlement - POST /settlements/{settlementId}/join
+6. Leave settlement - POST /settlements/{settlementId}/leave
+7. Get all settlements - GET /settlements
+8. Get settlement details (Name, MyTotal, TotalExpenses, InviteCode) - GET /settlements/{settlementId}
+9. Get settlement participants - GET /settlements/{settlementId}/participants
+10. Modify settlement (Name) - PUT /settlements/{settlementId}
+11. Delete settlement (SettlementId) - DELETE /settlements/{settlementId}
+12. Get settlement expenses - GET /settlements/{id}/expenses (paging)
+13. Create expense (Title, Type, Amount, Date, PayingParticipantId, ExpenseAllocations [ParticipantId, Amount]) - POST /expenses
+14. Modify expense (Title, AMount, Date, PayingParticipantId, ExpenseAllocations [ParticipantId, Amount]) - PUT /settlements/{settlementId}
+15. Delete expense (ExpenseId) - DELETE /expenses/{id}
+16. Settlement calculate balances (ParticipantName + Amount), reimbrusements (FromParticipantId, FromParticipantName, ToParticipantId, ToParticipantName, Amount) - GET /settlements/{id}/balances
+17. Websockets for real time updates
+18. Currency support
+
 
 # Development
 

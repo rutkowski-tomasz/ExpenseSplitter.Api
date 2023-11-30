@@ -24,7 +24,7 @@ internal sealed class LoginUserCommandHandler : ICommandHandler<LoginUserCommand
 
         if (result.IsFailure)
         {
-            return Result.Failure<LoginUserResponse>(UserErrors.InvalidCredentials);
+            return Result.Failure<LoginUserResponse>(result.Error);
         }
 
         return new LoginUserResponse(result.Value);

@@ -33,7 +33,8 @@ app.UseAuthorization();
 
 app
     .MapSettlementEndpoints()
-    .MapUserEndpoints();
+    .MapUserEndpoints()
+    .MapExpensesEndpoints();
 
 app.Run();
 

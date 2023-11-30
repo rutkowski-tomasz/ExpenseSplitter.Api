@@ -25,9 +25,9 @@ public sealed class Expense : Entity<ExpenseId>
 
     public ParticipantId PayingParticipantId { get; private set; }
 
-    public static Expense Create(
-        SettlementId settlementId,
+    public static Result<Expense> Create(
         string name,
+        SettlementId settlementId,
         ParticipantId payingParticipantId
     )
     {

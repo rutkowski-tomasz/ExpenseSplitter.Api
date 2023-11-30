@@ -9,8 +9,12 @@ namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 internal sealed class JwtService : IJwtService
 {
     private static readonly Error AuthenticationFailed = new(
-        "Keycloak.AuthenticationFailed",
+        "JwtService.AuthenticationFailed",
         "Failed to acquire access token do to authentication failure");
+
+    private static readonly Error BadGateway = new(
+        "JwtService.BadGateway",
+        "Can't communicate with identity provider");
 
     private readonly HttpClient httpClient;
     private readonly KeycloakOptions keycloakOptions;
@@ -55,7 +59,7 @@ internal sealed class JwtService : IJwtService
         }
         catch (HttpRequestException)
         {
-            return Result.Failure<string>(AuthenticationFailed);
+            return Result.Failure<string>(BadGateway);
         }
     }
 }

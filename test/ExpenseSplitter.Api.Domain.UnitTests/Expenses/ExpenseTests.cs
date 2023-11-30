@@ -13,11 +13,11 @@ public class ExpenseTests
         var settlementId = new Fixture().Create<SettlementId>();
         var participantId = new Fixture().Create<ParticipantId>();
 
-        var expense = Expense.Create(settlementId, name, participantId);
+        var expense = Expense.Create(name, settlementId, participantId);
 
-        expense.Should().NotBeNull();
-        expense.Name.Should().Be(name);
-        expense.SettlementId.Should().Be(settlementId);
-        expense.PayingParticipantId.Should().Be(participantId);
+        expense.IsSuccess.Should().BeTrue();
+        expense.Value.Name.Should().Be(name);
+        expense.Value.SettlementId.Should().Be(settlementId);
+        expense.Value.PayingParticipantId.Should().Be(participantId);
     }
 }

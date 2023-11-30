@@ -2,6 +2,7 @@
 using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -41,7 +42,7 @@ public static class UserEndpoints
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
     }
 
-    public static async Task<Results<Ok<LoginUserResponse>, BadRequest>> Login(
+    public static async Task<Results<Ok<LoginUserResponse>, BadRequest<Error>>> Login(
         LoginUserRequest request,
         ISender sender,
         CancellationToken cancellationToken
@@ -51,7 +52,7 @@ public static class UserEndpoints
 
         var result = await sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
     
     public static async Task<Results<Ok<GetLoggedInUserResponse>, BadRequest>> GetLoggedInUser(
