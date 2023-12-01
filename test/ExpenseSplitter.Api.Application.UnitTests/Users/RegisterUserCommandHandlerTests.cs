@@ -33,7 +33,7 @@ public class RegisterUserCommandHandlerTests
             .Create();
 
         authenticationServiceMock
-            .Setup(x => x.RegisterAsync(It.Is<User>(y => y.Email == command.Email), command.Password, It.IsAny<CancellationToken>()))
+            .Setup(x => x.RegisterAsync(command.Email, command.Password, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Guid.NewGuid().ToString());
 
         var result = await handler.Handle(command, default);
@@ -54,7 +54,7 @@ public class RegisterUserCommandHandlerTests
         var identityId = Guid.NewGuid();
 
         authenticationServiceMock
-            .Setup(x => x.RegisterAsync(It.Is<User>(y => y.Email == command.Email), command.Password, It.IsAny<CancellationToken>()))
+            .Setup(x => x.RegisterAsync(command.Email, command.Password, It.IsAny<CancellationToken>()))
             .ReturnsAsync(identityId.ToString());
 
         var result = await handler.Handle(command, default);

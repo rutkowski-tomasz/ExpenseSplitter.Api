@@ -26,7 +26,18 @@ public static class ExpensesEndpoints
         CancellationToken cancellationToken
     )
     {
-        var command = new CreateExpenseCommand(request.Name, request.SettlementId, request.PayingParticipantId);
+        var command = new CreateExpenseCommand(
+            request.Name,
+            request.Amount,
+            request.Date,
+            request.SettlementId,
+            request.PayingParticipantId,
+            request.Allocations.Select(x => new CreateExpenseCommandAllocation(
+                x.ParticipantId,
+                x.Value,
+                (CreateExpenseCommandAllocationSplit) x.AllocationSplit
+            ))
+        );
 
         var result = await sender.Send(command, cancellationToken);
 

@@ -16,22 +16,16 @@ public sealed class User : Entity<UserId>
     
     public string Nickname { get; private set; }
     public string Email { get; private set; }
-    public string IdentityId { get; private set; } = string.Empty;
 
-    public static Result<User> Create(string nickname, string email)
+    public static Result<User> Create(string nickname, string email, UserId id)
     {
         if (string.IsNullOrWhiteSpace(nickname))
         {
             return Result.Failure<User>(UserErrors.EmptyNickname);
         }
 
-        var user = new User(UserId.New(), nickname, email);
+        var user = new User(id, nickname, email);
 
         return user;
-    }
-
-    public void SetIdentityId(string identityId)
-    {
-        IdentityId = identityId;
     }
 }

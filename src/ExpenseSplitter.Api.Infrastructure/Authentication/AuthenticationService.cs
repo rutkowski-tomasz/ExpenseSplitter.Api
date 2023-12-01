@@ -17,11 +17,11 @@ internal sealed class AuthenticationService : IAuthenticationService
     }
 
     public async Task<string> RegisterAsync(
-        User user,
+        string email,
         string password,
         CancellationToken cancellationToken = default)
     {
-        var userRepresentationModel = UserRepresentationModel.FromUser(user);
+        var userRepresentationModel = UserRepresentationModel.Create(email);
 
         userRepresentationModel.Credentials = new CredentialRepresentationModel[]
         {

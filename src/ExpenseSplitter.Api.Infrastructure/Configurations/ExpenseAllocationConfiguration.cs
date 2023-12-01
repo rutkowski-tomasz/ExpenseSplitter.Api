@@ -2,6 +2,7 @@
 using ExpenseSplitter.Api.Domain.ExpenseAllocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
+using ExpenseSplitter.Api.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,7 +20,8 @@ internal sealed class ExpenseAllocationConfiguration : IEntityTypeConfiguration<
         builder.Property(expenseAllocation => expenseAllocation.Id)
             .HasConversion(expenseAllocationId => expenseAllocationId.Value, value => new ExpenseAllocationId(value));
 
-        builder.Property(expenseAllocation => expenseAllocation.Value);
+        builder.Property(expenseAllocation => expenseAllocation.Amount)
+            .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => new Amount(value));
 
         builder
             .HasOne<Expense>()

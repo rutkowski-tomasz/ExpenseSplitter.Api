@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Behaviors;
+using ExpenseSplitter.Api.Domain.ExpenseAllocations.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,8 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+
+        services.AddTransient<IExpenseAllocationService, ExpenseAllocationService>();
 
         return services;
     }

@@ -2,6 +2,7 @@
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,11 +25,16 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .WithMany()
             .HasForeignKey(expense => expense.SettlementId);
 
-        builder.Property(expense => expense.Name);
+        builder.Property(expense => expense.Title);
+
+        builder.Property(expense => expense.PaymentDate);
 
         builder
             .HasOne<Participant>()
             .WithMany()
             .HasForeignKey(expense => expense.PayingParticipantId);
+        
+        builder.Property(expenseAllocation => expenseAllocation.Amount)
+            .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => new Amount(value));
     }
 }

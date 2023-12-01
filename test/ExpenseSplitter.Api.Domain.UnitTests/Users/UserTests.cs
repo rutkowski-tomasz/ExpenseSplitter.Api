@@ -11,7 +11,7 @@ public class UserTests
         var email = new Fixture().Create<MailAddress>().Address;
         var nickname = new Fixture().Create<string>();
 
-        var user = User.Create(nickname, email);
+        var user = User.Create(nickname, email, UserId.New());
 
         user.IsSuccess.Should().BeTrue();
         user.Value.Nickname.Should().Be(nickname);
@@ -23,23 +23,15 @@ public class UserTests
     {
         var email = new Fixture().Create<MailAddress>().Address;
 
-        var user = User.Create("", email);
+        var user = User.Create("", email, UserId.New());
 
         user.IsFailure.Should().BeTrue();
         user.Error.Code.Should().Be(UserErrors.EmptyNickname.Code);
     }
-    
+
     [Fact]
-    public void SetIdentityId_Should()
+    public void UserIdNew_ShouldGenerateNonEmptyGuid()
     {
-        var user = new Fixture()
-            .Build<User>()
-            .FromFactory((string nickname, string email) => User.Create(nickname, email).Value)
-            .Create();
-
-        var identityId = new Fixture().Create<string>();
-        user.SetIdentityId(identityId);
-
-        user.IdentityId.Should().Be(identityId);
+        UserId.New().Value.Should().NotBeEmpty();
     }
 }

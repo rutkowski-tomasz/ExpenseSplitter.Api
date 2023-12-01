@@ -23,18 +23,18 @@ internal sealed class GetLoggedInUserQueryHandler
         GetLoggedInUserQuery request,
         CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdentityId(userContext.IdentityId, cancellationToken);
+        var user = await userRepository.GetByIdAsync(userContext.UserId, cancellationToken);
 
         if (user is null)
         {
             return Result.Failure<GetLoggedInUserResponse>(UserErrors.NotFound);
         }
 
-        var response = new GetLoggedInUserResponse()
+        var response = new GetLoggedInUserResponse
         {
             Email = user.Email,
             Nickname = user.Nickname,
-            Id = Guid.Parse(user.IdentityId)
+            Id = user.Id.Value
         };
         
         return Result.Success(response);

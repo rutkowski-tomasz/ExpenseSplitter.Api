@@ -21,16 +21,16 @@ public class GetLoggedInUserQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
-        userContextMock.Setup(x => x.IdentityId).Returns("my-id");
+        var userId = new Fixture().Create<UserId>();
+        userContextMock.Setup(x => x.UserId).Returns(userId);
 
         var user = new Fixture()
             .Build<User>()
-            .FromFactory((string nickname, string email) => User.Create(nickname, email).Value)
-            .Do(x => x.SetIdentityId(Guid.NewGuid().ToString()))
+            .FromFactory((string nickname, string email) => User.Create(nickname, email, userId).Value)
             .Create();
 
         userRepositoryMock
-            .Setup(x => x.GetByIdentityId("my-id", It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         
         var query = new Fixture().Create<GetLoggedInUserQuery>();
@@ -38,7 +38,7 @@ public class GetLoggedInUserQueryHandlerTests
         var result = await handler.Handle(query, default);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(user.IdentityId);
+        result.Value.Id.Should().Be(user.Id.Value);
         result.Value.Email.Should().Be(user.Email);
         result.Value.Nickname.Should().Be(user.Nickname);
     }
@@ -56,7 +56,8 @@ public class GetLoggedInUserQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserDoesntExistInUserRepository()
     {
-        userContextMock.Setup(x => x.IdentityId).Returns("my-id");
+        var userId = new Fixture().Create<UserId>();
+        userContextMock.Setup(x => x.UserId).Returns(userId);
         
         var query = new Fixture().Create<GetLoggedInUserQuery>();
 

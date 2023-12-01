@@ -1,36 +1,37 @@
 ﻿using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
+using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Domain.ExpenseAllocations;
 
 public sealed class ExpenseAllocation : Entity<ExpenseAllocationId>
 {
     private ExpenseAllocation(
+        Amount amount,
         ExpenseAllocationId id,
         ExpenseId expenseId,
-        ParticipantId participantId,
-        decimal value
+        ParticipantId participantId
     ) : base(id)
     {
         ExpenseId = expenseId;
         ParticipantId = participantId;
-        Value = value;
+        Amount = amount;
     }
 
     public ExpenseId ExpenseId { get; private set; }
 
     public ParticipantId ParticipantId { get; private set; }
 
-    public decimal Value { get; private set; }
+    public Amount Amount { get; private set; }
 
-    public static ExpenseAllocation Create(ExpenseId expenseId, ParticipantId participantId, decimal value)
+    public static ExpenseAllocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
     {
         var expenseAllocation = new ExpenseAllocation(
+            amount,
             ExpenseAllocationId.New(),
             expenseId,
-            participantId,
-            value
+            participantId
         );
 
         return expenseAllocation;

@@ -8,4 +8,9 @@ public class ParticipantErrors
         "Participant.NicknameEmpty",
         "Can't create participant with empty nickname"
     );
+
+    public static Error NotFound = new(
+        "Participant.NotFound",
+        "Can't find participant with given id"
+    );
 }

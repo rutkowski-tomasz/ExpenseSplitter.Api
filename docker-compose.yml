@@ -27,8 +27,8 @@ services:
     image: jboss/keycloak:latest
     container_name: expensesplitter-idp
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      # - KEYCLOAK_USER=admin
+      # - KEYCLOAK_PASSWORD=admin
       - KEYCLOAK_IMPORT=/tmp/expensesplitter-idp-realm-export.json
     volumes:
       - ./.containers/expensesplitter-idp:/opt/jboss/keycloak/standalone/data

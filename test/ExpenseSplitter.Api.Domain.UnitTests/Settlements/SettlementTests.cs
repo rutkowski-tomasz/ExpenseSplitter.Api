@@ -12,6 +12,7 @@ public class SettlementTests
         var settlement = Settlement.Create(name);
 
         settlement.IsSuccess.Should().BeTrue();
+        settlement.Value.Id.Value.Should().NotBeEmpty();
         settlement.Value.Name.Should().Be(name);
     }
 
@@ -22,5 +23,11 @@ public class SettlementTests
 
         settlement.IsFailure.Should().BeTrue();
         settlement.Error.Code.Should().Be(SettlementErrors.EmptyName.Code);
+    }
+
+    [Fact]
+    public void SettlementIdNew_ShouldGenerateNonEmptyGuid()
+    {
+        SettlementId.New().Value.Should().NotBeEmpty();
     }
 }

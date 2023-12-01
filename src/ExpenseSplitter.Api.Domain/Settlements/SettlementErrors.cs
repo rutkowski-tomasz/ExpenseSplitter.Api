@@ -13,4 +13,9 @@ public class SettlementErrors
         "Settlement.NotFound",
         "The settlement with the specified identifier was not found"
     );
+
+    public static Error Forbidden = new(
+        "Settlement.Forbidden",
+        "Can't access this settlement"
+    );
 }

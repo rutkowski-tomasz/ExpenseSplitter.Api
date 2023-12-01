@@ -1,6 +1,8 @@
-﻿namespace ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Domain.Users;
+
+namespace ExpenseSplitter.Api.Application.Abstractions.Authentication;
 
 public interface IUserContext
 {
-    string IdentityId { get; }
+    UserId UserId { get; }
 }

@@ -1,12 +1,25 @@
 using ExpenseSplitter.Api.Application;
 using ExpenseSplitter.Api.Infrastructure;
 using ExpenseSplitter.Api.Presentation.Endpoints;
+using ExpenseSplitter.Api.Presentation.Expenses;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JSON Web Token based security",
+    });
+});
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

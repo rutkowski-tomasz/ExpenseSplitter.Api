@@ -46,11 +46,11 @@ public sealed class UserRepresentationModel
 
     public string? Username { get; set; }
 
-    internal static UserRepresentationModel FromUser(User user) =>
+    internal static UserRepresentationModel Create(string email) =>
         new()
         {
-            Email = user.Email,
-            Username = user.Email,
+            Email = email,
+            Username = email,
             Enabled = true,
             EmailVerified = true,
             CreatedTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),

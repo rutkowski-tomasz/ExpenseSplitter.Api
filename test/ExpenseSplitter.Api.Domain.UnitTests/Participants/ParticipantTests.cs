@@ -16,6 +16,7 @@ public class ParticipantTests
         var participant = Participant.Create(settlementId, userId, nickname);
 
         participant.IsSuccess.Should().BeTrue();
+        participant.Value.Id.Value.Should().NotBeEmpty();
         participant.Value.Nickname.Should().Be(nickname);
         participant.Value.SettlementId.Should().Be(settlementId);
         participant.Value.UserId.Should().Be(userId);
@@ -31,5 +32,11 @@ public class ParticipantTests
 
         participant.IsFailure.Should().BeTrue();
         participant.Error.Code.Should().Be(ParticipantErrors.NicknameEmpty.Code);
+    }
+
+    [Fact]
+    public void ParticipantIdNew_ShouldGenerateNonEmptyGuid()
+    {
+        ParticipantId.New().Value.Should().NotBeEmpty();
     }
 }
