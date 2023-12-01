@@ -24,6 +24,14 @@ public class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseComm
         RuleFor(x => x.Allocations)
             .Must(x => x.Any())
             .WithMessage("Must contain at least one element");
+
+        RuleFor(x => x.Amount)
+            .GreaterThanOrEqualTo(x => x
+                .Allocations
+                .Where(y => y.AllocationSplit == CreateExpenseCommandAllocationSplit.Amount)
+                .Sum(y => y.Value)
+            )
+            .WithMessage("Total amount should be greater or equal to the sum of allocations");
     }
 }
 

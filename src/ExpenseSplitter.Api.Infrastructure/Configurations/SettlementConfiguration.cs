@@ -18,5 +18,9 @@ public class SettlementConfiguration : IEntityTypeConfiguration<Settlement>
             .HasConversion(settlementId => settlementId.Value, value => new SettlementId(value));
 
         builder.Property(settlement => settlement.Name);
+
+        builder.Property(settlement => settlement.InviteCode).HasMaxLength(20);
+
+        builder.HasIndex(settlement => settlement.InviteCode).IsUnique();
     }
 }

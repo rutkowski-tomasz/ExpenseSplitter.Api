@@ -3,11 +3,11 @@ using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Presentation.Models;
+using ExpenseSplitter.Api.Presentation.User.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ExpenseSplitter.Api.Presentation.Endpoints;
+namespace ExpenseSplitter.Api.Presentation.User;
 
 public static class UserEndpoints
 {

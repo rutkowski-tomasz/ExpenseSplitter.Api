@@ -2,11 +2,13 @@
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
-using ExpenseSplitter.Api.Presentation.Models;
+using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
+using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ExpenseSplitter.Api.Presentation.Endpoints;
+namespace ExpenseSplitter.Api.Presentation.Settlements;
 
 public static class SettlementEndpoints
 {
@@ -18,11 +20,12 @@ public static class SettlementEndpoints
         routeGroupBuilder.MapGet("", GetAllSettlements);
         routeGroupBuilder.MapGet("{id}", GetSettlement);
         routeGroupBuilder.MapPost("", CreateSettlement);
+        routeGroupBuilder.MapPost("/join", JoinSettlement);
 
         return builder;
     }
 
-    public static async Task<Results<Ok<IEnumerable<GetSettlementResponse>>, NotFound>> GetAllSettlements(
+    public static async Task<Results<Ok<GetAllSettlementsQueryResponse>, NotFound>> GetAllSettlements(
         ISender sender,
         CancellationToken cancellationToken
     )
@@ -58,5 +61,18 @@ public static class SettlementEndpoints
         var result = await sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+    }
+
+    public static async Task<Results<Ok<Guid>, BadRequest<Error>>> JoinSettlement(
+        JoinSettlementRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new JoinSettlementCommand(request.InviteCode, request.Nickname);
+
+        var result = await sender.Send(command, cancellationToken);
+        
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
 }

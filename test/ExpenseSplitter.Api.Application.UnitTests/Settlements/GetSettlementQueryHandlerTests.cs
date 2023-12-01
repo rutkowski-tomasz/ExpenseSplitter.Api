@@ -18,7 +18,7 @@ public class GetSettlementQueryHandlerTests
     {
         var settlement = new Fixture()
             .Build<Settlement>()
-            .FromFactory((string name) => Settlement.Create(name).Value)
+            .FromFactory((string name, string inviteCode) => Settlement.Create(name, inviteCode).Value)
             .Create();
 
         settlementRepositoryMock

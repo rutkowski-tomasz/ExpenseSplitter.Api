@@ -7,4 +7,6 @@ public interface ISettlementRepository
     void Add(Settlement settlement);
 
     Task<IEnumerable<Settlement>> GetAllAsync(CancellationToken cancellationToken = default);
+
+    Task<Settlement?> GetSettlementByInviteCode(string inviteCode, CancellationToken cancellationToken = default);
 }

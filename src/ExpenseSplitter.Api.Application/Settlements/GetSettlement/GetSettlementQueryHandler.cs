@@ -22,11 +22,11 @@ internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQue
             return Result.Failure<GetSettlementResponse>(SettlementErrors.NotFound);
         }
 
-        var settlementDto = new GetSettlementResponse
-        {
-            Id = settlement.Id.Value,
-            Name = settlement.Name
-        };
+        var settlementDto = new GetSettlementResponse(
+            settlement.Id.Value,
+            settlement.Name,
+            settlement.InviteCode
+        );
 
         return settlementDto;
     }

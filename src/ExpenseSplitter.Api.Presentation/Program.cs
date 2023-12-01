@@ -1,8 +1,9 @@
 using ExpenseSplitter.Api.Application;
 using ExpenseSplitter.Api.Infrastructure;
-using ExpenseSplitter.Api.Presentation.Endpoints;
 using ExpenseSplitter.Api.Presentation.Expenses;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.Settlements;
+using ExpenseSplitter.Api.Presentation.User;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);

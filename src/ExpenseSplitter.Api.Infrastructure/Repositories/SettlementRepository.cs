@@ -15,4 +15,11 @@ internal sealed class SettlementRepository : Repository<Settlement, SettlementId
             .Set<Settlement>()
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<Settlement?> GetSettlementByInviteCode(string inviteCode, CancellationToken cancellationToken = default)
+    {
+        return await DbContext
+            .Set<Settlement>()
+            .SingleOrDefaultAsync(x => x.InviteCode == inviteCode, cancellationToken);
+    }
 }

@@ -19,7 +19,7 @@ public class GetAllSettlementsQueryHandlerTests
     {
         var settlements = new Fixture()
             .Build<Settlement>()
-            .FromFactory((string name) => Settlement.Create(name).Value)
+            .FromFactory((string name, string inviteCode) => Settlement.Create(name, inviteCode).Value)
             .CreateMany(2)
             .ToArray();
 
@@ -32,10 +32,10 @@ public class GetAllSettlementsQueryHandlerTests
         var response = await handler.Handle(query, default);
 
         response.IsSuccess.Should().BeTrue();
-        response.Value.Should().HaveCount(2);
+        response.Value.Settlements.Should().HaveCount(2);
 
         var firstSettlement = settlements.First();
-        response.Value.First().Id.Should().Be(firstSettlement.Id.Value);
-        response.Value.First().Name.Should().Be(firstSettlement.Name);
+        response.Value.Settlements.First().Id.Should().Be(firstSettlement.Id.Value);
+        response.Value.Settlements.First().Name.Should().Be(firstSettlement.Name);
     }
 }

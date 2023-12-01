@@ -2,8 +2,8 @@
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Presentation.Endpoints;
-using ExpenseSplitter.Api.Presentation.Models;
+using ExpenseSplitter.Api.Presentation.Settlements;
+using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -21,16 +21,16 @@ public class SettlementEndpointsTests
     [Fact]
     public async Task GetAllSettlements_ShouldReturnOk_WhenSettlementsExist()
     {
-        var settlements = new Fixture().CreateMany<GetSettlementResponse>(2);
+        var settlements = new Fixture().Create<GetAllSettlementsQueryResponse>();
         senderMock
             .Setup(x => x.Send(It.IsAny<GetAllSettlementsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(settlements));
 
         var result = await SettlementEndpoints.GetAllSettlements(senderMock.Object, CancellationToken.None);
 
-        var castedResult = result.Result as Ok<IEnumerable<GetSettlementResponse>>;
+        var castedResult = result.Result as Ok<GetAllSettlementsQueryResponse>;
         castedResult!.StatusCode.Should().Be(200);
-        castedResult.Value.Should().HaveCount(2);
+        castedResult.Value!.Settlements.Should().HaveCount(settlements.Settlements.Count());
     }
 
     [Fact]
