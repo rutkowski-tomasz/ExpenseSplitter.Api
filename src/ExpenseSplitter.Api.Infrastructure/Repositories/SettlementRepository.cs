@@ -24,18 +24,10 @@ internal sealed class SettlementRepository : Repository<Settlement, SettlementId
             .SingleOrDefaultAsync(x => x.InviteCode == inviteCode, cancellationToken);
     }
 
-    public async Task<bool> RemoveSettlementById(SettlementId settlementId, CancellationToken cancellationToken = default)
+    public void Remove(Settlement settlement)
     {
-        var settlement = await DbContext
+        DbContext
             .Set<Settlement>()
-            .FirstOrDefaultAsync(x => x.Id == settlementId, cancellationToken);
-
-        if (settlement is null)
-        {
-            return false;
-        }
-
-        DbContext.Set<Settlement>().Remove(settlement);
-        return true;
+            .Remove(settlement);
     }
 }

@@ -20,4 +20,11 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
             .Where(x => x.SettlementId == settlementId)
             .ToListAsync(cancellationToken);
     }
+
+    public void Remove(Expense expense)
+    {
+        DbContext
+            .Set<Expense>()
+            .Remove(expense);
+    }
 }

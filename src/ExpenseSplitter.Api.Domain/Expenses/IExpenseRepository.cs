@@ -9,4 +9,6 @@ public interface IExpenseRepository
     void Add(Expense expense);
     
     Task<IEnumerable<Expense>> GetAllWithSettlementId(SettlementId settlementId, CancellationToken cancellationToken);
+
+    void Remove(Expense expense);
 }

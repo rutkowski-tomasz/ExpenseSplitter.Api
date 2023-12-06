@@ -3,25 +3,26 @@ using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
 
 public class JoinSettlementCommandHandler : ICommandHandler<JoinSettlementCommand, Guid>
 {
     private readonly ISettlementRepository settlementRepository;
-    private readonly IParticipantRepository participantRepository;
+    private readonly ISettlementUserRepository settlementUserRepository;
     private readonly IUserContext userContext;
     private readonly IUnitOfWork unitOfWork;
 
     public JoinSettlementCommandHandler(
         ISettlementRepository settlementRepository,
-        IParticipantRepository participantRepository,
+        ISettlementUserRepository settlementUserRepository,
         IUserContext userContext,
         IUnitOfWork unitOfWork
     )
     {
         this.settlementRepository = settlementRepository;
-        this.participantRepository = participantRepository;
+        this.settlementUserRepository = settlementUserRepository;
         this.userContext = userContext;
         this.unitOfWork = unitOfWork;
     }
@@ -29,23 +30,24 @@ public class JoinSettlementCommandHandler : ICommandHandler<JoinSettlementComman
     public async Task<Result<Guid>> Handle(JoinSettlementCommand request, CancellationToken cancellationToken)
     {
         var settlement = await settlementRepository.GetSettlementByInviteCode(request.InviteCode, cancellationToken);
-
         if (settlement is null)
         {
             return Result.Failure<Guid>(SettlementErrors.NotFound);
         }
 
-        var participantResult = Participant.Create(settlement.Id, request.Nickname);
-
-        if (participantResult.IsFailure)
+        if (await settlementUserRepository.CanUserAccessSettlement(settlement.Id, cancellationToken))
         {
-            return Result.Failure<Guid>(participantResult.Error);
+            return Result.Failure<Guid>(SettlementUserErrors.AlreadyJoined);
         }
 
-        var participant = participantResult.Value;
-        participant.SetUserId(userContext.UserId);
-        
-        participantRepository.Add(participant);
+        var settlementUserResult = SettlementUser.Create(settlement.Id, userContext.UserId);
+        if (settlementUserResult.IsFailure)
+        {
+            return Result.Failure<Guid>(settlementUserResult.Error);
+        }
+
+        var settlementUser = settlementUserResult.Value;
+        settlementUserRepository.Add(settlementUser);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,5 +23,10 @@ public class SettlementConfiguration : IEntityTypeConfiguration<Settlement>
         builder.Property(settlement => settlement.InviteCode).HasMaxLength(20);
 
         builder.HasIndex(settlement => settlement.InviteCode).IsUnique();
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(settlement => settlement.CreatorUserId);
     }
 }

@@ -10,5 +10,5 @@ public interface ISettlementRepository
 
     Task<Settlement?> GetSettlementByInviteCode(string inviteCode, CancellationToken cancellationToken = default);
 
-    Task<bool> RemoveSettlementById(SettlementId settlementId, CancellationToken cancellationToken = default);
+    void Remove(Settlement settlement);
 }

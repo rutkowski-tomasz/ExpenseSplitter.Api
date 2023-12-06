@@ -9,7 +9,5 @@ public class JoinSettlementCommandValidator : AbstractValidator<JoinSettlementCo
     public JoinSettlementCommandValidator()
     {
         RuleFor(x => x.InviteCode).NotEmpty();
-
-        RuleFor(x => x.Nickname).NotEmpty();
     }
 }

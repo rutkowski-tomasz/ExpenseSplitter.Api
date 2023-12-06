@@ -8,5 +8,6 @@ public sealed record GetExpensesForSettlementQueryResult(
 
 public sealed record GetExpensesForSettlementQueryResultExpense(
     ExpenseId Id,
-    string Title
+    string Title,
+    decimal Amount
 );

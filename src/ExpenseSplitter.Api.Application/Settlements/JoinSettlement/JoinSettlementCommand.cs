@@ -3,6 +3,5 @@
 namespace ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
 
 public sealed record JoinSettlementCommand(
-    string InviteCode,
-    string Nickname
+    string InviteCode
 ) : ICommand<Guid>;

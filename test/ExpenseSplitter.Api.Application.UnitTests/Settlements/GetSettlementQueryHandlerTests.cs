@@ -1,16 +1,23 @@
 ﻿using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
+using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 public class GetSettlementQueryHandlerTests
 {
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
+    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly GetSettlementQueryHandler handler;
 
     public GetSettlementQueryHandlerTests()
     {
         settlementRepositoryMock = new Mock<ISettlementRepository>();
-        handler = new GetSettlementQueryHandler(settlementRepositoryMock.Object);
+        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
+        handler = new GetSettlementQueryHandler(
+            settlementRepositoryMock.Object,
+            settlementUserRepositoryMock.Object
+        );
     }
 
     [Fact]
@@ -18,7 +25,7 @@ public class GetSettlementQueryHandlerTests
     {
         var settlement = new Fixture()
             .Build<Settlement>()
-            .FromFactory((string name, string inviteCode) => Settlement.Create(name, inviteCode).Value)
+            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId)).Value)
             .Create();
 
         settlementRepositoryMock

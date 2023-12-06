@@ -13,4 +13,9 @@ public class ExpenseErrors
         "Expense.NonPositiveAmount",
         "Can't create expense with non positive amount"
     );
+
+    public static Error NotFound = new(
+        "Expense.NotFound",
+        "The expense with the specified identifier was not found"
+    );
 }

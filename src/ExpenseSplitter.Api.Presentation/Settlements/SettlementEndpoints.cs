@@ -83,7 +83,7 @@ public static class SettlementEndpoints
         CancellationToken cancellationToken
     )
     {
-        var command = new JoinSettlementCommand(request.InviteCode, request.Nickname);
+        var command = new JoinSettlementCommand(request.InviteCode);
 
         var result = await sender.Send(command, cancellationToken);
         

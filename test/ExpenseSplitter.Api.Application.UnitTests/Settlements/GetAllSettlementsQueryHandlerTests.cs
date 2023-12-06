@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
@@ -19,7 +20,7 @@ public class GetAllSettlementsQueryHandlerTests
     {
         var settlements = new Fixture()
             .Build<Settlement>()
-            .FromFactory((string name, string inviteCode) => Settlement.Create(name, inviteCode).Value)
+            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId)).Value)
             .CreateMany(2)
             .ToArray();
 

@@ -36,7 +36,7 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
     public async Task<Result<Guid>> Handle(CreateSettlementCommand request, CancellationToken cancellationToken)
     {
         var inviteCode = GenerateInviteCode();
-        var settlementResult = Settlement.Create(request.Name, inviteCode);
+        var settlementResult = Settlement.Create(request.Name, inviteCode, userContext.UserId);
 
         if (settlementResult.IsFailure)
         {
@@ -45,8 +45,6 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
         
         var settlement = settlementResult.Value;
         settlementRepository.Add(settlement);
-
-        var isFirst = true;
 
         foreach (var participantName in request.ParticipantNames)
         {
@@ -58,17 +56,12 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
             }
 
             participantRepository.Add(participantResult.Value);
+        }
 
-            if (isFirst)
-            {
-                var error = CreateSettlementUser(settlement);
-                if (error is not null)
-                {
-                    return Result.Failure<Guid>(error);
-                }
-
-                isFirst = false;
-            }
+        var error = CreateSettlementUser(settlement);
+        if (error is not null)
+        {
+            return Result.Failure<Guid>(error);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

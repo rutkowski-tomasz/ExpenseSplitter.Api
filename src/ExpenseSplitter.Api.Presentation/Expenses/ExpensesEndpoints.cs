@@ -1,4 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
+using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Domain.Abstractions;
@@ -16,6 +17,7 @@ public static class ExpensesEndpoints
 
         routeGroupBuilder.MapPost("", CreateExpense);
         routeGroupBuilder.MapGet("{settlementId}", GetExpensesForSettlement);
+        routeGroupBuilder.MapDelete("{id}", DeleteExpense);
 
         return builder;
     }
@@ -60,5 +62,19 @@ public static class ExpensesEndpoints
         var result = await sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
+    }
+
+    
+    public static async Task<Results<Ok, BadRequest<Error>>> DeleteExpense(
+        Guid id,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new DeleteExpenseCommand(id);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
     }
 }
