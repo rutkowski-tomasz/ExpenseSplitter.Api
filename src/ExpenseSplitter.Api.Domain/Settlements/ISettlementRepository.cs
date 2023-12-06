@@ -9,4 +9,6 @@ public interface ISettlementRepository
     Task<IEnumerable<Settlement>> GetAllAsync(CancellationToken cancellationToken = default);
 
     Task<Settlement?> GetSettlementByInviteCode(string inviteCode, CancellationToken cancellationToken = default);
+
+    Task<bool> RemoveSettlementById(SettlementId settlementId, CancellationToken cancellationToken = default);
 }
