@@ -30,6 +30,8 @@ services:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
       - KEYCLOAK_IMPORT=/tmp/expensesplitter-idp-realm-export.json
+      - JGROUPS_DISCOVERY_PROTOCOL=TCPPING
+      - JGROUPS_DISCOVERY_PROPERTIES=initial_hosts="localhost[7600]"
     volumes:
       - ./.containers/expensesplitter-idp:/opt/jboss/keycloak/standalone/data
       - ./.files/expensesplitter-idp-realm-export.json:/tmp/expensesplitter-idp-realm-export.json
