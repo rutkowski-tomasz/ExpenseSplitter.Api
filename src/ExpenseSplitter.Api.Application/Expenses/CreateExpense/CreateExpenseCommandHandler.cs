@@ -5,12 +5,14 @@ using ExpenseSplitter.Api.Domain.ExpenseAllocations.Services;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 
 public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand, Guid>
 {
+    private readonly ISettlementUserRepository settlementUserRepository;
     private readonly IExpenseRepository expenseRepository;
     private readonly IExpenseAllocationRepository expenseAllocationRepository;
     private readonly IExpenseAllocationService expenseAllocationService;
@@ -18,6 +20,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
     private readonly IUnitOfWork unitOfWork;
 
     public CreateExpenseCommandHandler(
+        ISettlementUserRepository settlementUserRepository,
         IExpenseRepository expenseRepository,
         IExpenseAllocationRepository expenseAllocationRepository,
         IExpenseAllocationService expenseAllocationService,
@@ -25,6 +28,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         IUnitOfWork unitOfWork
     )
     {
+        this.settlementUserRepository = settlementUserRepository;
         this.expenseRepository = expenseRepository;
         this.expenseAllocationRepository = expenseAllocationRepository;
         this.expenseAllocationService = expenseAllocationService;
@@ -34,7 +38,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
 
     public async Task<Result<Guid>> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
     {
-        if (!await participantRepository.IsUserParticipatingInSettlement(new SettlementId(request.SettlementId), cancellationToken))
+        if (!await settlementUserRepository.CanUserAccessSettlement(new SettlementId(request.SettlementId), cancellationToken))
         {
             return Result.Failure<Guid>(SettlementErrors.Forbidden);
         }

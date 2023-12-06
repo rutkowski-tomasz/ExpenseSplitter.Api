@@ -3,6 +3,7 @@ using System;
 using ExpenseSplitter.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseSplitter.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206122702_NullableParticipantUserId")]
+    partial class NullableParticipantUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,39 +125,6 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                     b.ToTable("participants", (string)null);
                 });
 
-            modelBuilder.Entity("ExpenseSplitter.Api.Domain.SettlementUsers.SettlementUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid?>("ParticipantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("participant_id");
-
-                    b.Property<Guid>("SettlementId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("settlement_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_settlement_users");
-
-                    b.HasIndex("ParticipantId")
-                        .HasDatabaseName("ix_settlement_users_participant_id");
-
-                    b.HasIndex("SettlementId")
-                        .HasDatabaseName("ix_settlement_users_settlement_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_settlement_users_user_id");
-
-                    b.ToTable("settlement_users", (string)null);
-                });
-
             modelBuilder.Entity("ExpenseSplitter.Api.Domain.Settlements.Settlement", b =>
                 {
                     b.Property<Guid>("Id")
@@ -257,28 +227,6 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_participants_user_user_temp_id");
-                });
-
-            modelBuilder.Entity("ExpenseSplitter.Api.Domain.SettlementUsers.SettlementUser", b =>
-                {
-                    b.HasOne("ExpenseSplitter.Api.Domain.Participants.Participant", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .HasConstraintName("fk_settlement_users_participants_participant_id1");
-
-                    b.HasOne("ExpenseSplitter.Api.Domain.Settlements.Settlement", null)
-                        .WithMany()
-                        .HasForeignKey("SettlementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_settlement_users_settlements_settlement_id1");
-
-                    b.HasOne("ExpenseSplitter.Api.Domain.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_settlement_users_user_user_temp_id");
                 });
 #pragma warning restore 612, 618
         }

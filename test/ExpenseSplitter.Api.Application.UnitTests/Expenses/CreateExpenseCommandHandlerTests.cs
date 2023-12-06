@@ -5,16 +5,19 @@ using ExpenseSplitter.Api.Domain.ExpenseAllocations.Services;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
 public class CreateExpenseCommandHandlerTests
 {
     private readonly CreateExpenseCommandHandler createExpenseCommandHandler;
+    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly Mock<IParticipantRepository> participantRepositoryMock;
 
     public CreateExpenseCommandHandlerTests()
     {
+        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var expenseRepositoryMock = new Mock<IExpenseRepository>();
         var expenseAllocationRepositoryMock = new Mock<IExpenseAllocationRepository>();
         var expenseAllocationServiceMock = new Mock<IExpenseAllocationService>();
@@ -22,6 +25,7 @@ public class CreateExpenseCommandHandlerTests
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         
         createExpenseCommandHandler = new CreateExpenseCommandHandler(
+            settlementUserRepositoryMock.Object,
             expenseRepositoryMock.Object,
             expenseAllocationRepositoryMock.Object,
             expenseAllocationServiceMock.Object,
@@ -39,7 +43,7 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
 
-        participantRepositoryMock.Setup(x => x.IsUserParticipatingInSettlement(
+        settlementUserRepositoryMock.Setup(x => x.CanUserAccessSettlement(
             It.IsAny<SettlementId>(),
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
@@ -60,7 +64,7 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
 
-        participantRepositoryMock.Setup(x => x.IsUserParticipatingInSettlement(
+        settlementUserRepositoryMock.Setup(x => x.CanUserAccessSettlement(
             It.IsAny<SettlementId>(),
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(false);
@@ -82,7 +86,7 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
 
-        participantRepositoryMock.Setup(x => x.IsUserParticipatingInSettlement(
+        settlementUserRepositoryMock.Setup(x => x.CanUserAccessSettlement(
             It.IsAny<SettlementId>(),
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
@@ -108,7 +112,7 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(false);
 
-        participantRepositoryMock.Setup(x => x.IsUserParticipatingInSettlement(
+        settlementUserRepositoryMock.Setup(x => x.CanUserAccessSettlement(
             It.IsAny<SettlementId>(),
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);

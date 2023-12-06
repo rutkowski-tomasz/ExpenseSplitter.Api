@@ -35,7 +35,7 @@ public class JoinSettlementCommandHandler : ICommandHandler<JoinSettlementComman
             return Result.Failure<Guid>(SettlementErrors.NotFound);
         }
 
-        var participantResult = Participant.Create(settlement.Id, userContext.UserId, request.Nickname);
+        var participantResult = Participant.Create(settlement.Id, request.Nickname);
 
         if (participantResult.IsFailure)
         {
@@ -43,6 +43,7 @@ public class JoinSettlementCommandHandler : ICommandHandler<JoinSettlementComman
         }
 
         var participant = participantResult.Value;
+        participant.SetUserId(userContext.UserId);
         
         participantRepository.Add(participant);
 

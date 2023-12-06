@@ -1,12 +1,18 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 
 public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCommand, Guid>
 {
     private readonly ISettlementRepository settlementRepository;
+    private readonly IParticipantRepository participantRepository;
+    private readonly ISettlementUserRepository settlementUserRepository;
+    private readonly IUserContext userContext;
     private readonly IUnitOfWork unitOfWork;
 
     private const string InviteCodeChars = "abcdefghjkmnpqrstwxyzABCDEFGHJKLMNOPQRSTWXYZ23456789";
@@ -14,10 +20,16 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
 
     public CreateSettlementCommandHandler(
         ISettlementRepository settlementRepository,
+        IParticipantRepository participantRepository,
+        ISettlementUserRepository settlementUserRepository,
+        IUserContext userContext,
         IUnitOfWork unitOfWork
     )
     {
         this.settlementRepository = settlementRepository;
+        this.participantRepository = participantRepository;
+        this.settlementUserRepository = settlementUserRepository;
+        this.userContext = userContext;
         this.unitOfWork = unitOfWork;
     }
 
@@ -31,11 +43,50 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
             return Result.Failure<Guid>(settlementResult.Error);
         }
         
-        settlementRepository.Add(settlementResult.Value);
+        var settlement = settlementResult.Value;
+        settlementRepository.Add(settlement);
+
+        var isFirst = true;
+
+        foreach (var participantName in request.ParticipantNames)
+        {
+            var participantResult = Participant.Create(settlement.Id, participantName);
+
+            if (participantResult.IsFailure)
+            {
+                return Result.Failure<Guid>(participantResult.Error);
+            }
+
+            participantRepository.Add(participantResult.Value);
+
+            if (isFirst)
+            {
+                var error = CreateSettlementUser(settlement);
+                if (error is not null)
+                {
+                    return Result.Failure<Guid>(error);
+                }
+
+                isFirst = false;
+            }
+        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return settlementResult.Value.Id.Value;
+    }
+
+    private Error? CreateSettlementUser(Settlement settlement)
+    {
+        var settlementUserResult = SettlementUser.Create(settlement.Id, userContext.UserId);
+        if (settlementUserResult.IsFailure)
+        {
+            return settlementUserResult.Error;
+        }
+
+        var settlementUser = settlementUserResult.Value;
+        settlementUserRepository.Add(settlementUser);
+        return null;
     }
 
     private string GenerateInviteCode()

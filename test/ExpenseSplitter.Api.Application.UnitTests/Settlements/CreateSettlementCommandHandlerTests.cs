@@ -1,21 +1,32 @@
-﻿using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class CreateSettlementCommandHandlerTests
 {
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
+    private readonly Mock<IParticipantRepository> participantRepositoryMock;
+    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly CreateSettlementCommandHandler handler;
 
     public CreateSettlementCommandHandlerTests()
     {
         settlementRepositoryMock = new Mock<ISettlementRepository>();
+        participantRepositoryMock = new Mock<IParticipantRepository>();
+        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
+        var userContextMock = new Mock<IUserContext>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 
         handler = new CreateSettlementCommandHandler(
             settlementRepositoryMock.Object,
+            participantRepositoryMock.Object,
+            settlementUserRepositoryMock.Object,
+            userContextMock.Object,
             unitOfWorkMock.Object
         );
     }

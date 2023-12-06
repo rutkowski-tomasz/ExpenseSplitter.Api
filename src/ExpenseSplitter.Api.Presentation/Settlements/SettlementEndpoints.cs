@@ -19,6 +19,7 @@ public static class SettlementEndpoints
 
         routeGroupBuilder.MapGet("", GetAllSettlements);
         routeGroupBuilder.MapGet("{id}", GetSettlement);
+        routeGroupBuilder.MapDelete("{id}", DeleteSettlement);
         routeGroupBuilder.MapPost("", CreateSettlement);
         routeGroupBuilder.MapPost("/join", JoinSettlement);
 
@@ -50,13 +51,26 @@ public static class SettlementEndpoints
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.NotFound();
     }
 
+    public static async Task<Results<Ok, NotFound>> DeleteSettlement(
+        Guid id,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new DeleteSettlementCommand(id);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.NotFound();
+    }
+
     public static async Task<Results<Ok<Guid>, BadRequest>> CreateSettlement(
         CreateSettlementRequest request,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var command = new CreateSettlementCommand(request.Name);
+        var command = new CreateSettlementCommand(request.Name, request.ParticipantNames);
 
         var result = await sender.Send(command, cancellationToken);
 

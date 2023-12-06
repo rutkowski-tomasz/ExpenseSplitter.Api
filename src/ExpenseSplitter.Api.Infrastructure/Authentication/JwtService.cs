@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Infrastructure.Authentication.Models;
@@ -45,6 +46,11 @@ internal sealed class JwtService : IJwtService
             var authorizationRequestContent = new FormUrlEncodedContent(authRequestParameters);
 
             var response = await httpClient.PostAsync("", authorizationRequestContent, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Result.Failure<string>(AuthenticationFailed);
+            }
 
             response.EnsureSuccessStatusCode();
 

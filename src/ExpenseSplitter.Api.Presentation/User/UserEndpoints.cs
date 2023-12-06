@@ -20,7 +20,7 @@ public static class UserEndpoints
 
         routeGroupBuilder.MapPost("login", Login).AllowAnonymous();
 
-        routeGroupBuilder.MapPost("me", GetLoggedInUser).RequireAuthorization();
+        routeGroupBuilder.MapGet("me", GetLoggedInUser).RequireAuthorization();
 
         return builder;
     }

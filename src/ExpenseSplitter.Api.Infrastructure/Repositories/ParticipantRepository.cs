@@ -17,13 +17,6 @@ internal sealed class ParticipantRepository : Repository<Participant, Participan
         this.userContext = userContext;
     }
 
-    public async Task<bool> IsUserParticipatingInSettlement(SettlementId settlementId, CancellationToken cancellationToken)
-    {
-        return await DbContext
-            .Set<Participant>()
-            .AnyAsync(x => x.SettlementId == settlementId && x.UserId == userContext.UserId, cancellationToken);
-    }
-
     public async Task<bool> AreAllParticipantsInSettlement(SettlementId settlementId, IEnumerable<ParticipantId> participantIds, CancellationToken cancellationToken)
     {
         var participants = await DbContext
@@ -33,5 +26,13 @@ internal sealed class ParticipantRepository : Repository<Participant, Participan
             .ToListAsync(cancellationToken);
 
         return participantIds.All(x => participants.Contains(x));
+    }
+
+    public async Task<IEnumerable<Participant>> GetAllBySettlementId(SettlementId settlementId, CancellationToken cancellationToken)
+    {
+        return await DbContext
+            .Set<Participant>()
+            .Where(x => x.SettlementId == settlementId)
+            .ToListAsync(cancellationToken);
     }
 }
