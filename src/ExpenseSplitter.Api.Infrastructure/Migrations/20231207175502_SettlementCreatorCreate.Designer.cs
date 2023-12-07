@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseSplitter.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231206145800_SettlementCreatorCreate")]
+    [Migration("20231207175502_SettlementCreatorCreate")]
     partial class SettlementCreatorCreate
     {
         /// <inheritdoc />

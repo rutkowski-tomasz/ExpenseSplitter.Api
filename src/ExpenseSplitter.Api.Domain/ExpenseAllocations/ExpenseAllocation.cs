@@ -36,4 +36,14 @@ public sealed class ExpenseAllocation : Entity<ExpenseAllocationId>
 
         return expenseAllocation;
     }
+
+    public void SetAmount(Amount amount)
+    {
+        Amount = amount;
+    }
+
+    public void SetParticipantId(ParticipantId participantId)
+    {
+        ParticipantId = participantId;
+    }
 }

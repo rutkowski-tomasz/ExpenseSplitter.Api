@@ -58,4 +58,24 @@ public sealed class Expense : Entity<ExpenseId>
 
         return expense;
     }
+
+    public void SetTitle(string title)
+    {
+        Title = title;
+    }
+
+    public void SetAmount(Amount amount)
+    {
+        Amount = amount;
+    }
+
+    public void SetPaymentDate(DateTime date)
+    {
+        PaymentDate = date;
+    }
+
+    public void SetPayingParticipantId(ParticipantId participantId)
+    {
+        PayingParticipantId = participantId;
+    }
 }
