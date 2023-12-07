@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
 using ExpenseSplitter.Api.Application.Participants.GetParticipantsBySettlementId;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
@@ -14,6 +15,7 @@ public static class ParticipantsEndpoints
         var routeGroupBuilder = builder.MapGroup("api/participants").RequireAuthorization();
 
         routeGroupBuilder.MapGet("{settlementId}", GetSettlementParticipants);
+        routeGroupBuilder.MapPost("{settlementId}/{participantId}", ClaimParticipant);
 
         return builder;
     }
@@ -30,4 +32,21 @@ public static class ParticipantsEndpoints
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
+
+    public static async Task<Results<Ok, BadRequest<Error>>> ClaimParticipant(
+        Guid settlementId,
+        Guid participantId,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new ClaimParticipantCommand(settlementId, participantId);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
+    }
+
+    
+
 }
