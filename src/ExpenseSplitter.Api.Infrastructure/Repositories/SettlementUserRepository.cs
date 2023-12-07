@@ -23,4 +23,16 @@ internal sealed class SettlementUserRepository : Repository<SettlementUser, Sett
             .Set<SettlementUser>()
             .AnyAsync(x => x.SettlementId == settlementId && x.UserId == userContext.UserId, cancellationToken);
     }
+
+    public async Task<SettlementUser?> GetSettlementUserWithSettlementId(SettlementId settlementId, CancellationToken cancellationToken)
+    {
+        return await DbContext
+            .Set<SettlementUser>()
+            .FirstOrDefaultAsync(x => x.SettlementId == settlementId && x.UserId == userContext.UserId, cancellationToken);
+    }
+
+    public void Remove(SettlementUser settlementUser)
+    {
+        DbContext.Set<SettlementUser>().Remove(settlementUser);
+    }
 }

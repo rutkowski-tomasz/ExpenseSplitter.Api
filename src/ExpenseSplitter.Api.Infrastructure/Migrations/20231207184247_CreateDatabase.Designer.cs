@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseSplitter.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231124194254_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231207184247_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,10 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("amount");
+
                     b.Property<Guid>("ExpenseId")
                         .HasColumnType("uuid")
                         .HasColumnName("expense_id");
@@ -38,10 +42,6 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                     b.Property<Guid>("ParticipantId")
                         .HasColumnType("uuid")
                         .HasColumnName("participant_id");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric")
-                        .HasColumnName("value");
 
                     b.HasKey("Id")
                         .HasName("pk_expense_allocations");
@@ -61,18 +61,26 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("amount");
 
                     b.Property<Guid>("PayingParticipantId")
                         .HasColumnType("uuid")
                         .HasColumnName("paying_participant_id");
 
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("payment_date");
+
                     b.Property<Guid>("SettlementId")
                         .HasColumnType("uuid")
                         .HasColumnName("settlement_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_expenses");
@@ -101,7 +109,7 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("settlement_id");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
@@ -117,11 +125,54 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                     b.ToTable("participants", (string)null);
                 });
 
+            modelBuilder.Entity("ExpenseSplitter.Api.Domain.SettlementUsers.SettlementUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("ParticipantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("participant_id");
+
+                    b.Property<Guid>("SettlementId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("settlement_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_settlement_users");
+
+                    b.HasIndex("ParticipantId")
+                        .HasDatabaseName("ix_settlement_users_participant_id");
+
+                    b.HasIndex("SettlementId")
+                        .HasDatabaseName("ix_settlement_users_settlement_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_settlement_users_user_id");
+
+                    b.ToTable("settlement_users", (string)null);
+                });
+
             modelBuilder.Entity("ExpenseSplitter.Api.Domain.Settlements.Settlement", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<Guid>("CreatorUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creator_user_id");
+
+                    b.Property<string>("InviteCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("invite_code");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -130,6 +181,13 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_settlements");
+
+                    b.HasIndex("CreatorUserId")
+                        .HasDatabaseName("ix_settlements_creator_user_id");
+
+                    b.HasIndex("InviteCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_settlements_invite_code");
 
                     b.ToTable("settlements", (string)null);
                 });
@@ -140,6 +198,12 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("email");
+
                     b.Property<string>("Nickname")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -148,6 +212,10 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_users");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
                 });
@@ -198,9 +266,39 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                     b.HasOne("ExpenseSplitter.Api.Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .HasConstraintName("fk_participants_user_user_temp_id");
+                });
+
+            modelBuilder.Entity("ExpenseSplitter.Api.Domain.SettlementUsers.SettlementUser", b =>
+                {
+                    b.HasOne("ExpenseSplitter.Api.Domain.Participants.Participant", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .HasConstraintName("fk_settlement_users_participants_participant_id1");
+
+                    b.HasOne("ExpenseSplitter.Api.Domain.Settlements.Settlement", null)
+                        .WithMany()
+                        .HasForeignKey("SettlementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_participants_user_user_temp_id");
+                        .HasConstraintName("fk_settlement_users_settlements_settlement_id1");
+
+                    b.HasOne("ExpenseSplitter.Api.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_settlement_users_user_user_temp_id");
+                });
+
+            modelBuilder.Entity("ExpenseSplitter.Api.Domain.Settlements.Settlement", b =>
+                {
+                    b.HasOne("ExpenseSplitter.Api.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatorUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_settlements_user_user_temp_id");
                 });
 #pragma warning restore 612, 618
         }

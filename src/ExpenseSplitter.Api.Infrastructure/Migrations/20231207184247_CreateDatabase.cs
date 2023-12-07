@@ -6,33 +6,42 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ExpenseSplitter.Api.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "settlements",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_settlements", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    nickname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    nickname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "settlements",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    invite_code = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    creator_user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_settlements", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_settlements_user_user_temp_id",
+                        column: x => x.creator_user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,7 +50,7 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     settlement_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
                     nickname = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -57,8 +66,7 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         name: "fk_participants_user_user_temp_id",
                         column: x => x.user_id,
                         principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -67,7 +75,9 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     settlement_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    payment_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     paying_participant_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -88,13 +98,44 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "settlement_users",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    settlement_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    participant_id = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_settlement_users", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_settlement_users_participants_participant_id1",
+                        column: x => x.participant_id,
+                        principalTable: "participants",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "fk_settlement_users_settlements_settlement_id1",
+                        column: x => x.settlement_id,
+                        principalTable: "settlements",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_settlement_users_user_user_temp_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "expense_allocations",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     expense_id = table.Column<Guid>(type: "uuid", nullable: false),
                     participant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    value = table.Column<decimal>(type: "numeric", nullable: false)
+                    amount = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -142,6 +183,38 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                 name: "ix_participants_user_id",
                 table: "participants",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_settlement_users_participant_id",
+                table: "settlement_users",
+                column: "participant_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_settlement_users_settlement_id",
+                table: "settlement_users",
+                column: "settlement_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_settlement_users_user_id",
+                table: "settlement_users",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_settlements_creator_user_id",
+                table: "settlements",
+                column: "creator_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_settlements_invite_code",
+                table: "settlements",
+                column: "invite_code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_email",
+                table: "users",
+                column: "email",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -149,6 +222,9 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "expense_allocations");
+
+            migrationBuilder.DropTable(
+                name: "settlement_users");
 
             migrationBuilder.DropTable(
                 name: "expenses");

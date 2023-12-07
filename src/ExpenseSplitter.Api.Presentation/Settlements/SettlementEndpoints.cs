@@ -3,6 +3,7 @@ using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
+using ExpenseSplitter.Api.Application.Settlements.LeaveSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
@@ -22,6 +23,7 @@ public static class SettlementEndpoints
         routeGroupBuilder.MapDelete("{id}", DeleteSettlement);
         routeGroupBuilder.MapPost("", CreateSettlement);
         routeGroupBuilder.MapPost("/join", JoinSettlement);
+        routeGroupBuilder.MapPost("/leave", LeaveSettlement);
 
         return builder;
     }
@@ -88,5 +90,18 @@ public static class SettlementEndpoints
         var result = await sender.Send(command, cancellationToken);
         
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
+    }
+
+    public static async Task<Results<Ok, BadRequest<Error>>> LeaveSettlement(
+        LeaveSettlementRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new LeaveSettlementCommand(request.settlementId);
+
+        var result = await sender.Send(command, cancellationToken);
+        
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
     }
 }
