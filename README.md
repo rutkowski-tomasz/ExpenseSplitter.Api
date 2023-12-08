@@ -63,25 +63,33 @@ TODO
 
 ## 📈 Business use-cases
 
-1. ✅ Register - POST /auth/register
-2. ✅ Login - POST /auth/login
-3. ✅ Create settlement (with participants, generate InviteCode) - POST /settlements
-4. ✅ Join settlement - POST /settlements/{settlementId}/join
-5. ✅ Leave settlement - POST /settlements/{settlementId}/leave
-6. ✅ Get all settlements - GET /settlements
-7. ✅ Get settlement details (Name, MyTotal, TotalExpenses, InviteCode) - GET /settlements/{settlementId}
-8. ✅ Get settlement participants - GET /participants/{settlementId}
-9. Claim participant
-10. Modify settlement (Name) - PUT /settlements/{settlementId}
-11. ✅ Delete settlement (SettlementId) - DELETE /settlements/{settlementId}
-12. ✅ Get settlement expenses - GET /settlements/{id}/expenses (paging)
-13. ✅ Create expense (Title, Type, Amount, Date, PayingParticipantId, ExpenseAllocations [ParticipantId, Amount]) - POST /expenses
-14. Modify expense (Title, AMount, Date, PayingParticipantId, ExpenseAllocations [ParticipantId, Amount]) - PUT /settlements/{settlementId}
-15. ✅ Delete expense (ExpenseId) - DELETE /expenses/{id}
-16. Settlement calculate balances (ParticipantName + Amount), reimbrusements (FromParticipantId, FromParticipantName, ToParticipantId, ToParticipantName, Amount) - GET /settlements/{id}/balances
-17. Websockets for real time updates
-18. Currency support
+| Status  | Method  | Path   | Notes  |
+|---|---|---|---|
+| ✅ Done | POST | /user/login | |
+| ✅ Done | POST | /user/register | |
+| ✅ Done | GET | /user/me | |
+| TODO | POST | /settlements | Generate invite code |
+| TODO | GET | /settlements | |
+| TODO | GET | /settlements/{settlementId} | |
+| TODO | PUT | /settlements/{settlementId} | |
+| TODO | DELETE | /settlements/{settlementId} | |
+| TODO | GET | /settlements/{settlementId}/expenses | |
+| TODO | GET | /settlements/{settlementId}/participants | |
+| TODO | PATCH | /settlements/join | |
+| TODO | PATCH | /settlements/{settlementId}/leave | |
+| TODO | GET | /settlements/{settlementId}/reimbrusment | Balances (participant + amount) and reimbrusements (from, to, amount) |
+| TODO | PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
+| TODO | POST | /expenses | |
+| TODO | GET | /expenses/{expenseId} | |
+| TODO | PUT | /expenses/{expenseId} | |
+| TODO | DELETE | /expenses/{expenseId} | |
 
+### Notes
+
+1. When dealing with expenses always include allocations
+2. When dealing with settlements always include participants
+3. Add websockets for real time updates
+4. Currency support
 
 # Development
 
