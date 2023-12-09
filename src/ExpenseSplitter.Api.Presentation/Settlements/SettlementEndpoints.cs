@@ -30,7 +30,7 @@ public static class SettlementEndpoints
         routeGroupBuilder.MapGet("{settlementId}/expenses", GetExpensesForSettlement);
 
         routeGroupBuilder.MapPost("/join", JoinSettlement);
-        routeGroupBuilder.MapPost("/{id}/leave", LeaveSettlement);
+        routeGroupBuilder.MapPost("/{settlementId}/leave", LeaveSettlement);
         routeGroupBuilder.MapPatch("/{settlementId}/participants/{participantId}/claim", ClaimParticipant);
 
         return builder;

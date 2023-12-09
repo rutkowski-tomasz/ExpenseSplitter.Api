@@ -45,93 +45,65 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
 
         UpdateExpense(expense, request);
 
-        if (request.Allocations is not null)
-        {
-            await UpdateAllocations(request, expenseId, cancellationToken);
-        }
+        var allocations = await expenseAllocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
+        RemoveNonExistingAllocations(allocations, request);
+        CreateNewAllocations(request, expenseId);
+        UpdateExistingAllocations(allocations, request);
 
         await unitOfWork.SaveChangesAsync();
         return Result.Success();
     }
 
-    private async Task UpdateAllocations(UpdateExpenseCommand request, ExpenseId expenseId, CancellationToken cancellationToken)
-    {
-        var allocations = await expenseAllocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
-        
-        var allocationsToRemove = allocations
-            .Where(a => !request.Allocations.Any(ra => ra.Id.HasValue && new ExpenseAllocationId(ra.Id.Value) == a.Id))
-            .ToList();
-        
-        foreach (var allocation in allocationsToRemove)
-        {
-            expenseAllocationRepository.Remove(allocation);
-        }
-
-        foreach (var requestAllocation in request.Allocations)
-        {
-            if (requestAllocation.Id is null)
-            {
-                AddNewAllocation(requestAllocation, expenseId);
-                continue;
-            }
-
-            var expenseAllocationId = new ExpenseAllocationId(requestAllocation.Id.Value);
-            var existingAllocation = await expenseAllocationRepository.GetWithId(expenseAllocationId, cancellationToken);
-
-            if (existingAllocation is null)
-            {
-                continue;
-            }
-
-            UpdateExistingAllocation(requestAllocation, existingAllocation);
-        }
-    }
-
-    private void AddNewAllocation(UpdateExpenseCommandAllocation requestAllocation, ExpenseId expenseId)
-    {
-        var newAllocation = ExpenseAllocation.Create(
-            new Amount(requestAllocation.Value!.Value),
-            expenseId,
-            new ParticipantId(requestAllocation.ParticipantId!.Value)
-        );
-        expenseAllocationRepository.Add(newAllocation);
-    }
-
-    private void UpdateExistingAllocation(UpdateExpenseCommandAllocation requestAllocation, ExpenseAllocation existingAllocation)
-    {
-        if (requestAllocation.Value is not null)
-        {
-            existingAllocation.SetAmount(new Amount(requestAllocation.Value.Value));
-        }
-
-        if (requestAllocation.ParticipantId is not null)
-        {
-            var participantId = new ParticipantId(requestAllocation.ParticipantId.Value);
-            existingAllocation.SetParticipantId(participantId);
-        }
-    }
-
     private void UpdateExpense(Expense expense, UpdateExpenseCommand request)
     {
-        if (request.Title is not null)
-        {
-            expense.SetTitle(request.Title);
-        }
+        expense.SetTitle(request.Title);
+        expense.SetAmount(new Amount(request.Amount));
+        expense.SetPaymentDate(request.Date);
+        expense.SetPayingParticipantId(new ParticipantId(request.PayingParticipantId));
+    }
 
-        if (request.Amount is not null)
-        {
-            expense.SetAmount(new Amount(request.Amount.Value));
-        }
+    private void RemoveNonExistingAllocations(IEnumerable<ExpenseAllocation> allocations, UpdateExpenseCommand updateCommand)
+    {
+        var allocationsToRemove = allocations
+            .Where(x => !updateCommand.Allocations.Any(y => y.Id.HasValue && new ExpenseAllocationId(y.Id.Value) == x.Id));
 
-        if (request.Date is not null)
+        foreach (var allocationToRemove in allocationsToRemove)
         {
-            expense.SetPaymentDate(request.Date.Value);
+            expenseAllocationRepository.Remove(allocationToRemove);
         }
+    }
 
-        if (request.PayingParticipantId is not null)
+    private void CreateNewAllocations(UpdateExpenseCommand updateCommand, ExpenseId expenseId)
+    {
+        var newAllocations = updateCommand
+            .Allocations
+            .Where(x => !x.Id.HasValue)
+            .Select(x => ExpenseAllocation.Create(
+                new Amount(x.Value),
+                expenseId,
+                new ParticipantId(x.ParticipantId)
+            ));
+        
+        foreach (var newAllocation in newAllocations)
         {
-            var participantId = new ParticipantId(request.PayingParticipantId.Value);
-            expense.SetPayingParticipantId(participantId);
+            expenseAllocationRepository.Add(newAllocation);
+        }
+    }
+
+    private void UpdateExistingAllocations(IEnumerable<ExpenseAllocation> allocations, UpdateExpenseCommand updateCommand)
+    {
+        var updates = updateCommand
+            .Allocations
+            .Where(x => x.Id.HasValue)
+            .Select(x => new {
+                UpdateModel = x,
+                Entity = allocations.Single(y => y.Id == new ExpenseAllocationId(x.Id!.Value))
+            });
+
+        foreach (var update in updates)
+        {
+            update.Entity.SetAmount(new Amount(update.UpdateModel.Value));
+            update.Entity.SetParticipantId(new ParticipantId(update.UpdateModel.ParticipantId));
         }
     }
 }

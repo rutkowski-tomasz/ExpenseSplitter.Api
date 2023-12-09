@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
+using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
@@ -18,6 +19,7 @@ public static class ExpensesEndpoints
 
         routeGroupBuilder.MapPost("", CreateExpense);
         routeGroupBuilder.MapGet("{expenseId}", GetExpense);
+        routeGroupBuilder.MapPut("{expenseId}", UpdateExpense);
         routeGroupBuilder.MapDelete("{expenseId}", DeleteExpense);
 
         return builder;
@@ -63,6 +65,30 @@ public static class ExpensesEndpoints
         var result = await sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
+    }
+
+    public static async Task<Results<Ok, BadRequest<Error>>> UpdateExpense(
+        UpdateExpenseRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new UpdateExpenseCommand(
+            request.Id,
+            request.Title,
+            request.Amount,
+            request.Date,
+            request.PayingParticipantId,
+            request.Allocations.Select(x => new UpdateExpenseCommandAllocation(
+                x.Id,
+                x.ParticipantId,
+                x.Value
+            ))
+        );
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
     }
 
     public static async Task<Results<Ok, BadRequest<Error>>> DeleteExpense(
