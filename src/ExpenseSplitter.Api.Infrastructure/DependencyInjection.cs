@@ -1,6 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -78,7 +78,7 @@ public static class DependencyInjection
             .AddScoped<IExpenseRepository, ExpenseRepository>()
             .AddScoped<ISettlementRepository, SettlementRepository>()
             .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped<IExpenseAllocationRepository, ExpenseAllocationRepository>()
+            .AddScoped<IAllocationRepository, AllocationRepository>()
             .AddScoped<IParticipantRepository, ParticipantRepository>()
             .AddScoped<ISettlementUserRepository, SettlementUserRepository>();
         ;

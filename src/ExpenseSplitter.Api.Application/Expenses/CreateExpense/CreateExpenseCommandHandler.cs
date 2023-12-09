@@ -1,7 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations.Services;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -14,24 +13,21 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
 {
     private readonly ISettlementUserRepository settlementUserRepository;
     private readonly IExpenseRepository expenseRepository;
-    private readonly IExpenseAllocationRepository expenseAllocationRepository;
-    private readonly IExpenseAllocationService expenseAllocationService;
+    private readonly IAllocationRepository allocationRepository;
     private readonly IParticipantRepository participantRepository;
     private readonly IUnitOfWork unitOfWork;
 
     public CreateExpenseCommandHandler(
         ISettlementUserRepository settlementUserRepository,
         IExpenseRepository expenseRepository,
-        IExpenseAllocationRepository expenseAllocationRepository,
-        IExpenseAllocationService expenseAllocationService,
+        IAllocationRepository allocationRepository,
         IParticipantRepository participantRepository,
         IUnitOfWork unitOfWork
     )
     {
         this.settlementUserRepository = settlementUserRepository;
         this.expenseRepository = expenseRepository;
-        this.expenseAllocationRepository = expenseAllocationRepository;
-        this.expenseAllocationService = expenseAllocationService;
+        this.allocationRepository = allocationRepository;
         this.participantRepository = participantRepository;
         this.unitOfWork = unitOfWork;
     }
@@ -63,11 +59,11 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
 
         expenseRepository.Add(result.Value);
 
-        var allocations = CreateExpenseAllocations(request, result);
+        var allocations = CreateAllocations(request, result);
 
         foreach (var allocation in allocations)
         {
-            expenseAllocationRepository.Add(allocation);
+            allocationRepository.Add(allocation);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -91,7 +87,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         );
     }
 
-    private IEnumerable<ExpenseAllocation> CreateExpenseAllocations(CreateExpenseCommand request, Result<Expense> result)
+    private IEnumerable<Allocation> CreateAllocations(CreateExpenseCommand request, Result<Expense> result)
     {
         var allPartsSum = request
             .Allocations
@@ -105,14 +101,8 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
 
         var allocations = request
             .Allocations
-            .Select(x => ExpenseAllocation.Create(
-                expenseAllocationService.Calculate(
-                    new Amount(request.Amount),
-                    (ExpenseAllocationSplit)x.AllocationSplit,
-                    x.Value,
-                    allPartsSum,
-                    allAmountSum
-                ),
+            .Select(x => Allocation.Create(
+                new Amount(x.Value),
                 result.Value.Id,
                 new ParticipantId(x.ParticipantId)
             ));

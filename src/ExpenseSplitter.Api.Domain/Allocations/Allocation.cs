@@ -3,13 +3,13 @@ using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Shared;
 
-namespace ExpenseSplitter.Api.Domain.ExpenseAllocations;
+namespace ExpenseSplitter.Api.Domain.Allocations;
 
-public sealed class ExpenseAllocation : Entity<ExpenseAllocationId>
+public sealed class Allocation : Entity<AllocationId>
 {
-    private ExpenseAllocation(
+    private Allocation(
         Amount amount,
-        ExpenseAllocationId id,
+        AllocationId id,
         ExpenseId expenseId,
         ParticipantId participantId
     ) : base(id)
@@ -25,11 +25,11 @@ public sealed class ExpenseAllocation : Entity<ExpenseAllocationId>
 
     public Amount Amount { get; private set; }
 
-    public static ExpenseAllocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
+    public static Allocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
     {
-        var expenseAllocation = new ExpenseAllocation(
+        var expenseAllocation = new Allocation(
             amount,
-            ExpenseAllocationId.New(),
+            AllocationId.New(),
             expenseId,
             participantId
         );

@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -14,21 +14,21 @@ public class UpdateExpenseCommandHandlerTests
 {
     private readonly UpdateExpenseCommandHandler updateExpenseCommandHandler;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
-    private readonly Mock<IExpenseAllocationRepository> expenseAllocationRepositoryMock;
+    private readonly Mock<IAllocationRepository> allocationRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly Mock<IUnitOfWork> unitOfWorkMock;
 
     public UpdateExpenseCommandHandlerTests()
     {
         expenseRepositoryMock = new Mock<IExpenseRepository>();
-        expenseAllocationRepositoryMock = new Mock<IExpenseAllocationRepository>();
+        allocationRepositoryMock = new Mock<IAllocationRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         unitOfWorkMock = new Mock<IUnitOfWork>();
 
         updateExpenseCommandHandler = new UpdateExpenseCommandHandler(
             expenseRepositoryMock.Object,
             settlementUserRepositoryMock.Object,
-            expenseAllocationRepositoryMock.Object,
+            allocationRepositoryMock.Object,
             unitOfWorkMock.Object
         );
     }

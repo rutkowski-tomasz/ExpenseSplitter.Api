@@ -37,7 +37,7 @@ TODO
 ## 📃 Domain Layer
 
 - ✅ DDD abstractions: Entity, ValueObject, DomainEvent
-- ✅ Model entities: Expense, ExpenseAllocation, Participant, Settlement, User
+- ✅ Model entities: Expense, Allocation, Participant, Settlement, User
 - ✅ Results and Error
 - ✅ Strongly typed IDs
 - Solve primitive obsession

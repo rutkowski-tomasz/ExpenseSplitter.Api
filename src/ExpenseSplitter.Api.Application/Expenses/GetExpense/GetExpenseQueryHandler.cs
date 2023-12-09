@@ -1,6 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
@@ -10,17 +10,17 @@ namespace ExpenseSplitter.Api.Application.Settlements.GetExpense;
 internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, GetExpenseResponse>
 {
     private readonly IExpenseRepository expenseRepository;
-    private readonly IExpenseAllocationRepository expenseAllocationRepository;
+    private readonly IAllocationRepository allocationRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
 
     public GetExpenseQueryHandler(
         IExpenseRepository expenseRepository,
-        IExpenseAllocationRepository expenseAllocationRepository,
+        IAllocationRepository allocationRepository,
         ISettlementUserRepository settlementUserRepository
     )
     {
         this.expenseRepository = expenseRepository;
-        this.expenseAllocationRepository = expenseAllocationRepository;
+        this.allocationRepository = allocationRepository;
         this.settlementUserRepository = settlementUserRepository;
     }
 
@@ -38,7 +38,7 @@ internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, Ge
             return Result.Failure<GetExpenseResponse>(SettlementErrors.Forbidden);
         }
 
-        var allocations = await expenseAllocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
+        var allocations = await allocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
 
         var response = new GetExpenseResponse(
             expense.Id.Value,

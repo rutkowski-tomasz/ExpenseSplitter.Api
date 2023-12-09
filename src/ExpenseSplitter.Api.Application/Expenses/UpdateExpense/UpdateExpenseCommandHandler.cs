@@ -1,6 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -13,19 +13,19 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
 {
     private readonly IExpenseRepository expenseRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IExpenseAllocationRepository expenseAllocationRepository;
+    private readonly IAllocationRepository allocationRepository;
     private readonly IUnitOfWork unitOfWork;
 
     public UpdateExpenseCommandHandler(
         IExpenseRepository expenseRepository,
         ISettlementUserRepository settlementUserRepository,
-        IExpenseAllocationRepository expenseAllocationRepository,
+        IAllocationRepository expenseAllocationRepository,
         IUnitOfWork unitOfWork
     )
     {
         this.expenseRepository = expenseRepository;
         this.settlementUserRepository = settlementUserRepository;
-        this.expenseAllocationRepository = expenseAllocationRepository;
+        this.allocationRepository = expenseAllocationRepository;
         this.unitOfWork = unitOfWork;
     }
 
@@ -45,7 +45,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
 
         UpdateExpense(expense, request);
 
-        var allocations = await expenseAllocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
+        var allocations = await allocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
         RemoveNonExistingAllocations(allocations, request);
         CreateNewAllocations(request, expenseId);
         UpdateExistingAllocations(allocations, request);
@@ -62,14 +62,14 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         expense.SetPayingParticipantId(new ParticipantId(request.PayingParticipantId));
     }
 
-    private void RemoveNonExistingAllocations(IEnumerable<ExpenseAllocation> allocations, UpdateExpenseCommand updateCommand)
+    private void RemoveNonExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
     {
         var allocationsToRemove = allocations
-            .Where(x => !updateCommand.Allocations.Any(y => y.Id.HasValue && new ExpenseAllocationId(y.Id.Value) == x.Id));
+            .Where(x => !updateCommand.Allocations.Any(y => y.Id.HasValue && new AllocationId(y.Id.Value) == x.Id));
 
         foreach (var allocationToRemove in allocationsToRemove)
         {
-            expenseAllocationRepository.Remove(allocationToRemove);
+            allocationRepository.Remove(allocationToRemove);
         }
     }
 
@@ -78,7 +78,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         var newAllocations = updateCommand
             .Allocations
             .Where(x => !x.Id.HasValue)
-            .Select(x => ExpenseAllocation.Create(
+            .Select(x => Allocation.Create(
                 new Amount(x.Value),
                 expenseId,
                 new ParticipantId(x.ParticipantId)
@@ -86,18 +86,18 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         
         foreach (var newAllocation in newAllocations)
         {
-            expenseAllocationRepository.Add(newAllocation);
+            allocationRepository.Add(newAllocation);
         }
     }
 
-    private void UpdateExistingAllocations(IEnumerable<ExpenseAllocation> allocations, UpdateExpenseCommand updateCommand)
+    private void UpdateExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
     {
         var updates = updateCommand
             .Allocations
             .Where(x => x.Id.HasValue)
             .Select(x => new {
                 UpdateModel = x,
-                Entity = allocations.Single(y => y.Id == new ExpenseAllocationId(x.Id!.Value))
+                Entity = allocations.Single(y => y.Id == new AllocationId(x.Id!.Value))
             });
 
         foreach (var update in updates)

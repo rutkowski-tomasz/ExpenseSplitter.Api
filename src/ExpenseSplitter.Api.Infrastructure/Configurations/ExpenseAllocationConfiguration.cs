@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ExpenseSplitter.Api.Domain.ExpenseAllocations;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Shared;
@@ -9,16 +9,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace ExpenseSplitter.Api.Infrastructure.Configurations;
 
 [ExcludeFromCodeCoverage]
-internal sealed class ExpenseAllocationConfiguration : IEntityTypeConfiguration<ExpenseAllocation>
+internal sealed class AllocationConfiguration : IEntityTypeConfiguration<Allocation>
 {
-    public void Configure(EntityTypeBuilder<ExpenseAllocation> builder)
+    public void Configure(EntityTypeBuilder<Allocation> builder)
     {
-        builder.ToTable("expense_allocations");
+        builder.ToTable("allocations");
         
         builder.HasKey(expenseAllocation => expenseAllocation.Id);
 
         builder.Property(expenseAllocation => expenseAllocation.Id)
-            .HasConversion(expenseAllocationId => expenseAllocationId.Value, value => new ExpenseAllocationId(value));
+            .HasConversion(expenseAllocationId => expenseAllocationId.Value, value => new AllocationId(value));
 
         builder.Property(expenseAllocation => expenseAllocation.Amount)
             .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => new Amount(value));
