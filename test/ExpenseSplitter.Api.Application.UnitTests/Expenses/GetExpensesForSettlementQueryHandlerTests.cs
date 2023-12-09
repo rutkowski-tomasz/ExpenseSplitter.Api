@@ -35,6 +35,8 @@ public class GetExpensesForSettlementQueryHandlerTests
         expenseRepositoryMock
             .Setup(x => x.GetAllWithSettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 
+                It.IsAny<int>(),
+                It.IsAny<int>(),
                 It.IsAny<CancellationToken>()
             ))
             .ReturnsAsync(expenses);
@@ -55,6 +57,8 @@ public class GetExpensesForSettlementQueryHandlerTests
         expenseRepositoryMock
             .Setup(x => x.GetAllWithSettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 
+                It.IsAny<int>(),
+                It.IsAny<int>(),
                 It.IsAny<CancellationToken>()
             ))
             .ReturnsAsync(expenses);

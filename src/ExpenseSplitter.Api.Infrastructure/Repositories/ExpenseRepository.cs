@@ -12,12 +12,18 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
 
     public async Task<IEnumerable<Expense>> GetAllWithSettlementId(
         SettlementId settlementId,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken
     )
     {
+        var skip = (page - 1) * pageSize;
+
         return await DbContext
             .Set<Expense>()
             .Where(x => x.SettlementId == settlementId)
+            .Skip(skip)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
     }
 

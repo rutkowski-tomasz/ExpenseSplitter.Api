@@ -2,6 +2,7 @@ using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
+using ExpenseSplitter.Api.Application.Settlements.GetExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Expenses.Models;
 using MediatR;
@@ -16,8 +17,8 @@ public static class ExpensesEndpoints
         var routeGroupBuilder = builder.MapGroup("api/expenses").RequireAuthorization();
 
         routeGroupBuilder.MapPost("", CreateExpense);
-        routeGroupBuilder.MapGet("{settlementId}", GetExpensesForSettlement);
-        routeGroupBuilder.MapDelete("{id}", DeleteExpense);
+        routeGroupBuilder.MapGet("{expenseId}", GetExpense);
+        routeGroupBuilder.MapDelete("{expenseId}", DeleteExpense);
 
         return builder;
     }
@@ -51,27 +52,26 @@ public static class ExpensesEndpoints
         return TypedResults.Ok(result.Value);
     }
     
-    public static async Task<Results<Ok<GetExpensesForSettlementQueryResult>, BadRequest<Error>>> GetExpensesForSettlement(
-        Guid settlementId,
+    public static async Task<Results<Ok<GetExpenseResponse>, BadRequest<Error>>> GetExpense(
+        Guid expenseId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var query = new GetExpensesForSettlementQuery(settlementId);
+        var query = new GetExpenseQuery(expenseId);
 
         var result = await sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
 
-    
     public static async Task<Results<Ok, BadRequest<Error>>> DeleteExpense(
-        Guid id,
+        Guid expenseId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var query = new DeleteExpenseCommand(id);
+        var query = new DeleteExpenseCommand(expenseId);
 
         var result = await sender.Send(query, cancellationToken);
 

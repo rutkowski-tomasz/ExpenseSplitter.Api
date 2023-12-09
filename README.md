@@ -68,21 +68,20 @@ TODO
 | ✅ Done | POST | /user/login | |
 | ✅ Done | POST | /user/register | |
 | ✅ Done | GET | /user/me | |
-| TODO | POST | /settlements | Generate invite code |
-| TODO | GET | /settlements | |
-| TODO | GET | /settlements/{settlementId} | |
+| ✅ Done | POST | /settlements | Generate invite code |
+| ✅ Done | GET | /settlements | Paging |
+| ✅ Done | GET | /settlements/{settlementId} | |
 | TODO | PUT | /settlements/{settlementId} | |
-| TODO | DELETE | /settlements/{settlementId} | |
-| TODO | GET | /settlements/{settlementId}/expenses | |
-| TODO | GET | /settlements/{settlementId}/participants | |
-| TODO | PATCH | /settlements/join | |
-| TODO | PATCH | /settlements/{settlementId}/leave | |
-| TODO | GET | /settlements/{settlementId}/reimbrusment | Balances (participant + amount) and reimbrusements (from, to, amount) |
-| TODO | PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
-| TODO | POST | /expenses | |
-| TODO | GET | /expenses/{expenseId} | |
+| ✅ Done | DELETE | /settlements/{settlementId} | |
+| ✅ Done | GET | /settlements/{settlementId}/expenses | Paging |
+| ✅ Done | PUT | /settlements/join | |
+| ✅ Done | PUT | /settlements/{settlementId}/leave | |
+| TODO | GET | /settlements/{settlementId}/reimbrusement | Balances (participant + amount) and reimbrusements (from, to, amount) |
+| ✅ Done | PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
+| ✅ Done | POST | /expenses | |
+| ✅ Done | GET | /expenses/{expenseId} | |
 | TODO | PUT | /expenses/{expenseId} | |
-| TODO | DELETE | /expenses/{expenseId} | |
+| ✅ Done | DELETE | /expenses/{expenseId} | |
 
 ### Notes
 
@@ -90,6 +89,7 @@ TODO
 2. When dealing with settlements always include participants
 3. Add websockets for real time updates
 4. Currency support
+5. Cascade delete
 
 # Development
 

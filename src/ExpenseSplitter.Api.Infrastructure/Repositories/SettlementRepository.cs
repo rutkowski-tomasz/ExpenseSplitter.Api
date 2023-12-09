@@ -10,10 +10,14 @@ internal sealed class SettlementRepository : Repository<Settlement, SettlementId
     {
     }
 
-    public async Task<IEnumerable<Settlement>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Settlement>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken)
     {
+        var skip = (page - 1) * pageSize;
+
         return await DbContext
             .Set<Settlement>()
+            .Skip(skip)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
     }
 

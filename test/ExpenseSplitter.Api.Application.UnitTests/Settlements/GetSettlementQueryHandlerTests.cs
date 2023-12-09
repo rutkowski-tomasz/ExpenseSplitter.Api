@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
+using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Users;
@@ -8,15 +9,19 @@ public class GetSettlementQueryHandlerTests
 {
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
+    private readonly Mock<IParticipantRepository> participantRepositoryMock;
     private readonly GetSettlementQueryHandler handler;
 
     public GetSettlementQueryHandlerTests()
     {
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
+        participantRepositoryMock = new Mock<IParticipantRepository>();
+
         handler = new GetSettlementQueryHandler(
             settlementRepositoryMock.Object,
-            settlementUserRepositoryMock.Object
+            settlementUserRepositoryMock.Object,
+            participantRepositoryMock.Object
         );
     }
 

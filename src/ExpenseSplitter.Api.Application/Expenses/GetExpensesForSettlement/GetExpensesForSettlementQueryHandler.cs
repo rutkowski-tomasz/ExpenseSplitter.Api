@@ -17,7 +17,7 @@ internal sealed class GetExpensesForSettlementQueryHandler : IQueryHandler<GetEx
     public async Task<Result<GetExpensesForSettlementQueryResult>> Handle(GetExpensesForSettlementQuery request, CancellationToken cancellationToken)
     {
         var expenses = await expenseRepository
-            .GetAllWithSettlementId(new SettlementId(request.SettlementId), cancellationToken);
+            .GetAllWithSettlementId(new SettlementId(request.SettlementId), 1, 100, cancellationToken);
 
         var resultExpenses = expenses.Select(x => new GetExpensesForSettlementQueryResultExpense(
             x.Id,

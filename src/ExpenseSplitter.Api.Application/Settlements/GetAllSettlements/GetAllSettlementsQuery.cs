@@ -3,4 +3,4 @@ using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 
 namespace ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 
-public sealed record GetAllSettlementsQuery : IQuery<GetAllSettlementsQueryResponse>;
+public sealed record GetAllSettlementsQuery(int page, int pageSize) : IQuery<GetAllSettlementsQueryResponse>;

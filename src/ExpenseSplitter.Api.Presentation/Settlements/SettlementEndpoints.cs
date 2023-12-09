@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
+using ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
@@ -8,6 +11,7 @@ using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -19,21 +23,27 @@ public static class SettlementEndpoints
         var routeGroupBuilder = builder.MapGroup("api/settlements").RequireAuthorization();
 
         routeGroupBuilder.MapGet("", GetAllSettlements);
-        routeGroupBuilder.MapGet("{id}", GetSettlement);
-        routeGroupBuilder.MapDelete("{id}", DeleteSettlement);
         routeGroupBuilder.MapPost("", CreateSettlement);
+        routeGroupBuilder.MapGet("{settlementId}", GetSettlement);
+        routeGroupBuilder.MapDelete("{settlementId}", DeleteSettlement);
+
+        routeGroupBuilder.MapGet("{settlementId}/expenses", GetExpensesForSettlement);
+
         routeGroupBuilder.MapPost("/join", JoinSettlement);
-        routeGroupBuilder.MapPost("/leave", LeaveSettlement);
+        routeGroupBuilder.MapPost("/{id}/leave", LeaveSettlement);
+        routeGroupBuilder.MapPatch("/{settlementId}/participants/{participantId}/claim", ClaimParticipant);
 
         return builder;
     }
 
     public static async Task<Results<Ok<GetAllSettlementsQueryResponse>, NotFound>> GetAllSettlements(
         ISender sender,
+        [FromQuery] int page,
+        [FromQuery] int pageSize,
         CancellationToken cancellationToken
     )
     {
-        var query = new GetAllSettlementsQuery();
+        var query = new GetAllSettlementsQuery(page, pageSize);
 
         var result = await sender.Send(query, cancellationToken);
 
@@ -41,12 +51,12 @@ public static class SettlementEndpoints
     }
 
     public static async Task<Results<Ok<GetSettlementResponse>, NotFound>> GetSettlement(
-        Guid id,
+        Guid settlementId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var query = new GetSettlementQuery(id);
+        var query = new GetSettlementQuery(settlementId);
 
         var result = await sender.Send(query, cancellationToken);
 
@@ -54,12 +64,12 @@ public static class SettlementEndpoints
     }
 
     public static async Task<Results<Ok, NotFound>> DeleteSettlement(
-        Guid id,
+        Guid settlementId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var query = new DeleteSettlementCommand(id);
+        var query = new DeleteSettlementCommand(settlementId);
 
         var result = await sender.Send(query, cancellationToken);
 
@@ -79,6 +89,19 @@ public static class SettlementEndpoints
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
     }
 
+    public static async Task<Results<Ok<GetExpensesForSettlementQueryResult>, BadRequest<Error>>> GetExpensesForSettlement(
+        Guid settlementId,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetExpensesForSettlementQuery(settlementId);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
+    }
+
     public static async Task<Results<Ok<Guid>, BadRequest<Error>>> JoinSettlement(
         JoinSettlementRequest request,
         ISender sender,
@@ -93,15 +116,29 @@ public static class SettlementEndpoints
     }
 
     public static async Task<Results<Ok, BadRequest<Error>>> LeaveSettlement(
-        LeaveSettlementRequest request,
+        Guid settlementId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var command = new LeaveSettlementCommand(request.settlementId);
+        var command = new LeaveSettlementCommand(settlementId);
 
         var result = await sender.Send(command, cancellationToken);
         
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
+    }
+
+    public static async Task<Results<Ok, BadRequest<Error>>> ClaimParticipant(
+        Guid settlementId,
+        Guid participantId,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new ClaimParticipantCommand(settlementId, participantId);
+
+        var result = await sender.Send(query, cancellationToken);
+
         return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 
@@ -9,14 +10,17 @@ internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQue
 {
     private readonly ISettlementRepository settlementRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
+    private readonly IParticipantRepository participantRepository;
 
     public GetSettlementQueryHandler(
         ISettlementRepository settlementRepository,
-        ISettlementUserRepository settlementUserRepository
+        ISettlementUserRepository settlementUserRepository,
+        IParticipantRepository participantRepository
     )
     {
         this.settlementRepository = settlementRepository;
         this.settlementUserRepository = settlementUserRepository;
+        this.participantRepository = participantRepository;
     }
 
     public async Task<Result<GetSettlementResponse>> Handle(GetSettlementQuery request, CancellationToken cancellationToken)
@@ -33,10 +37,16 @@ internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQue
             return Result.Failure<GetSettlementResponse>(SettlementErrors.NotFound);
         }
 
+        var participants = await participantRepository.GetAllBySettlementId(settlementId, cancellationToken);
+
         var settlementDto = new GetSettlementResponse(
             settlement.Id.Value,
             settlement.Name,
-            settlement.InviteCode
+            settlement.InviteCode,
+            participants.Select(x => new GetSettlementResponseParticipant(
+                x.Id.Value,
+                x.Nickname
+            ))
         );
 
         return settlementDto;

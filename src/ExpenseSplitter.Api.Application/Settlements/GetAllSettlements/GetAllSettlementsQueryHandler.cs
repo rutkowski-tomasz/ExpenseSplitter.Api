@@ -14,9 +14,9 @@ internal sealed class GetSettlementsQueryHandler : IQueryHandler<GetAllSettlemen
         this.settlementRepository = settlementRepository;
     }
 
-    public async Task<Result<GetAllSettlementsQueryResponse>> Handle(GetAllSettlementsQuery _, CancellationToken cancellationToken)
+    public async Task<Result<GetAllSettlementsQueryResponse>> Handle(GetAllSettlementsQuery query, CancellationToken cancellationToken)
     {
-        var settlements = await settlementRepository.GetAllAsync(cancellationToken);
+        var settlements = await settlementRepository.GetAllAsync(query.page, query.pageSize, cancellationToken);
 
         var response = new GetAllSettlementsQueryResponse(
             settlements.Select(settlement => new GetAllSettlementsQueryResponseSettlement(
