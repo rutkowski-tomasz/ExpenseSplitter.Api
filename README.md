@@ -71,7 +71,7 @@ TODO
 | ✅ Done | POST | /settlements | Generate invite code |
 | ✅ Done | GET | /settlements | Paging |
 | ✅ Done | GET | /settlements/{settlementId} | |
-| TODO | PUT | /settlements/{settlementId} | |
+| ✅ Done | PUT | /settlements/{settlementId} | |
 | ✅ Done | DELETE | /settlements/{settlementId} | |
 | ✅ Done | GET | /settlements/{settlementId}/expenses | Paging |
 | ✅ Done | PUT | /settlements/join | |
@@ -80,7 +80,7 @@ TODO
 | ✅ Done | PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
 | ✅ Done | POST | /expenses | |
 | ✅ Done | GET | /expenses/{expenseId} | |
-| TODO | PUT | /expenses/{expenseId} | |
+| ✅ Done | PUT | /expenses/{expenseId} | |
 | ✅ Done | DELETE | /expenses/{expenseId} | |
 
 ### Notes

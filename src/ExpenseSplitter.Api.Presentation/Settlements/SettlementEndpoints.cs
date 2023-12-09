@@ -7,6 +7,7 @@ using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
 using ExpenseSplitter.Api.Application.Settlements.LeaveSettlement;
+using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
@@ -24,6 +25,7 @@ public static class SettlementEndpoints
 
         routeGroupBuilder.MapGet("", GetAllSettlements);
         routeGroupBuilder.MapPost("", CreateSettlement);
+        routeGroupBuilder.MapPut("{settlementId}", UpdateSettlement);
         routeGroupBuilder.MapGet("{settlementId}", GetSettlement);
         routeGroupBuilder.MapDelete("{settlementId}", DeleteSettlement);
 
@@ -87,6 +89,23 @@ public static class SettlementEndpoints
         var result = await sender.Send(command, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+    }
+
+    public static async Task<Results<Ok, BadRequest>> UpdateSettlement(
+        Guid settlementId,
+        UpdateSettlementRequest request,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new UpdateSettlementCommand(
+            settlementId,
+            request.Name
+        );
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest();
     }
 
     public static async Task<Results<Ok<GetExpensesForSettlementQueryResult>, BadRequest<Error>>> GetExpensesForSettlement(

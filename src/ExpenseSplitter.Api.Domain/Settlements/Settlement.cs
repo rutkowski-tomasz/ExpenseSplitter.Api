@@ -34,4 +34,9 @@ public sealed class Settlement : Entity<SettlementId>
         settlement.RaiseDomainEvent(new SettlementCreatedDomainEvent(settlement.Id));
         return settlement;
     }
+
+    public void SetName(string name)
+    {
+        Name = name;
+    }
 }
