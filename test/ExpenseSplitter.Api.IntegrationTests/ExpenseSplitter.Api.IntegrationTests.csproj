@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.14" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="3.6.0" />
     <PackageReference Include="Testcontainers.Keycloak" Version="3.6.0" />
+    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="AutoFixture" Version="4.18.0" />
   </ItemGroup>

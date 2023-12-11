@@ -37,6 +37,10 @@ public class GetSettlementQueryHandlerTests
             .Setup(x => x.GetByIdAsync(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(settlement);
 
+        settlementUserRepositoryMock
+            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         var query = new Fixture().Create<GetSettlementQuery>();
 
         var response = await handler.Handle(query, default);
@@ -49,6 +53,10 @@ public class GetSettlementQueryHandlerTests
     public async Task Handle_ShouldFail_WhenSettlementWithTheIdDoesntExist()
     {
         var query = new Fixture().Create<GetSettlementQuery>();
+
+        settlementUserRepositoryMock
+            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         var response = await handler.Handle(query, default);
 

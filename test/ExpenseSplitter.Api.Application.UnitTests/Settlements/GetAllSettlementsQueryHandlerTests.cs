@@ -24,11 +24,11 @@ public class GetAllSettlementsQueryHandlerTests
             .CreateMany(2)
             .ToArray();
 
-        settlementRepositoryMock
-            .Setup(x => x.GetAllAsync(1, 100, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlements.ToList());
-
         var query = new Fixture().Create<GetAllSettlementsQuery>();
+    
+        settlementRepositoryMock
+            .Setup(x => x.GetAllAsync(query.page, query.pageSize, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(settlements.ToList());
 
         var response = await handler.Handle(query, default);
 

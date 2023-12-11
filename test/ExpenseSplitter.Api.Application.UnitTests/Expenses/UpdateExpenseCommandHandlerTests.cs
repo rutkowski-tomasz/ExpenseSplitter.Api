@@ -36,7 +36,14 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldUpdateExpense_WhenValidRequest()
     {
-        var request = new Fixture().Create<UpdateExpenseCommand>();
+        var request = new Fixture()
+            .Build<UpdateExpenseCommand>()
+            .With(x => x.Allocations, new Fixture()
+                .Build<UpdateExpenseCommandAllocation>()
+                .With(y => y.Id, (Guid?) null)
+                .CreateMany()
+            )
+            .Create();
         var expense = new Fixture()
             .Build<Expense>()
             .FromFactory(

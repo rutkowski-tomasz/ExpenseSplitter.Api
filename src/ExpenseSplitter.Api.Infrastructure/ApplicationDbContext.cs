@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,8 @@ namespace ExpenseSplitter.Api.Infrastructure;
 
 public class ApplicationDbContext : DbContext, IUnitOfWork
 {
+    public DbSet<User> Users { get; set; }
+
     private readonly IPublisher publisher;
 
     public ApplicationDbContext(
