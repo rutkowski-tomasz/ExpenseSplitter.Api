@@ -13,16 +13,15 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
     private readonly IParticipantRepository participantRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
     private readonly IUserContext userContext;
+    private readonly IInviteCodeService inviteCodeService;
     private readonly IUnitOfWork unitOfWork;
-
-    private const string InviteCodeChars = "abcdefghjkmnpqrstwxyzABCDEFGHJKLMNOPQRSTWXYZ23456789";
-    private const int InviteCodeLength = 8;
 
     public CreateSettlementCommandHandler(
         ISettlementRepository settlementRepository,
         IParticipantRepository participantRepository,
         ISettlementUserRepository settlementUserRepository,
         IUserContext userContext,
+        IInviteCodeService inviteCodeService,
         IUnitOfWork unitOfWork
     )
     {
@@ -30,12 +29,13 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
         this.participantRepository = participantRepository;
         this.settlementUserRepository = settlementUserRepository;
         this.userContext = userContext;
+        this.inviteCodeService = inviteCodeService;
         this.unitOfWork = unitOfWork;
     }
 
     public async Task<Result<Guid>> Handle(CreateSettlementCommand request, CancellationToken cancellationToken)
     {
-        var inviteCode = GenerateInviteCode();
+        var inviteCode = inviteCodeService.GenerateInviteCode();
         var settlementResult = Settlement.Create(request.Name, inviteCode, userContext.UserId);
 
         if (settlementResult.IsFailure)
@@ -80,19 +80,5 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
         var settlementUser = settlementUserResult.Value;
         settlementUserRepository.Add(settlementUser);
         return null;
-    }
-
-    private string GenerateInviteCode()
-    {
-        var random = new Random();
-
-        var inviteCode = string.Join(
-            "",
-            Enumerable
-                .Range(1, InviteCodeLength)
-                .Select(_ => InviteCodeChars[random.Next(InviteCodeChars.Length)])
-        );
-
-        return inviteCode;
     }
 }

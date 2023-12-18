@@ -1,4 +1,4 @@
-namespace ExpenseSplitter.Api.Application.Settlements.GetExpense;
+namespace ExpenseSplitter.Api.Application.Expenses.GetExpense;
 
 public sealed record GetExpenseResponse(
     Guid Id,

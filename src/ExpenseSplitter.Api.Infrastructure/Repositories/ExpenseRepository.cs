@@ -10,7 +10,7 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
     {
     }
 
-    public async Task<IEnumerable<Expense>> GetAllWithSettlementId(
+    public async Task<IEnumerable<Expense>> GetAllBySettlementId(
         SettlementId settlementId,
         int page,
         int pageSize,
@@ -25,12 +25,5 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
-    }
-
-    public void Remove(Expense expense)
-    {
-        DbContext
-            .Set<Expense>()
-            .Remove(expense);
     }
 }

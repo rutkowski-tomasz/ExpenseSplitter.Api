@@ -27,7 +27,7 @@ public class GetAllSettlementsQueryHandlerTests
         var query = new Fixture().Create<GetAllSettlementsQuery>();
     
         settlementRepositoryMock
-            .Setup(x => x.GetAllAsync(query.page, query.pageSize, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetAll(query.Page, query.PageSize, It.IsAny<CancellationToken>()))
             .ReturnsAsync(settlements.ToList());
 
         var response = await handler.Handle(query, default);

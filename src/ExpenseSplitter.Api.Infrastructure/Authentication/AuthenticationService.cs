@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
-using ExpenseSplitter.Api.Domain.Users;
 using ExpenseSplitter.Api.Infrastructure.Authentication.Models;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
@@ -19,7 +18,8 @@ internal sealed class AuthenticationService : IAuthenticationService
     public async Task<string> RegisterAsync(
         string email,
         string password,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken
+    )
     {
         var userRepresentationModel = UserRepresentationModel.Create(email);
 

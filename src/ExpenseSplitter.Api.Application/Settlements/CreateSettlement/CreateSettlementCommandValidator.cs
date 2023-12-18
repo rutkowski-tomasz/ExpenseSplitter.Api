@@ -9,5 +9,6 @@ public class CreateSettlementCommandValidator : AbstractValidator<CreateSettleme
     public CreateSettlementCommandValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.ParticipantNames).NotEmpty();
     }
 }

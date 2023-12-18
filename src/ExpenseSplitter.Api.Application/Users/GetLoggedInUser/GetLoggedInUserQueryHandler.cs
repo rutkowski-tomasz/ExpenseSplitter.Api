@@ -23,7 +23,7 @@ internal sealed class GetLoggedInUserQueryHandler
         GetLoggedInUserQuery request,
         CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(userContext.UserId, cancellationToken);
+        var user = await userRepository.GetById(userContext.UserId, cancellationToken);
 
         if (user is null)
         {

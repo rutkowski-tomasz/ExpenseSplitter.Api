@@ -10,23 +10,23 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 public class CreateSettlementCommandHandlerTests
 {
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
-    private readonly Mock<IParticipantRepository> participantRepositoryMock;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly CreateSettlementCommandHandler handler;
 
     public CreateSettlementCommandHandlerTests()
     {
         settlementRepositoryMock = new Mock<ISettlementRepository>();
-        participantRepositoryMock = new Mock<IParticipantRepository>();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
+        Mock<IParticipantRepository> participantRepositoryMock = new();
+        Mock<ISettlementUserRepository> settlementUserRepositoryMock = new();
         var userContextMock = new Mock<IUserContext>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var inviteCodeServiceMock = new Mock<IInviteCodeService>();
 
         handler = new CreateSettlementCommandHandler(
             settlementRepositoryMock.Object,
             participantRepositoryMock.Object,
             settlementUserRepositoryMock.Object,
             userContextMock.Object,
+            inviteCodeServiceMock.Object,
             unitOfWorkMock.Object
         );
     }

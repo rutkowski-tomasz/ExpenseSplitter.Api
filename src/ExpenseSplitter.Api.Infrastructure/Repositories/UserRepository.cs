@@ -1,5 +1,4 @@
 ﻿using ExpenseSplitter.Api.Domain.Users;
-using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 

@@ -31,7 +31,7 @@ internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQue
             return Result.Failure<GetSettlementResponse>(SettlementErrors.Forbidden);
         }
 
-        var settlement = await settlementRepository.GetByIdAsync(settlementId, cancellationToken);
+        var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         if (settlement is null)
         {
             return Result.Failure<GetSettlementResponse>(SettlementErrors.NotFound);

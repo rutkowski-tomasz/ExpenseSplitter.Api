@@ -22,14 +22,14 @@ public class LeaveSettlementCommandHandler : ICommandHandler<LeaveSettlementComm
     public async Task<Result> Handle(LeaveSettlementCommand request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.SettlemetId);
-        var settlementUser = await settlementUserRepository.GetSettlementUserWithSettlementId(settlementId, cancellationToken);
+        var settlementUser = await settlementUserRepository.GetBySettlementId(settlementId, cancellationToken);
         if (settlementUser is null)
         {
             return Result.Failure(SettlementErrors.Forbidden);
         }
 
         settlementUserRepository.Remove(settlementUser);
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

@@ -13,12 +13,5 @@ public sealed record CreateExpenseCommand(
 
 public sealed record CreateExpenseCommandAllocation(
     Guid ParticipantId,
-    decimal Value,
-    CreateExpenseCommandAllocationSplit AllocationSplit
+    decimal Value
 );
-
-public enum CreateExpenseCommandAllocationSplit
-{
-    Amount = 1,
-    Part = 2,
-}

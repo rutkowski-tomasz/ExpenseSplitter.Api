@@ -30,7 +30,7 @@ public class GetLoggedInUserQueryHandlerTests
             .Create();
 
         userRepositoryMock
-            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetById(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         
         var query = new Fixture().Create<GetLoggedInUserQuery>();

@@ -1,9 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
-using ExpenseSplitter.Api.Domain.Shared;
 using ExpenseSplitter.Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

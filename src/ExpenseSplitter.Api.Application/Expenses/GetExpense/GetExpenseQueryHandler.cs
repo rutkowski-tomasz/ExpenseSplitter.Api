@@ -5,7 +5,7 @@ using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 
-namespace ExpenseSplitter.Api.Application.Settlements.GetExpense;
+namespace ExpenseSplitter.Api.Application.Expenses.GetExpense;
 
 internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, GetExpenseResponse>
 {
@@ -27,7 +27,7 @@ internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, Ge
     public async Task<Result<GetExpenseResponse>> Handle(GetExpenseQuery request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.ExpenseId);
-        var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
+        var expense = await expenseRepository.GetById(expenseId, cancellationToken);
         if (expense is null)
         {
             return Result.Failure<GetExpenseResponse>(ExpenseErrors.NotFound);
@@ -38,7 +38,7 @@ internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, Ge
             return Result.Failure<GetExpenseResponse>(SettlementErrors.Forbidden);
         }
 
-        var allocations = await allocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
+        var allocations = await allocationRepository.GetAllByExpenseId(expenseId, cancellationToken);
 
         var response = new GetExpenseResponse(
             expense.Id.Value,

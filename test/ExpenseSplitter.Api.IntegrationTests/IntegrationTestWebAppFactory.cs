@@ -77,7 +77,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         }));
 
         context.User = claimsPrincipal;
-        mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+        mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
 
         services.AddTransient(_ => mockHttpContextAccessor.Object);
     }

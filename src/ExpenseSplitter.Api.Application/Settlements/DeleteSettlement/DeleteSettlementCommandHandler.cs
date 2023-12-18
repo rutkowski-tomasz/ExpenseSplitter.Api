@@ -2,9 +2,8 @@ using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Settlements;
-using ExpenseSplitter.Api.Domain.SettlementUsers;
 
-namespace ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
+namespace ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
 
 public class DeleteSettlementCommandHandler : ICommandHandler<DeleteSettlementCommand>
 {
@@ -26,7 +25,7 @@ public class DeleteSettlementCommandHandler : ICommandHandler<DeleteSettlementCo
     public async Task<Result> Handle(DeleteSettlementCommand request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.Id);
-        var settlement = await settlementRepository.GetByIdAsync(settlementId, cancellationToken);
+        var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         if (settlement is null)
         {
             return Result.Failure<Guid>(SettlementErrors.NotFound);
@@ -38,7 +37,7 @@ public class DeleteSettlementCommandHandler : ICommandHandler<DeleteSettlementCo
         }
 
         settlementRepository.Remove(settlement);
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

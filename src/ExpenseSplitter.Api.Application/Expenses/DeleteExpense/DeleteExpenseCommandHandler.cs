@@ -26,7 +26,7 @@ public class DeleteExpenseCommandHandler : ICommandHandler<DeleteExpenseCommand>
     public async Task<Result> Handle(DeleteExpenseCommand request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.Id);
-        var expense = await expenseRepository.GetByIdAsync(expenseId);
+        var expense = await expenseRepository.GetById(expenseId, cancellationToken);
 
         if (expense is null)
         {

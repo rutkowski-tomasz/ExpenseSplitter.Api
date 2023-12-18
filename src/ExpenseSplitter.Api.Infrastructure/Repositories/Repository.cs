@@ -14,9 +14,10 @@ internal abstract class Repository<TEntity, TEntityId>
         DbContext = dbContext;
     }
 
-    public async Task<TEntity?> GetByIdAsync(
+    public async Task<TEntity?> GetById(
         TEntityId id,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken
+    )
     {
         return await DbContext
             .Set<TEntity>()
@@ -26,5 +27,10 @@ internal abstract class Repository<TEntity, TEntityId>
     public void Add(TEntity entity)
     {
         DbContext.Add(entity);
+    }
+
+    public void Remove(TEntity entity)
+    {
+        DbContext.Remove(entity);
     }
 }

@@ -44,7 +44,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
             return Result.Failure<Guid>(ParticipantErrors.NotFound);
         }
 
-        var result = Expense.Create(
+        var expenseResult = Expense.Create(
             request.Title,
             new Amount(request.Amount),
             request.Date,
@@ -52,14 +52,15 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
             new ParticipantId(request.PayingParticipantId)
         );
 
-        if (result.IsFailure)
+        if (expenseResult.IsFailure)
         {
-            return Result.Failure<Guid>(result.Error);
+            return Result.Failure<Guid>(expenseResult.Error);
         }
 
-        expenseRepository.Add(result.Value);
+        var expense = expenseResult.Value;
+        expenseRepository.Add(expense);
 
-        var allocations = CreateAllocations(request, result);
+        var allocations = CreateAllocations(request, expense.Id);
 
         foreach (var allocation in allocations)
         {
@@ -68,7 +69,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return result.Value.Id.Value;
+        return expenseResult.Value.Id.Value;
     }
     
     private async Task<bool> AreParticipantIdsValid(CreateExpenseCommand request, CancellationToken cancellationToken)
@@ -87,25 +88,16 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         );
     }
 
-    private IEnumerable<Allocation> CreateAllocations(CreateExpenseCommand request, Result<Expense> result)
+    private static IEnumerable<Allocation> CreateAllocations(CreateExpenseCommand request, ExpenseId expenseId)
     {
-        var allPartsSum = request
-            .Allocations
-            .Where(x => x.AllocationSplit == CreateExpenseCommandAllocationSplit.Part)
-            .Sum(x => x.Value);
-
-        var allAmountSum = request
-            .Allocations
-            .Where(x => x.AllocationSplit == CreateExpenseCommandAllocationSplit.Amount)
-            .Sum(x => x.Value);
-
         var allocations = request
             .Allocations
             .Select(x => Allocation.Create(
                 new Amount(x.Value),
-                result.Value.Id,
+                expenseId,
                 new ParticipantId(x.ParticipantId)
             ));
+
         return allocations;
     }
 }

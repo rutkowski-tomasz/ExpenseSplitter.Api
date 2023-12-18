@@ -28,7 +28,7 @@ internal sealed class ClaimParticipantCommandHandler : ICommandHandler<ClaimPart
         var settlementId = new SettlementId(request.SettlementId);
         var participantId = new ParticipantId(request.ParticipantId);
 
-        var settlementUser = await settlementUserRepository.GetSettlementUserWithSettlementId(settlementId, cancellationToken);
+        var settlementUser = await settlementUserRepository.GetBySettlementId(settlementId, cancellationToken);
         if (settlementUser is null)
         {
             return Result.Failure(SettlementErrors.Forbidden);
@@ -40,7 +40,7 @@ internal sealed class ClaimParticipantCommandHandler : ICommandHandler<ClaimPart
         }
 
         settlementUser.SetParticipantId(participantId);
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

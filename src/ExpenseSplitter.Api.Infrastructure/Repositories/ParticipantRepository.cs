@@ -1,4 +1,3 @@
-using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using Microsoft.EntityFrameworkCore;
@@ -7,14 +6,9 @@ namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 
 internal sealed class ParticipantRepository : Repository<Participant, ParticipantId>, IParticipantRepository
 {
-    private readonly IUserContext userContext;
 
-    public ParticipantRepository(
-        ApplicationDbContext dbContext,
-        IUserContext userContext
-    ) : base(dbContext)
+    public ParticipantRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
-        this.userContext = userContext;
     }
 
     public async Task<bool> IsParticipantInSettlement(SettlementId settlementId, ParticipantId participantId, CancellationToken cancellationToken)

@@ -29,7 +29,8 @@ internal sealed class JwtService : IJwtService
     public async Task<Result<string>> GetAccessTokenAsync(
         string email,
         string password,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken
+    )
     {
         try
         {

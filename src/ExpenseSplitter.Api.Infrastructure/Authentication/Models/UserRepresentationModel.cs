@@ -1,6 +1,4 @@
-﻿using ExpenseSplitter.Api.Domain.Users;
-
-namespace ExpenseSplitter.Api.Infrastructure.Authentication.Models;
+﻿namespace ExpenseSplitter.Api.Infrastructure.Authentication.Models;
 
 public sealed class UserRepresentationModel
 {

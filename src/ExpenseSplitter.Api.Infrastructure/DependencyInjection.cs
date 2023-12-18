@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
@@ -8,6 +9,7 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Users;
 using ExpenseSplitter.Api.Infrastructure.Authentication;
 using ExpenseSplitter.Api.Infrastructure.Repositories;
+using ExpenseSplitter.Api.Infrastructure.Settlements;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +62,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.AddScoped<IUserContext, UserContext>();
+        services.AddScoped<IInviteCodeService, InviteCodeService>();
     }
 
     private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
@@ -80,7 +83,7 @@ public static class DependencyInjection
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IAllocationRepository, AllocationRepository>()
             .AddScoped<IParticipantRepository, ParticipantRepository>()
-            .AddScoped<ISettlementUserRepository, SettlementUserRepository>();
+            .AddScoped<ISettlementUserRepository, SettlementUserRepository>()
         ;
     }
 }

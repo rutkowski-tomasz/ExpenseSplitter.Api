@@ -1,7 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Application.Users.LoginUser;
 

@@ -28,7 +28,6 @@ public class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseComm
         RuleFor(x => x.Amount)
             .GreaterThanOrEqualTo(x => x
                 .Allocations
-                .Where(y => y.AllocationSplit == CreateExpenseCommandAllocationSplit.Amount)
                 .Sum(y => y.Value)
             )
             .WithMessage("Total amount should be greater or equal to the sum of allocations");
@@ -43,7 +42,5 @@ public class CreateExpenseCommandAllocationValidator : AbstractValidator<CreateE
         RuleFor(x => x.Value).GreaterThanOrEqualTo(0);
         
         RuleFor(x => x.ParticipantId).NotEmpty();
-
-        RuleFor(x => x.AllocationSplit).IsInEnum();
     }
 }

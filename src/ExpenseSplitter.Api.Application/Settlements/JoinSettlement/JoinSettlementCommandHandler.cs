@@ -1,7 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 
@@ -29,7 +28,7 @@ public class JoinSettlementCommandHandler : ICommandHandler<JoinSettlementComman
 
     public async Task<Result<Guid>> Handle(JoinSettlementCommand request, CancellationToken cancellationToken)
     {
-        var settlement = await settlementRepository.GetSettlementByInviteCode(request.InviteCode, cancellationToken);
+        var settlement = await settlementRepository.GetByInviteCode(request.InviteCode, cancellationToken);
         if (settlement is null)
         {
             return Result.Failure<Guid>(SettlementErrors.NotFound);

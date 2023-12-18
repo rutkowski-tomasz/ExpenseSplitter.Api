@@ -9,14 +9,13 @@ public class GetSettlementQueryHandlerTests
 {
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<IParticipantRepository> participantRepositoryMock;
     private readonly GetSettlementQueryHandler handler;
 
     public GetSettlementQueryHandlerTests()
     {
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        participantRepositoryMock = new Mock<IParticipantRepository>();
+        var participantRepositoryMock = new Mock<IParticipantRepository>();
 
         handler = new GetSettlementQueryHandler(
             settlementRepositoryMock.Object,
@@ -34,7 +33,7 @@ public class GetSettlementQueryHandlerTests
             .Create();
 
         settlementRepositoryMock
-            .Setup(x => x.GetByIdAsync(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(settlement);
 
         settlementUserRepositoryMock

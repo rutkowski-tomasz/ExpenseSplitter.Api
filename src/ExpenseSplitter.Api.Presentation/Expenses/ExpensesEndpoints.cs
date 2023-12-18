@@ -1,9 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
-using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
+using ExpenseSplitter.Api.Application.Expenses.GetExpense;
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
-using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
-using ExpenseSplitter.Api.Application.Settlements.GetExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Expenses.Models;
 using MediatR;
@@ -39,8 +37,7 @@ public static class ExpensesEndpoints
             request.PayingParticipantId,
             request.Allocations.Select(x => new CreateExpenseCommandAllocation(
                 x.ParticipantId,
-                x.Value,
-                (CreateExpenseCommandAllocationSplit) x.AllocationSplit
+                x.Value
             ))
         );
 

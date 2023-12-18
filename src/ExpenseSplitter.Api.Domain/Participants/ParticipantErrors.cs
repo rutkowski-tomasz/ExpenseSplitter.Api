@@ -2,14 +2,14 @@ using ExpenseSplitter.Api.Domain.Abstractions;
 
 namespace ExpenseSplitter.Api.Domain.Participants;
 
-public class ParticipantErrors
+public static class ParticipantErrors
 {
-    public static Error NicknameEmpty = new(
+    public static readonly Error NicknameEmpty = new(
         "Participant.NicknameEmpty",
         "Can't create participant with empty nickname"
     );
 
-    public static Error NotFound = new(
+    public static readonly Error NotFound = new(
         "Participant.NotFound",
         "Can't find participant with given id"
     );

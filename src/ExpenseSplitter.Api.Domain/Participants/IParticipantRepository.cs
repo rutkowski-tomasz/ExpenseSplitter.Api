@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using ExpenseSplitter.Api.Domain.Settlements;
 
 namespace ExpenseSplitter.Api.Domain.Participants;

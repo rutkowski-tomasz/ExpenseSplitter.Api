@@ -1,5 +1,4 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
-using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Settlements;
 
@@ -16,7 +15,7 @@ internal sealed class GetSettlementsQueryHandler : IQueryHandler<GetAllSettlemen
 
     public async Task<Result<GetAllSettlementsQueryResponse>> Handle(GetAllSettlementsQuery query, CancellationToken cancellationToken)
     {
-        var settlements = await settlementRepository.GetAllAsync(query.page, query.pageSize, cancellationToken);
+        var settlements = await settlementRepository.GetAll(query.Page, query.PageSize, cancellationToken);
 
         var response = new GetAllSettlementsQueryResponse(
             settlements.Select(settlement => new GetAllSettlementsQueryResponseSettlement(

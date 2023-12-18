@@ -33,7 +33,7 @@ public class GetExpensesForSettlementQueryHandlerTests
             .CreateMany(2)
             .ToList();
         expenseRepositoryMock
-            .Setup(x => x.GetAllWithSettlementId(
+            .Setup(x => x.GetAllBySettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 
                 It.IsAny<int>(),
                 It.IsAny<int>(),
@@ -55,7 +55,7 @@ public class GetExpensesForSettlementQueryHandlerTests
         var request = new Fixture().Create<GetExpensesForSettlementQuery>();
         var expenses = Enumerable.Empty<Expense>().ToList();
         expenseRepositoryMock
-            .Setup(x => x.GetAllWithSettlementId(
+            .Setup(x => x.GetAllBySettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 
                 It.IsAny<int>(),
                 It.IsAny<int>(),

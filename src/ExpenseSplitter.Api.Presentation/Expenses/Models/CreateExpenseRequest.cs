@@ -11,12 +11,5 @@ public record CreateExpenseRequest(
 
 public sealed record CreateExpenseRequestAllocation(
     Guid ParticipantId,
-    decimal Value,
-    CreateExpenseRequestAllocationSplit AllocationSplit
+    decimal Value
 );
-
-public enum CreateExpenseRequestAllocationSplit
-{
-    Amount = 1,
-    Part = 2,
-}

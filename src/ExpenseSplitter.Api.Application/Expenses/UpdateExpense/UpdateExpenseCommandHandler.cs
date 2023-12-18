@@ -32,7 +32,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
     public async Task<Result> Handle(UpdateExpenseCommand request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.Id);
-        var expense = await expenseRepository.GetByIdAsync(expenseId, cancellationToken);
+        var expense = await expenseRepository.GetById(expenseId, cancellationToken);
         if (expense is null)
         {
             return Result.Failure(ExpenseErrors.NotFound);
@@ -45,12 +45,15 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
 
         UpdateExpense(expense, request);
 
-        var allocations = await allocationRepository.GetAllWithExpenseId(expenseId, cancellationToken);
+        var allocations = (await allocationRepository
+            .GetAllByExpenseId(expenseId, cancellationToken))
+            .ToList();
+        
         RemoveNonExistingAllocations(allocations, request);
         CreateNewAllocations(request, expenseId);
         UpdateExistingAllocations(allocations, request);
 
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         return Result.Success();
     }
 

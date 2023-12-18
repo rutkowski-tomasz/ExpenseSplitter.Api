@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -14,16 +13,14 @@ public class UpdateExpenseCommandHandlerTests
 {
     private readonly UpdateExpenseCommandHandler updateExpenseCommandHandler;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
-    private readonly Mock<IAllocationRepository> allocationRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<IUnitOfWork> unitOfWorkMock;
 
     public UpdateExpenseCommandHandlerTests()
     {
         expenseRepositoryMock = new Mock<IExpenseRepository>();
-        allocationRepositoryMock = new Mock<IAllocationRepository>();
+        var allocationRepositoryMock = new Mock<IAllocationRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        unitOfWorkMock = new Mock<IUnitOfWork>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
 
         updateExpenseCommandHandler = new UpdateExpenseCommandHandler(
             expenseRepositoryMock.Object,
@@ -53,7 +50,7 @@ public class UpdateExpenseCommandHandlerTests
             .Create();
 
         expenseRepositoryMock
-            .Setup(repo => repo.GetByIdAsync(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expense);
         settlementUserRepositoryMock.Setup(repo => repo.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
@@ -67,8 +64,8 @@ public class UpdateExpenseCommandHandlerTests
     public async Task Handle_ShouldFail_WhenExpenseNotFound()
     {
         var request = new Fixture().Create<UpdateExpenseCommand>();
-        expenseRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Expense)null);
+        expenseRepositoryMock.Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(null as Expense);
 
         var result = await updateExpenseCommandHandler.Handle(request, default);
 
@@ -88,7 +85,7 @@ public class UpdateExpenseCommandHandlerTests
             )
             .Create();
 
-        expenseRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
+        expenseRepositoryMock.Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expense);
         settlementUserRepositoryMock.Setup(repo => repo.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);

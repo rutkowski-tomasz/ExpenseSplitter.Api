@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
+using ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
