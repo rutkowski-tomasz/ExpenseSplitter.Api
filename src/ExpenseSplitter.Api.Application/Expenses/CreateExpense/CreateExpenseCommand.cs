@@ -4,7 +4,6 @@ namespace ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 
 public sealed record CreateExpenseCommand(
     string Title,
-    decimal Amount,
     DateTime Date,
     Guid SettlementId,
     Guid PayingParticipantId,

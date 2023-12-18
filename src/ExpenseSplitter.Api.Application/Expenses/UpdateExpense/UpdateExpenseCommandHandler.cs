@@ -43,7 +43,11 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
             return Result.Failure(SettlementErrors.Forbidden);
         }
 
-        UpdateExpense(expense, request);
+        var updateResult = UpdateExpense(expense, request);
+        if (updateResult.IsFailure)
+        {
+            return updateResult;
+        }
 
         var allocations = (await allocationRepository
             .GetAllByExpenseId(expenseId, cancellationToken))
@@ -57,12 +61,24 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         return Result.Success();
     }
 
-    private void UpdateExpense(Expense expense, UpdateExpenseCommand request)
+    private Result UpdateExpense(Expense expense, UpdateExpenseCommand request)
     {
-        expense.SetTitle(request.Title);
-        expense.SetAmount(new Amount(request.Amount));
+        var setTitleResult = expense.SetTitle(request.Title);
+        if (setTitleResult.IsFailure)
+        {
+            return setTitleResult;
+        }
+
+        var totalAmount = request.Allocations.Sum(x => x.Value);
+        var setAmountResult = expense.SetAmount(new Amount(totalAmount));
+        if (setAmountResult.IsFailure)
+        {
+            return setAmountResult;
+        }
+
         expense.SetPaymentDate(request.Date);
         expense.SetPayingParticipantId(new ParticipantId(request.PayingParticipantId));
+        return Result.Success();
     }
 
     private void RemoveNonExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)

@@ -5,7 +5,6 @@ namespace ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 public sealed record UpdateExpenseCommand(
     Guid Id,
     string Title,
-    decimal Amount,
     DateTime Date,
     Guid PayingParticipantId,
     IEnumerable<UpdateExpenseCommandAllocation> Allocations

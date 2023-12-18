@@ -24,11 +24,6 @@ public class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
             .WithMany()
             .HasForeignKey(participant => participant.SettlementId);
 
-        builder
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(participant => participant.UserId);
-
         builder.Property(participant => participant.Nickname);
     }
 }

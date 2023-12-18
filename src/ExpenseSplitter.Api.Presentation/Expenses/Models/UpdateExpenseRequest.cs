@@ -1,9 +1,7 @@
 namespace ExpenseSplitter.Api.Presentation.Expenses.Models;
 
 public sealed record UpdateExpenseRequest(
-    Guid Id,
     string Title,
-    decimal Amount,
     DateTime Date,
     Guid PayingParticipantId,
     IEnumerable<UpdateExpenseRequestAllocation> Allocations

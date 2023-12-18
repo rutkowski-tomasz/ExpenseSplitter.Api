@@ -1,6 +1,11 @@
 ﻿namespace ExpenseSplitter.Api.Presentation.Settlements.Models;
 
-public sealed record CreateSettlementRequest(
+public sealed record UpdateSettlementRequest(
     string Name,
-    IEnumerable<string> ParticipantNames
+    IEnumerable<UpdateSettlementRequestParticipant> Participants
+);
+
+public sealed record UpdateSettlementRequestParticipant(
+    Guid? Id,
+    string Nickname
 );

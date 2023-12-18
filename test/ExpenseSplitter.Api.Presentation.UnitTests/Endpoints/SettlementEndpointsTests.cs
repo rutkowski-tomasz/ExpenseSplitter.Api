@@ -26,7 +26,7 @@ public class SettlementEndpointsTests
             .Setup(x => x.Send(It.IsAny<GetAllSettlementsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(settlements));
 
-        var result = await SettlementEndpoints.GetAllSettlements(senderMock.Object, 0, 100, CancellationToken.None);
+        var result = await SettlementEndpoints.GetAllSettlements(senderMock.Object, CancellationToken.None, 1, 20);
 
         var castedResult = result.Result as Ok<GetAllSettlementsQueryResponse>;
         castedResult!.StatusCode.Should().Be(200);

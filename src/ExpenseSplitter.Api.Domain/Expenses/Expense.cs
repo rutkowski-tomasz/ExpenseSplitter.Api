@@ -59,14 +59,26 @@ public sealed class Expense : Entity<ExpenseId>
         return expense;
     }
 
-    public void SetTitle(string title)
+    public Result SetTitle(string title)
     {
+        if (string.IsNullOrEmpty(title))
+        {
+            return Result.Failure<Expense>(ExpenseErrors.EmptyName);
+        }
+
         Title = title;
+        return Result.Success();
     }
 
-    public void SetAmount(Amount amount)
+    public Result SetAmount(Amount amount)
     {
+        if (amount.Value <= 0)
+        {
+            return Result.Failure<Expense>(ExpenseErrors.NonPositiveAmount);
+        }
+
         Amount = amount;
+        return Result.Success();
     }
 
     public void SetPaymentDate(DateTime date)

@@ -10,8 +10,6 @@ public class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseComm
     {
         RuleFor(x => x.Title).NotEmpty();
 
-        RuleFor(x => x.Amount).GreaterThan(0);
-
         RuleFor(x => x.Date).LessThanOrEqualTo(DateTime.Today);
 
         RuleFor(x => x.SettlementId).NotEmpty();
@@ -22,15 +20,8 @@ public class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseComm
             .SetValidator(new CreateExpenseCommandAllocationValidator());
 
         RuleFor(x => x.Allocations)
-            .Must(x => x.Any())
+            .NotEmpty()
             .WithMessage("Must contain at least one element");
-
-        RuleFor(x => x.Amount)
-            .GreaterThanOrEqualTo(x => x
-                .Allocations
-                .Sum(y => y.Value)
-            )
-            .WithMessage("Total amount should be greater or equal to the sum of allocations");
     }
 }
 

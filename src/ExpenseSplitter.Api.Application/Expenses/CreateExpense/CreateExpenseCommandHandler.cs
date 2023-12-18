@@ -44,9 +44,10 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
             return Result.Failure<Guid>(ParticipantErrors.NotFound);
         }
 
+        var totalAmount = request.Allocations.Sum(x => x.Value);
         var expenseResult = Expense.Create(
             request.Title,
-            new Amount(request.Amount),
+            new Amount(totalAmount),
             request.Date,
             new SettlementId(request.SettlementId), 
             new ParticipantId(request.PayingParticipantId)

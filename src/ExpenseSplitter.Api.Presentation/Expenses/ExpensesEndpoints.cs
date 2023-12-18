@@ -31,7 +31,6 @@ public static class ExpensesEndpoints
     {
         var command = new CreateExpenseCommand(
             request.Name,
-            request.Amount,
             request.Date,
             request.SettlementId,
             request.PayingParticipantId,
@@ -66,14 +65,14 @@ public static class ExpensesEndpoints
 
     public static async Task<Results<Ok, BadRequest<Error>>> UpdateExpense(
         UpdateExpenseRequest request,
+        Guid expenseId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
         var command = new UpdateExpenseCommand(
-            request.Id,
+            expenseId,
             request.Title,
-            request.Amount,
             request.Date,
             request.PayingParticipantId,
             request.Allocations.Select(x => new UpdateExpenseCommandAllocation(

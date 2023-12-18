@@ -35,8 +35,14 @@ public sealed class Settlement : Entity<SettlementId>
         return settlement;
     }
 
-    public void SetName(string name)
+    public Result SetName(string name)
     {
+        if (string.IsNullOrEmpty(name))
+        {
+            return Result.Failure(SettlementErrors.EmptyName);
+        }
+
         Name = name;
+        return Result.Success();
     }
 }

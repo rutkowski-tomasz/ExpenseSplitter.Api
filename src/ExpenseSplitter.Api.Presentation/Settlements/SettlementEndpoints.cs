@@ -40,9 +40,9 @@ public static class SettlementEndpoints
 
     public static async Task<Results<Ok<GetAllSettlementsQueryResponse>, NotFound>> GetAllSettlements(
         ISender sender,
-        [FromQuery] int page,
-        [FromQuery] int pageSize,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20
     )
     {
         var query = new GetAllSettlementsQuery(page, pageSize);
@@ -100,7 +100,11 @@ public static class SettlementEndpoints
     {
         var command = new UpdateSettlementCommand(
             settlementId,
-            request.Name
+            request.Name,
+            request.Participants.Select(x => new UpdateSettlementCommandParticipant(
+                x.Id,
+                x.Nickname
+            ))
         );
 
         var result = await sender.Send(command, cancellationToken);

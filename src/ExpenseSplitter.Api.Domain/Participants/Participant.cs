@@ -18,8 +18,6 @@ public sealed class Participant : Entity<ParticipantId>
 
     public SettlementId SettlementId { get; private set; }
 
-    public UserId? UserId { get; private set; }
-
     public string Nickname { get; private set; }
 
     public static Result<Participant> Create(SettlementId settlementId, string nickname)
@@ -38,8 +36,14 @@ public sealed class Participant : Entity<ParticipantId>
         return participant;
     }
 
-    public void SetUserId(UserId userId)
+    public Result SetNickname(string nickname)
     {
-        UserId = userId;
+        if (string.IsNullOrWhiteSpace(nickname))
+        {
+            return Result.Failure(ParticipantErrors.NicknameEmpty);
+        }
+
+        Nickname = nickname;
+        return Result.Success();
     }
 }
