@@ -16,9 +16,16 @@ public class CustomFixutre
             (string name, string inviteCode, UserId creatorUserId, DateTime createdOnUtc) =>
                 Settlement.Create(name, inviteCode, creatorUserId, createdOnUtc).Value
         ));
-        fixture.Customize<Expense>(x => x.FromFactory(
-            (string name, Amount amount, DateTime dateTime)
-                => Expense.Create(name, amount, DateOnly.FromDateTime(dateTime), SettlementId.New(), ParticipantId.New()).Value
+        fixture.Customize<Expense>(x => 
+            x.FromFactory(
+                (string name, Amount amount, DateTime dateTime)
+                    => Expense.Create(name, amount, DateOnly.FromDateTime(dateTime), SettlementId.New(), ParticipantId.New()).Value
+            )
+            .Without(y => y.Allocations)
+        );
+        fixture.Customize<User>(x => x.FromFactory(
+            (string nickname, string email) =>
+                User.Create(nickname, email, UserId.New()).Value
         ));
 
         return fixture;

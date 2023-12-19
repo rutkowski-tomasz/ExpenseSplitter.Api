@@ -6,11 +6,13 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class GetAllSettlementsQueryHandlerTests
 {
+    private readonly Fixture fixture;
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
     private readonly GetSettlementsQueryHandler handler;
 
     public GetAllSettlementsQueryHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         handler = new GetSettlementsQueryHandler(settlementRepositoryMock.Object);
     }
@@ -18,16 +20,11 @@ public class GetAllSettlementsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldMapSettlementsToDto()
     {
-        var settlements = new Fixture()
-            .Build<Settlement>()
-            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId), DateTime.UtcNow).Value)
-            .CreateMany(2)
-            .ToArray();
-
-        var query = new Fixture().Create<GetAllSettlementsQuery>();
+        var settlements = fixture.CreateMany<Settlement>(2);
+        var query = fixture.Create<GetAllSettlementsQuery>();
     
         settlementRepositoryMock
-            .Setup(x => x.GetAll(query.Page, query.PageSize, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetPaged(query.Page, query.PageSize, It.IsAny<CancellationToken>()))
             .ReturnsAsync(settlements.ToList());
 
         var response = await handler.Handle(query, default);

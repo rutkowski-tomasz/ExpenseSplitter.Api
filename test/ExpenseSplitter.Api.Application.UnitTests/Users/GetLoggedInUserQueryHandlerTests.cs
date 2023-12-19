@@ -6,12 +6,14 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Users;
 
 public class GetLoggedInUserQueryHandlerTests
 {
+    private readonly Fixture fixture;
     private readonly Mock<IUserRepository> userRepositoryMock;
     private readonly Mock<IUserContext> userContextMock;
     private readonly GetLoggedInUserQueryHandler handler;
 
     public GetLoggedInUserQueryHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         userRepositoryMock = new Mock<IUserRepository>();
         userContextMock = new Mock<IUserContext>();
 
@@ -21,19 +23,14 @@ public class GetLoggedInUserQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
-        var userId = new Fixture().Create<UserId>();
-        userContextMock.Setup(x => x.UserId).Returns(userId);
-
-        var user = new Fixture()
-            .Build<User>()
-            .FromFactory((string nickname, string email) => User.Create(nickname, email, userId).Value)
-            .Create();
+        var user = fixture.Create<User>();
+        userContextMock.Setup(x => x.UserId).Returns(user.Id);
 
         userRepositoryMock
-            .Setup(x => x.GetById(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetById(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         
-        var query = new Fixture().Create<GetLoggedInUserQuery>();
+        var query = fixture.Create<GetLoggedInUserQuery>();
 
         var result = await handler.Handle(query, default);
 
@@ -46,7 +43,7 @@ public class GetLoggedInUserQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenIdentityIdIsEmpty()
     {
-        var query = new Fixture().Create<GetLoggedInUserQuery>();
+        var query = fixture.Create<GetLoggedInUserQuery>();
 
         var result = await handler.Handle(query, default);
 
@@ -56,10 +53,10 @@ public class GetLoggedInUserQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserDoesntExistInUserRepository()
     {
-        var userId = new Fixture().Create<UserId>();
+        var userId = fixture.Create<UserId>();
         userContextMock.Setup(x => x.UserId).Returns(userId);
         
-        var query = new Fixture().Create<GetLoggedInUserQuery>();
+        var query = fixture.Create<GetLoggedInUserQuery>();
 
         var result = await handler.Handle(query, default);
 

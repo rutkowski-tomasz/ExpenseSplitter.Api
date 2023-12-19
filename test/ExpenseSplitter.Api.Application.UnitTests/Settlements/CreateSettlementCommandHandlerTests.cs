@@ -10,11 +10,13 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class CreateSettlementCommandHandlerTests
 {
+    private readonly Fixture fixture;
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
     private readonly CreateSettlementCommandHandler handler;
 
     public CreateSettlementCommandHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         Mock<IParticipantRepository> participantRepositoryMock = new();
         Mock<ISettlementUserRepository> settlementUserRepositoryMock = new();
@@ -37,7 +39,7 @@ public class CreateSettlementCommandHandlerTests
     [Fact]
     public async Task Validate_ShouldFail_WhenNameIsEmpty()
     {
-        var command = new Fixture()
+        var command = fixture
             .Build<CreateSettlementCommand>()
             .With(x => x.Name, string.Empty)
             .Create();
@@ -51,7 +53,7 @@ public class CreateSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldAddNewSettlementToRepository()
     {
-        var command = new Fixture().Create<CreateSettlementCommand>();
+        var command = fixture.Create<CreateSettlementCommand>();
 
         var response = await handler.Handle(command, default);
 
@@ -64,7 +66,7 @@ public class CreateSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenNameIsEmpty()
     {
-        var command = new Fixture()
+        var command = fixture
             .Build<CreateSettlementCommand>()
             .With(x => x.Name, string.Empty)
             .Create();

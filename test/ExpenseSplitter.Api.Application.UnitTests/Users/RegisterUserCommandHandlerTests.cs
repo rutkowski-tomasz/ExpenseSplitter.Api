@@ -9,10 +9,12 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Users;
 public class RegisterUserCommandHandlerTests
 {
     private readonly RegisterUserCommandHandler handler;
+    private readonly Fixture fixture;
     private readonly Mock<IAuthenticationService> authenticationServiceMock;
 
     public RegisterUserCommandHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         authenticationServiceMock = new Mock<IAuthenticationService>();
         var userRepositoryMock = new Mock<IUserRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -27,9 +29,9 @@ public class RegisterUserCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
-        var command = new Fixture()
+        var command = fixture
             .Build<RegisterUserCommand>()
-            .With(x => x.Email, new Fixture().Create<MailAddress>().Address)
+            .With(x => x.Email, fixture.Create<MailAddress>().Address)
             .Create();
 
         authenticationServiceMock
@@ -45,9 +47,9 @@ public class RegisterUserCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenNicknameIsEmpty()
     {
-        var command = new Fixture()
+        var command = fixture
             .Build<RegisterUserCommand>()
-            .With(x => x.Email, new Fixture().Create<MailAddress>().Address)
+            .With(x => x.Email, fixture.Create<MailAddress>().Address)
             .With(x => x.Nickname, string.Empty)
             .Create();
 

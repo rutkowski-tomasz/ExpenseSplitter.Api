@@ -8,10 +8,12 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Users;
 public class LoginUserCommandHandlerTests
 {
     private readonly LoginUserCommandHandler handler;
+    private readonly Fixture fixture;
     private readonly Mock<IJwtService> jwtServiceMock;
 
     public LoginUserCommandHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         jwtServiceMock = new Mock<IJwtService>();
 
         handler = new LoginUserCommandHandler(jwtServiceMock.Object);
@@ -24,7 +26,7 @@ public class LoginUserCommandHandlerTests
             .Setup(x => x.GetAccessTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("access-token");
 
-        var command = new Fixture().Create<LoginUserCommand>();
+        var command = fixture.Create<LoginUserCommand>();
 
         var result = await handler.Handle(command, default);
 
@@ -39,7 +41,7 @@ public class LoginUserCommandHandlerTests
             .Setup(x => x.GetAccessTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Failure<string>(UserErrors.InvalidCredentials));
 
-        var command = new Fixture().Create<LoginUserCommand>();
+        var command = fixture.Create<LoginUserCommand>();
 
         var result = await handler.Handle(command, default);
 

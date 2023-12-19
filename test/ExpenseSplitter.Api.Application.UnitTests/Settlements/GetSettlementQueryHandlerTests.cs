@@ -7,12 +7,14 @@ using ExpenseSplitter.Api.Domain.Users;
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 public class GetSettlementQueryHandlerTests
 {
+    private readonly Fixture fixture;
     private readonly Mock<ISettlementRepository> settlementRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly GetSettlementQueryHandler handler;
 
     public GetSettlementQueryHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var participantRepositoryMock = new Mock<IParticipantRepository>();
@@ -27,10 +29,7 @@ public class GetSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldMapSettlementsToDto()
     {
-        var settlement = new Fixture()
-            .Build<Settlement>()
-            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId), DateTime.UtcNow).Value)
-            .Create();
+        var settlement = fixture.Create<Settlement>();
 
         settlementRepositoryMock
             .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
@@ -40,7 +39,7 @@ public class GetSettlementQueryHandlerTests
             .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var query = new Fixture().Create<GetSettlementQuery>();
+        var query = fixture.Create<GetSettlementQuery>();
 
         var response = await handler.Handle(query, default);
 
@@ -51,7 +50,7 @@ public class GetSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenSettlementWithTheIdDoesntExist()
     {
-        var query = new Fixture().Create<GetSettlementQuery>();
+        var query = fixture.Create<GetSettlementQuery>();
 
         settlementUserRepositoryMock
             .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))

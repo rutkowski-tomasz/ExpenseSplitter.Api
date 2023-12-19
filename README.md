@@ -2,8 +2,6 @@
 
 # 💵 ExpenseSplitter
 
-🚧 This is still being developed and some features are not yet implemented 🚧
-
 ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously crafted in C#. This project serves as a vivid showcase of how Clean Architecture priciples can be applied, with an emphasis on creating a robust and scalable solution for managing expenses among users. The API allows users to create settlements, add participants, and manage expenses with flexible splitting options, ensuring a comprehensive expense settlement system.
 
 # 🦩 Features / patterns
@@ -13,10 +11,8 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 3. **Application Layer**: CQRS using MediatR with ICommand, IQuery, ICommandHandler, IQueryHandler abstractions, Logging for ICommandHandler, Validators with handling middleware, Result-driven communication
 4. **Presentation Layer**: Minimal API with Swagger documentation, Trace ID middleware.
 5. **Infrastructure Layer**: EF Core (DbContext, Entity mapping, DB migrations, Repositories), Authentication & Authorization, Database migrations
-6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Dependabot integration
-Architecture tests
+6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Dependabot integration, Architecture tests
 7. Docker support with docker-compose orchestration
-
 
 # 🛹 Model diagram
 
@@ -50,7 +46,6 @@ TODO
 2. Currency support
 3. Outbox pattern
 4. Serilog
-5. Reimbrusement endpoint
 
 # Development
 

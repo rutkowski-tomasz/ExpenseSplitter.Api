@@ -10,7 +10,7 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
     {
     }
 
-    public async Task<IEnumerable<Expense>> GetAllBySettlementId(
+    public async Task<IEnumerable<Expense>> GetPagedBySettlementId(
         SettlementId settlementId,
         int page,
         int pageSize,
@@ -25,6 +25,15 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
             .OrderByDescending(x => x.PaymentDate)
             .Skip(skip)
             .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Expense>> GetAllBySettlementId(SettlementId settlementId, CancellationToken cancellationToken)
+    {
+        return await DbContext
+            .Set<Expense>()
+            .Where(x => x.SettlementId == settlementId)
+            .Include(x => x.Allocations)
             .ToListAsync(cancellationToken);
     }
 }

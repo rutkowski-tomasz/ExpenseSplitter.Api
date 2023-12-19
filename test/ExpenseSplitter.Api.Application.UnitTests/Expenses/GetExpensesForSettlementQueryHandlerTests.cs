@@ -1,18 +1,18 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Domain.Expenses;
-using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
-using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
 public class GetExpensesForSettlementQueryHandlerTests
 {
     private readonly GetExpensesForSettlementQueryHandler getExpensesForSettlementQueryHandler;
+    private readonly Fixture fixture;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
 
     public GetExpensesForSettlementQueryHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
         
         getExpensesForSettlementQueryHandler = new GetExpensesForSettlementQueryHandler(
@@ -23,17 +23,10 @@ public class GetExpensesForSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnMappedExpenses()
     {
-        var request = new Fixture().Create<GetExpensesForSettlementQuery>();
-        var expenses = new Fixture()
-            .Build<Expense>()
-            .FromFactory(
-                (string name, Amount amount, DateTime dateTime)
-                    => Expense.Create(name, amount, DateOnly.FromDateTime(dateTime), SettlementId.New(), ParticipantId.New()).Value
-            )
-            .CreateMany(2)
-            .ToList();
+        var request = fixture.Create<GetExpensesForSettlementQuery>();
+        var expenses = fixture.CreateMany<Expense>(2);
         expenseRepositoryMock
-            .Setup(x => x.GetAllBySettlementId(
+            .Setup(x => x.GetPagedBySettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 
                 It.IsAny<int>(),
                 It.IsAny<int>(),
@@ -52,10 +45,10 @@ public class GetExpensesForSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenNoExpenses()
     {
-        var request = new Fixture().Create<GetExpensesForSettlementQuery>();
+        var request = fixture.Create<GetExpensesForSettlementQuery>();
         var expenses = Enumerable.Empty<Expense>().ToList();
         expenseRepositoryMock
-            .Setup(x => x.GetAllBySettlementId(
+            .Setup(x => x.GetPagedBySettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 
                 It.IsAny<int>(),
                 It.IsAny<int>(),

@@ -1,4 +1,5 @@
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.Shared;
@@ -28,6 +29,8 @@ public sealed class Expense : Entity<ExpenseId>
     public Amount Amount { get; private set; }
     public DateOnly PaymentDate { get; private set;  }
     public ParticipantId PayingParticipantId { get; private set; }
+
+    public List<Allocation> Allocations { get; set; }
 
     public static Result<Expense> Create(
         string title,

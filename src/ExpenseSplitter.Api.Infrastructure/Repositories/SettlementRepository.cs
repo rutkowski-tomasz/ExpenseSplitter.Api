@@ -9,7 +9,7 @@ internal sealed class SettlementRepository : Repository<Settlement, SettlementId
     {
     }
 
-    public async Task<IEnumerable<Settlement>> GetAll(int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Settlement>> GetPaged(int page, int pageSize, CancellationToken cancellationToken)
     {
         var skip = (page - 1) * pageSize;
 

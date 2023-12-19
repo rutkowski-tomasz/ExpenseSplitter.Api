@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
+using ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
@@ -34,6 +35,7 @@ public static class SettlementEndpoints
         routeGroupBuilder.MapPost("/join", JoinSettlement);
         routeGroupBuilder.MapPost("/{settlementId}/leave", LeaveSettlement);
         routeGroupBuilder.MapPatch("/{settlementId}/participants/{participantId}/claim", ClaimParticipant);
+        routeGroupBuilder.MapGet("/{settlementId}/reimbrusement", CalculateReimbrusement);
 
         return builder;
     }
@@ -163,5 +165,18 @@ public static class SettlementEndpoints
         var result = await sender.Send(query, cancellationToken);
 
         return result.IsSuccess ? TypedResults.Ok() : TypedResults.BadRequest(result.Error);
+    }
+
+    public static async Task<Results<Ok<CalculateReimbrusementQueryResult>, BadRequest<Error>>> CalculateReimbrusement(
+        Guid settlementId,
+        ISender sender,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new CalculateReimbrusementQuery(settlementId);
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
 }
