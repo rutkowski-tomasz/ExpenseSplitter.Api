@@ -7,7 +7,7 @@ public class AmountTests
     [Fact]
     public void IsZero_ShouldReturnTrue_WhenValueIsZero()
     {
-        var amount = new Amount(0);
+        var amount = Amount.Create(0).Value;
 
         amount.IsZero().Should().BeTrue();
     }

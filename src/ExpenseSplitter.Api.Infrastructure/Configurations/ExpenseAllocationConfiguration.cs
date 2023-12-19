@@ -21,7 +21,7 @@ internal sealed class AllocationConfiguration : IEntityTypeConfiguration<Allocat
             .HasConversion(expenseAllocationId => expenseAllocationId.Value, value => new AllocationId(value));
 
         builder.Property(expenseAllocation => expenseAllocation.Amount)
-            .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => new Amount(value));
+            .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => Amount.Create(value).Value);
 
         builder
             .HasOne<Expense>()

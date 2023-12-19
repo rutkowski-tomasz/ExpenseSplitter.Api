@@ -35,6 +35,6 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .HasForeignKey(expense => expense.PayingParticipantId);
         
         builder.Property(expenseAllocation => expenseAllocation.Amount)
-            .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => new Amount(value));
+            .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => Amount.Create(value).Value);
     }
 }

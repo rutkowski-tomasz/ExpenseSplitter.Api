@@ -44,10 +44,15 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
             return Result.Failure<Guid>(ParticipantErrors.NotFound);
         }
 
-        var totalAmount = request.Allocations.Sum(x => x.Value);
+        var totalAmountResult = Amount.Create(request.Allocations.Sum(x => x.Value));
+        if (totalAmountResult.IsFailure)
+        {
+            return Result.Failure<Guid>(totalAmountResult.Error);
+        }
+    
         var expenseResult = Expense.Create(
             request.Title,
-            new Amount(totalAmount),
+            totalAmountResult.Value,
             request.Date,
             new SettlementId(request.SettlementId), 
             new ParticipantId(request.PayingParticipantId)
@@ -94,7 +99,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         var allocations = request
             .Allocations
             .Select(x => Allocation.Create(
-                new Amount(x.Value),
+                Amount.Create(x.Value).Value,
                 expenseId,
                 new ParticipantId(x.ParticipantId)
             ));

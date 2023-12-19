@@ -42,11 +42,6 @@ public sealed class Expense : Entity<ExpenseId>
             return Result.Failure<Expense>(ExpenseErrors.EmptyName);
         }
 
-        if (amount.Value <= 0)
-        {
-            return Result.Failure<Expense>(ExpenseErrors.NonPositiveAmount);
-        }
-
         var expense = new Expense(
             title,
             amount,
@@ -70,15 +65,9 @@ public sealed class Expense : Entity<ExpenseId>
         return Result.Success();
     }
 
-    public Result SetAmount(Amount amount)
+    public void SetAmount(Amount amount)
     {
-        if (amount.Value <= 0)
-        {
-            return Result.Failure<Expense>(ExpenseErrors.NonPositiveAmount);
-        }
-
         Amount = amount;
-        return Result.Success();
     }
 
     public void SetPaymentDate(DateTime date)

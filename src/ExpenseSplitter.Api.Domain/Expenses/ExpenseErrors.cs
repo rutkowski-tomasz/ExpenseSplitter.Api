@@ -9,11 +9,6 @@ public static class ExpenseErrors
         "Can't create expense with empty name"
     );
 
-    public static readonly Error NonPositiveAmount = new(
-        "Expense.NonPositiveAmount",
-        "Can't create expense with non positive amount"
-    );
-
     public static readonly Error NotFound = new(
         "Expense.NotFound",
         "The expense with the specified identifier was not found"
