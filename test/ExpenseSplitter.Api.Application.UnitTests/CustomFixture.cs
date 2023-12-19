@@ -1,6 +1,7 @@
 ﻿using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
+using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Shared;
 using ExpenseSplitter.Api.Domain.Users;
 
@@ -26,6 +27,10 @@ public class CustomFixutre
         fixture.Customize<User>(x => x.FromFactory(
             (string nickname, string email) =>
                 User.Create(nickname, email, UserId.New()).Value
+        ));
+        fixture.Customize<SettlementUser>(x => x.FromFactory(
+            () =>
+                SettlementUser.Create(SettlementId.New(), UserId.New()).Value
         ));
 
         return fixture;

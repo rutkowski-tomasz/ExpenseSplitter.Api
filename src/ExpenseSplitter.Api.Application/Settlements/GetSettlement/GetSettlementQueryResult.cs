@@ -4,6 +4,8 @@ public sealed record GetSettlementQueryResult(
     Guid Id,
     string Name,
     string InviteCode,
+    decimal TotalCost,
+    decimal? YourCost,
     IEnumerable<GetSettlementQueryResultParticipant> Participants
 );
 
