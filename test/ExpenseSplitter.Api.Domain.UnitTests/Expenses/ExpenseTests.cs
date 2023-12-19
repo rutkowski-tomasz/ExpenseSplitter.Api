@@ -12,17 +12,17 @@ public class ExpenseTests
     {
         var name = new Fixture().Create<string>();
         var amount = new Fixture().Create<Amount>();
-        var date = new Fixture().Create<DateOnly>();
+        var dateTime = new Fixture().Create<DateTime>();
         var settlementId = new Fixture().Create<SettlementId>();
         var participantId = new Fixture().Create<ParticipantId>();
 
-        var expense = Expense.Create(name, amount, date, settlementId, participantId);
+        var expense = Expense.Create(name, amount, DateOnly.FromDateTime(dateTime), settlementId, participantId);
         
         expense.IsSuccess.Should().BeTrue();
         expense.Value.Id.Value.Should().NotBeEmpty();
         expense.Value.Title.Should().Be(name);
         expense.Value.Amount.Should().Be(amount);
-        expense.Value.PaymentDate.Should().Be(date);
+        expense.Value.PaymentDate.Should().Be(DateOnly.FromDateTime(dateTime));
         expense.Value.SettlementId.Should().Be(settlementId);
         expense.Value.PayingParticipantId.Should().Be(participantId);
     }

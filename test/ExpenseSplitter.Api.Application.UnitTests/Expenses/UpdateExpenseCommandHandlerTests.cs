@@ -12,16 +12,19 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
 public class UpdateExpenseCommandHandlerTests
 {
+    private readonly Fixture fixture;
     private readonly UpdateExpenseCommandHandler updateExpenseCommandHandler;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
+    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
 
     public UpdateExpenseCommandHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
         var allocationRepositoryMock = new Mock<IAllocationRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        var settlementRepositoryMock = new Mock<ISettlementRepository>();
+        settlementRepositoryMock = new Mock<ISettlementRepository>();
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 
@@ -38,21 +41,20 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldUpdateExpense_WhenValidRequest()
     {
-        var request = new Fixture()
+        var request = fixture
             .Build<UpdateExpenseCommand>()
-            .With(x => x.Allocations, new Fixture()
+            .With(x => x.Allocations, fixture
                 .Build<UpdateExpenseCommandAllocation>()
                 .With(y => y.Id, (Guid?) null)
                 .CreateMany()
             )
             .Create();
-        var expense = new Fixture()
-            .Build<Expense>()
-            .FromFactory(
-                (string title, Amount amount, DateOnly date)
-                    => Expense.Create(title, amount, date, SettlementId.New(), ParticipantId.New()).Value
-            )
-            .Create();
+        var expense = fixture.Create<Expense>();
+        var settlement = fixture.Create<Settlement>();
+
+        settlementRepositoryMock
+            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(settlement);
 
         expenseRepositoryMock
             .Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
@@ -68,7 +70,7 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenExpenseNotFound()
     {
-        var request = new Fixture().Create<UpdateExpenseCommand>();
+        var request = fixture.Create<UpdateExpenseCommand>();
         expenseRepositoryMock.Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(null as Expense);
 
@@ -81,14 +83,8 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserCannotAccessSettlement()
     {
-        var request = new Fixture().Create<UpdateExpenseCommand>();
-        var expense = new Fixture()
-            .Build<Expense>()
-            .FromFactory(
-                (string title, Amount amount, DateOnly date)
-                    => Expense.Create(title, amount, date, SettlementId.New(), ParticipantId.New()).Value
-            )
-            .Create();
+        var request = fixture.Create<UpdateExpenseCommand>();
+        var expense = fixture.Create<Expense>();
 
         expenseRepositoryMock.Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expense);

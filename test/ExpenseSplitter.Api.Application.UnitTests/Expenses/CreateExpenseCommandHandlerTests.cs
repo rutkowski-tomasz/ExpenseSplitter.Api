@@ -12,16 +12,19 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 public class CreateExpenseCommandHandlerTests
 {
     private readonly CreateExpenseCommandHandler createExpenseCommandHandler;
+    private readonly Fixture fixture;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly Mock<IParticipantRepository> participantRepositoryMock;
+    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
 
     public CreateExpenseCommandHandlerTests()
     {
+        fixture = CustomFixutre.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var expenseRepositoryMock = new Mock<IExpenseRepository>();
         var allocationRepositoryMock = new Mock<IAllocationRepository>();
         participantRepositoryMock = new Mock<IParticipantRepository>();
-        var settlementRepositoryMock = new Mock<ISettlementRepository>();
+        settlementRepositoryMock = new Mock<ISettlementRepository>();
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         
@@ -50,8 +53,11 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
 
-        var request = new Fixture().Create<CreateExpenseCommand>();
-            
+        settlementRepositoryMock.Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fixture.Create<Settlement>());
+
+        var request = fixture.Create<CreateExpenseCommand>();
+
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsSuccess.Should().BeTrue();
@@ -71,7 +77,7 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(false);
 
-        var request = new Fixture().Create<CreateExpenseCommand>();
+        var request = fixture.Create<CreateExpenseCommand>();
             
         var result = await createExpenseCommandHandler.Handle(request, default);
 
@@ -93,7 +99,10 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
 
-        var request = new Fixture()
+        settlementRepositoryMock.Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fixture.Create<Settlement>());
+
+        var request = fixture
             .Build<CreateExpenseCommand>()
             .With(x => x.Title, string.Empty)
             .Create();
@@ -119,7 +128,7 @@ public class CreateExpenseCommandHandlerTests
             It.IsAny<CancellationToken>()
         )).ReturnsAsync(true);
 
-        var request = new Fixture().Create<CreateExpenseCommand>();
+        var request = fixture.Create<CreateExpenseCommand>();
             
         var result = await createExpenseCommandHandler.Handle(request, default);
 
