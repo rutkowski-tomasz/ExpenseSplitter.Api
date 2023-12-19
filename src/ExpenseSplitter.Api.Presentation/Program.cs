@@ -5,6 +5,7 @@ using ExpenseSplitter.Api.Presentation.Extensions;
 using ExpenseSplitter.Api.Presentation.Settlements;
 using ExpenseSplitter.Api.Presentation.User;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration)
+);
 
 var app = builder.Build();
 
@@ -34,6 +38,8 @@ if (app.Environment.IsDevelopment())
 
     app.ApplyMigrations();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

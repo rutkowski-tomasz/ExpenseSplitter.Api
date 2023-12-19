@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Behaviors;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -9,15 +10,15 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Abstractions.Behaviors;
 public class LoggingBehaviorTests
 {
     private readonly Mock<ILogger<TestCommand>> loggerMock;
-    private readonly LoggingBehavior<TestCommand, int> loggingBehavior;
+    private readonly LoggingBehavior<TestCommand, Result<int>> loggingBehavior;
     private readonly TestCommand request;
 
-    public record TestCommand : IBaseCommand;
+    public record TestCommand : IRequest;
 
     public LoggingBehaviorTests()
     {
         loggerMock = new Mock<ILogger<TestCommand>>();
-        loggingBehavior = new LoggingBehavior<TestCommand, int>(
+        loggingBehavior = new LoggingBehavior<TestCommand, Result<int>>(
             loggerMock.Object
         );
 
@@ -27,7 +28,7 @@ public class LoggingBehaviorTests
     [Fact]
     public async Task Handle_ShouldLogProcessingInformation()
     {
-        var next = new RequestHandlerDelegate<int>(() => Task.FromResult(1));
+        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(1)));
 
         var response = await loggingBehavior.Handle(request, next, default);
 
@@ -55,7 +56,7 @@ public class LoggingBehaviorTests
     [Fact]
     public async Task Handle_ShouldLogError_WhenDelegateThrowsAnException()
     {
-        var next = new RequestHandlerDelegate<int>(() => throw new Exception());
+        var next = new RequestHandlerDelegate<Result<int>>(() => throw new Exception());
 
         var act = async () => await loggingBehavior.Handle(request, next, default);
 

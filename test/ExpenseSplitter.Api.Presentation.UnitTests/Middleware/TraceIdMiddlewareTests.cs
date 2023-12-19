@@ -12,7 +12,7 @@ public class TraceIdMiddlewareTests
     {
         var nextMock = new Mock<RequestDelegate>();
         var loggerMock = new Mock<ILogger<TraceIdMiddleware>>();
-        middleware = new TraceIdMiddleware(nextMock.Object, loggerMock.Object);
+        middleware = new TraceIdMiddleware(nextMock.Object);
     }
 
     [Fact]

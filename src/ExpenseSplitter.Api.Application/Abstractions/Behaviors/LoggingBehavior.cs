@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -6,7 +7,8 @@ namespace ExpenseSplitter.Api.Application.Abstractions.Behaviors;
 
 public class LoggingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IBaseCommand
+    where TRequest : IRequest
+    where TResponse : Result
 {
     private readonly ILogger<TRequest> logger;
 
@@ -22,21 +24,28 @@ public class LoggingBehavior<TRequest, TResponse>
     {
         var name = request.GetType().Name;
 
-        try
+        logger.LogInformation("Processing request {RequestName}", name);
+
+        var result = await next();
+
+        if (result.IsFailure)
         {
-            logger.LogInformation("Executing command {Command}", name);
-
-            var result = await next();
-
-            logger.LogInformation("Command {Command} processed successfully", name);
-
-            return result;
+            logger.LogError(
+                "Request failure {@RequestName}, {@Error}, {@DateTimeUtc}",
+                typeof(TRequest).Name,
+                result.Error,
+                DateTime.UtcNow
+            );
         }
-        catch (Exception exception)
+        else
         {
-            logger.LogError(exception, "Command {Command} processing failed", name);
-
-            throw;
+            logger.LogInformation(
+                "Request success {@RequestName}, {@DateTimeUtc}",
+                typeof(TRequest).Name,
+                DateTime.UtcNow
+            );
         }
+        
+        return result;
     }
 }
