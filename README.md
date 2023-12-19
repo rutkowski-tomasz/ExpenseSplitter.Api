@@ -8,88 +8,49 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 
 # 🦩 Features / patterns
 
-1. Bold split into: Domain, Application, Infrastructure and Presentation layers
-2. DDD elements: Entities, ValueObjects, DomainEvents, DomainServices
-3. Minimal API with Swagger documentation
-4. Docker support with docker-compose orchestration
-5. Database migration and seeding
-6. Outbox pattern
-7. Authentication and Authorization
-8. CQRS pattern with custom validators and behaviors
-9. Result driven communication
-10. Primitive obsession solved, strongly typed IDs
-11. Dependency Injection pattern
-12. Automated tests with CI Integration
+1. Bold split into: Domain, Application, Infrastructure, and Presentation layers
+2. **Domain layer**: Entities, ValueObjects, DomainEvents, Domain Servies, Strongly typed IDs
+3. **Application Layer**: CQRS using MediatR with ICommand, IQuery, ICommandHandler, IQueryHandler abstractions, Logging for ICommandHandler, Validators with handling middleware, Result-driven communication
+4. **Presentation Layer**: Minimal API with Swagger documentation, Trace ID middleware.
+5. **Infrastructure Layer**: EF Core (DbContext, Entity mapping, DB migrations, Repositories), Authentication & Authorization, Database migrations
+6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Dependabot integration
+Architecture tests
+7. Docker support with docker-compose orchestration
+
 
 # 🛹 Model diagram
 
 TODO
 
-# 🛣️ Roadmap
+## 🗺️ Endpoints map
 
-## 🎯 Project general
+| Method  | Path   | Notes  |
+|---|---|---|
+| 🟩 POST | /user/login | |
+| 🟩 POST | /user/register | |
+| 🟦 GET | /user/me | |
+| 🟩 POST | /settlements | Generates invite code |
+| 🟦 GET | /settlements | |
+| 🟦 GET | /settlements/{settlementId} | |
+| 🟨 PUT | /settlements/{settlementId} | |
+| 🟥 DELETE | /settlements/{settlementId} | |
+| 🟦 GET | /settlements/{settlementId}/expenses | |
+| 🟨 PUT | /settlements/join | Join using invite code |
+| 🟨 PUT | /settlements/{settlementId}/leave | |
+| 🟦 GET | /settlements/{settlementId}/reimbrusement | Balances and suggested reimbrusements |
+| 🟪 PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
+| 🟩 POST | /expenses | |
+| 🟦 GET | /expenses/{expenseId} | |
+| 🟨 PUT | /expenses/{expenseId} | |
+| 🟥 DELETE | /expenses/{expenseId} | |
 
-- ✅ Repository description
-- ✅ Integrate with Depedabot
-- ✅ Continuous integration, badge, code coverage
-- ✅ docker & docker-compose support 
+# 🔭 Further development ideas
 
-## 📃 Domain Layer
-
-- ✅ DDD abstractions: Entity, ValueObject, DomainEvent
-- ✅ Model entities: Expense, Allocation, Participant, Settlement, User
-- ✅ Results and Error
-- ✅ Strongly typed IDs
-- Solve primitive obsession
-
-## 🧑🏻‍💼 Application Layer
-
-- ✅ MediatR with ICommand, IQuery, ICommandHandler, IQueryHandler abstractions
-- ✅ Logging for ICommandHandler
-- ✅ Validators with handling middleware
-
-## 🖼️ Presentation Layer
-
-- ✅ Minimal API with Swagger documentation
-- 🔄 DB seeding
-- ✅ Trace ID middleware
-
-## 🧑🏻‍🔧 Infrastructure Layer
-
-- ✅ EF Core - DbContext, Entity mapping, DB migrations, Repositories
-- Outbox pattern
-- ✅ Authentication & Authorization
-- ✅ Architecture tests
-
-## 📈 Business use-cases
-
-| Status  | Method  | Path   | Notes  |
-|---|---|---|---|
-| ✅ Done | POST | /user/login | |
-| ✅ Done | POST | /user/register | |
-| ✅ Done | GET | /user/me | |
-| ✅ Done | POST | /settlements | Generate invite code |
-| ✅ Done | GET | /settlements | Paging |
-| ✅ Done | GET | /settlements/{settlementId} | |
-| ✅ Done | PUT | /settlements/{settlementId} | |
-| ✅ Done | DELETE | /settlements/{settlementId} | |
-| ✅ Done | GET | /settlements/{settlementId}/expenses | Paging |
-| ✅ Done | PUT | /settlements/join | |
-| ✅ Done | PUT | /settlements/{settlementId}/leave | |
-| TODO | GET | /settlements/{settlementId}/reimbrusement | Balances (participant + amount) and reimbrusements (from, to, amount) |
-| ✅ Done | PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
-| ✅ Done | POST | /expenses | |
-| ✅ Done | GET | /expenses/{expenseId} | |
-| ✅ Done | PUT | /expenses/{expenseId} | |
-| ✅ Done | DELETE | /expenses/{expenseId} | |
-
-### Notes
-
-1. When dealing with expenses always include allocations
-2. When dealing with settlements always include participants
-3. Add websockets for real time updates
-4. Currency support
-5. Cascade delete
+1. Add websockets for real time updates
+2. Currency support
+3. Outbox pattern
+4. Serilog
+5. Reimbrusement endpoint
 
 # Development
 
