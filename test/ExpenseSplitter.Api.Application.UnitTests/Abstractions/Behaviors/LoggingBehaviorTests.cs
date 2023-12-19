@@ -1,6 +1,7 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Behaviors;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Settlements;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -30,14 +31,15 @@ public class LoggingBehaviorTests
     {
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(1)));
 
-        var response = await loggingBehavior.Handle(request, next, default);
+        var result = await loggingBehavior.Handle(request, next, default);
 
-        response.Should().Be(1);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(1);
 
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Executing command {nameof(TestCommand)}")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Processing request {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
@@ -45,7 +47,7 @@ public class LoggingBehaviorTests
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Command {nameof(TestCommand)} processed successfully")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Request success {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
@@ -56,16 +58,16 @@ public class LoggingBehaviorTests
     [Fact]
     public async Task Handle_ShouldLogError_WhenDelegateThrowsAnException()
     {
-        var next = new RequestHandlerDelegate<Result<int>>(() => throw new Exception());
+        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Failure<int>(SettlementErrors.Forbidden)));
 
-        var act = async () => await loggingBehavior.Handle(request, next, default);
+        var result = await loggingBehavior.Handle(request, next, default);
 
-        await act.Should().ThrowAsync<Exception>();
+        result.IsFailure.Should().BeTrue();
 
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Executing command {nameof(TestCommand)}")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Processing request {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
@@ -73,7 +75,7 @@ public class LoggingBehaviorTests
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Error,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Command {nameof(TestCommand)} processing failed")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Request failure {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);

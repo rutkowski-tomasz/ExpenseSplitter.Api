@@ -22,29 +22,30 @@ TODO
 
 | Method  | Path   | Notes  |
 |---|---|---|
-| 🟩POST | /user/login | |
-| 🟩POST | /user/register | |
-| 🟦GET | /user/me | |
-| 🟩POST | /settlements | Generates invite code |
-| 🟦GET | /settlements | |
-| 🟦GET | /settlements/{settlementId} | |
-| 🟨PUT | /settlements/{settlementId} | |
-| 🟥DELETE | /settlements/{settlementId} | |
-| 🟦GET | /settlements/{settlementId}/expenses | |
-| 🟨PUT | /settlements/join | Join using invite code |
-| 🟨PUT | /settlements/{settlementId}/leave | |
-| 🟦GET | /settlements/{settlementId}/reimbrusement | Balances and suggested reimbrusements |
-| 🟪PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
-| 🟩POST | /expenses | |
-| 🟦GET | /expenses/{expenseId} | |
-| 🟨PUT | /expenses/{expenseId} | |
-| 🟥DELETE | /expenses/{expenseId} | |
+| 🟩 POST | /user/login | |
+| 🟩 POST | /user/register | |
+| 🟦 GET | /user/me | |
+| 🟩 POST | /settlements | Generates invite code |
+| 🟦 GET | /settlements | |
+| 🟦 GET | /settlements/{settlementId} | |
+| 🟨 PUT | /settlements/{settlementId} | |
+| 🟥 DELETE | /settlements/{settlementId} | |
+| 🟦 GET | /settlements/{settlementId}/expenses | |
+| 🟨 PUT | /settlements/join | Join using invite code |
+| 🟨 PUT | /settlements/{settlementId}/leave | |
+| 🟦 GET | /settlements/{settlementId}/reimbrusement | Balances and suggested reimbrusements |
+| 🟪 PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
+| 🟩 POST | /expenses | |
+| 🟦 GET | /expenses/{expenseId} | |
+| 🟨 PUT | /expenses/{expenseId} | |
+| 🟥 DELETE | /expenses/{expenseId} | |
 
 # 🔭 Further development ideas
 
 1. Add websockets for real time updates
 2. Currency support
 3. Outbox pattern
+4. Model diagram
 
 # 👨🏻‍💻 Development
 

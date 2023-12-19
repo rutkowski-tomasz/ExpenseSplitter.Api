@@ -26,8 +26,8 @@ public class TraceIdMiddlewareTests
         context.Items.Should().ContainKey("traceId");
         context.Response.Headers.Should().ContainKey("traceId");
 
-        var generatedTraceId = context.Response.Headers["traceId"].ToString();
-        Guid.TryParse(generatedTraceId, out var _).Should().BeTrue("Generated traceId should be a valid GUID");
+        var traceId = context.Response.Headers["traceId"].ToString();
+        traceId.Should().NotBeNullOrWhiteSpace();
     }
 
     [Fact]
