@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
@@ -15,6 +16,8 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
     private readonly IExpenseRepository expenseRepository;
     private readonly IAllocationRepository allocationRepository;
     private readonly IParticipantRepository participantRepository;
+    private readonly ISettlementRepository settlementRepository;
+    private readonly IDateTimeProvider dateTimeProvider;
     private readonly IUnitOfWork unitOfWork;
 
     public CreateExpenseCommandHandler(
@@ -22,6 +25,8 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         IExpenseRepository expenseRepository,
         IAllocationRepository allocationRepository,
         IParticipantRepository participantRepository,
+        ISettlementRepository settlementRepository,
+        IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork
     )
     {
@@ -29,12 +34,15 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         this.expenseRepository = expenseRepository;
         this.allocationRepository = allocationRepository;
         this.participantRepository = participantRepository;
+        this.settlementRepository = settlementRepository;
+        this.dateTimeProvider = dateTimeProvider;
         this.unitOfWork = unitOfWork;
     }
 
     public async Task<Result<Guid>> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
     {
-        if (!await settlementUserRepository.CanUserAccessSettlement(new SettlementId(request.SettlementId), cancellationToken))
+        var settlementId = new SettlementId(request.SettlementId);
+        if (!await settlementUserRepository.CanUserAccessSettlement(settlementId, cancellationToken))
         {
             return Result.Failure<Guid>(SettlementErrors.Forbidden);
         }
@@ -43,6 +51,9 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         {
             return Result.Failure<Guid>(ParticipantErrors.NotFound);
         }
+
+        var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
+        settlement!.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
 
         var totalAmountResult = Amount.Create(request.Allocations.Sum(x => x.Value));
         if (totalAmountResult.IsFailure)

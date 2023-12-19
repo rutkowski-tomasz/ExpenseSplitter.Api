@@ -28,5 +28,9 @@ public class SettlementConfiguration : IEntityTypeConfiguration<Settlement>
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(settlement => settlement.CreatorUserId);
+
+        builder.Property(settlement => settlement.CreatedOnUtc);
+
+        builder.Property(settlement => settlement.UpdatedOnUtc);
     }
 }

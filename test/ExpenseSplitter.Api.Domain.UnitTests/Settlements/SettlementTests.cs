@@ -11,8 +11,9 @@ public class SettlementTests
         var name = new Fixture().Create<string>();
         var inviteCode = new Fixture().Create<string>();
         var creatorUserId = new Fixture().Create<UserId>();
+        var createdOnUtc = DateTime.UtcNow;
 
-        var settlement = Settlement.Create(name, inviteCode, creatorUserId);
+        var settlement = Settlement.Create(name, inviteCode, creatorUserId, createdOnUtc);
 
         settlement.IsSuccess.Should().BeTrue();
         settlement.Value.Id.Value.Should().NotBeEmpty();
@@ -25,7 +26,7 @@ public class SettlementTests
     {
         var creatorUserId = new Fixture().Create<UserId>();
 
-        var settlement = Settlement.Create("", "", creatorUserId);
+        var settlement = Settlement.Create("", "", creatorUserId, DateTime.UtcNow);
 
         settlement.IsFailure.Should().BeTrue();
         settlement.Error.Code.Should().Be(SettlementErrors.EmptyName.Code);

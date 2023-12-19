@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -8,6 +9,7 @@ using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Users;
 using ExpenseSplitter.Api.Infrastructure.Authentication;
+using ExpenseSplitter.Api.Infrastructure.Configurations;
 using ExpenseSplitter.Api.Infrastructure.Repositories;
 using ExpenseSplitter.Api.Infrastructure.Settlements;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +65,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<IInviteCodeService, InviteCodeService>();
+        services.AddScoped<IDateTimeProvider, DateTimeProvider>();
     }
 
     private static void AddPersistence(IServiceCollection services, IConfiguration configuration)

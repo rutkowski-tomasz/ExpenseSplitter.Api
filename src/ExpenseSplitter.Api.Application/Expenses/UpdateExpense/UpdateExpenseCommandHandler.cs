@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using ExpenseSplitter.Api.Application.Abstraction.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -15,18 +16,24 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
     private readonly IExpenseRepository expenseRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
     private readonly IAllocationRepository allocationRepository;
+    private readonly ISettlementRepository settlementRepository;
+    private readonly IDateTimeProvider dateTimeProvider;
     private readonly IUnitOfWork unitOfWork;
 
     public UpdateExpenseCommandHandler(
         IExpenseRepository expenseRepository,
         ISettlementUserRepository settlementUserRepository,
         IAllocationRepository expenseAllocationRepository,
+        ISettlementRepository settlementRepository,
+        IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork
     )
     {
         this.expenseRepository = expenseRepository;
         this.settlementUserRepository = settlementUserRepository;
         this.allocationRepository = expenseAllocationRepository;
+        this.settlementRepository = settlementRepository;
+        this.dateTimeProvider = dateTimeProvider;
         this.unitOfWork = unitOfWork;
     }
 
@@ -43,6 +50,9 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         {
             return Result.Failure(SettlementErrors.Forbidden);
         }
+
+        var settlement = await settlementRepository.GetById(expense.SettlementId, cancellationToken);
+        settlement!.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
 
         var updateResult = UpdateExpense(expense, request);
         if (updateResult.IsFailure)

@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -11,18 +12,21 @@ public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCo
     private readonly ISettlementUserRepository settlementUserRepository;
     private readonly ISettlementRepository settlementRepository;
     private readonly IParticipantRepository participantRepository;
+    private readonly IDateTimeProvider dateTimeProvider;
     private readonly IUnitOfWork unitOfWork;
 
     public UpdateSettlementCommandHandler(
         ISettlementUserRepository settlementUserRepository,
         ISettlementRepository settlementRepository,
         IParticipantRepository participantRepository,
+        IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork
     )
     {
         this.settlementUserRepository = settlementUserRepository;
         this.settlementRepository = settlementRepository;
         this.participantRepository = participantRepository;
+        this.dateTimeProvider = dateTimeProvider;
         this.unitOfWork = unitOfWork;
     }
 
@@ -40,6 +44,7 @@ public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCo
             return Result.Failure(SettlementErrors.NotFound);
         }
 
+        settlement.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
         var setNameResult = settlement.SetName(request.Name);
         if (setNameResult.IsFailure)
         {

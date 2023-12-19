@@ -1,3 +1,4 @@
+using ExpenseSplitter.Api.Application.Abstraction.Clock;
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -20,6 +21,8 @@ public class CreateExpenseCommandHandlerTests
         var expenseRepositoryMock = new Mock<IExpenseRepository>();
         var allocationRepositoryMock = new Mock<IAllocationRepository>();
         participantRepositoryMock = new Mock<IParticipantRepository>();
+        var settlementRepositoryMock = new Mock<ISettlementRepository>();
+        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         
         createExpenseCommandHandler = new CreateExpenseCommandHandler(
@@ -27,6 +30,8 @@ public class CreateExpenseCommandHandlerTests
             expenseRepositoryMock.Object,
             allocationRepositoryMock.Object,
             participantRepositoryMock.Object,
+            settlementRepositoryMock.Object,
+            dateTimeProviderMock.Object,
             unitOfWorkMock.Object
         );
     }

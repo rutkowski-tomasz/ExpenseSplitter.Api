@@ -29,7 +29,7 @@ public class GetSettlementQueryHandlerTests
     {
         var settlement = new Fixture()
             .Build<Settlement>()
-            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId)).Value)
+            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId), DateTime.UtcNow).Value)
             .Create();
 
         settlementRepositoryMock

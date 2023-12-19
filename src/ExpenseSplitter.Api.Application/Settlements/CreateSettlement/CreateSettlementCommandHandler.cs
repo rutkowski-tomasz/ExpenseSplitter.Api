@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -14,6 +15,7 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
     private readonly ISettlementUserRepository settlementUserRepository;
     private readonly IUserContext userContext;
     private readonly IInviteCodeService inviteCodeService;
+    private readonly IDateTimeProvider dateTimeProvider;
     private readonly IUnitOfWork unitOfWork;
 
     public CreateSettlementCommandHandler(
@@ -22,6 +24,7 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
         ISettlementUserRepository settlementUserRepository,
         IUserContext userContext,
         IInviteCodeService inviteCodeService,
+        IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork
     )
     {
@@ -30,13 +33,14 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
         this.settlementUserRepository = settlementUserRepository;
         this.userContext = userContext;
         this.inviteCodeService = inviteCodeService;
+        this.dateTimeProvider = dateTimeProvider;
         this.unitOfWork = unitOfWork;
     }
 
     public async Task<Result<Guid>> Handle(CreateSettlementCommand request, CancellationToken cancellationToken)
     {
         var inviteCode = inviteCodeService.GenerateInviteCode();
-        var settlementResult = Settlement.Create(request.Name, inviteCode, userContext.UserId);
+        var settlementResult = Settlement.Create(request.Name, inviteCode, userContext.UserId, dateTimeProvider.UtcNow);
 
         if (settlementResult.IsFailure)
         {

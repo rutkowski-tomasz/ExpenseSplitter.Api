@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -20,6 +21,7 @@ public class CreateSettlementCommandHandlerTests
         var userContextMock = new Mock<IUserContext>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         var inviteCodeServiceMock = new Mock<IInviteCodeService>();
+        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
 
         handler = new CreateSettlementCommandHandler(
             settlementRepositoryMock.Object,
@@ -27,6 +29,7 @@ public class CreateSettlementCommandHandlerTests
             settlementUserRepositoryMock.Object,
             userContextMock.Object,
             inviteCodeServiceMock.Object,
+            dateTimeProviderMock.Object,
             unitOfWorkMock.Object
         );
     }

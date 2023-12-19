@@ -15,6 +15,7 @@ internal sealed class SettlementRepository : Repository<Settlement, SettlementId
 
         return await DbContext
             .Set<Settlement>()
+            .OrderByDescending(x => x.UpdatedOnUtc)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

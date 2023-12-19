@@ -20,7 +20,7 @@ public class GetAllSettlementsQueryHandlerTests
     {
         var settlements = new Fixture()
             .Build<Settlement>()
-            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId)).Value)
+            .FromFactory((string name, string inviteCode, Guid userId) => Settlement.Create(name, inviteCode, new UserId(userId), DateTime.UtcNow).Value)
             .CreateMany(2)
             .ToArray();
 
