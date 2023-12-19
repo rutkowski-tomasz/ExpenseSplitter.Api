@@ -50,7 +50,7 @@ public static class ExpensesEndpoints
         return TypedResults.Ok(result.Value);
     }
     
-    public static async Task<Results<Ok<GetExpenseResponse>, BadRequest<Error>>> GetExpense(
+    public static async Task<Results<Ok<GetExpenseQueryResult>, BadRequest<Error>>> GetExpense(
         Guid expenseId,
         ISender sender,
         CancellationToken cancellationToken

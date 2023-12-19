@@ -38,7 +38,7 @@ public static class SettlementEndpoints
         return builder;
     }
 
-    public static async Task<Results<Ok<GetAllSettlementsQueryResponse>, NotFound>> GetAllSettlements(
+    public static async Task<Results<Ok<GetAllSettlementsQueryResult>, NotFound>> GetAllSettlements(
         ISender sender,
         CancellationToken cancellationToken,
         [FromQuery] int page = 1,
@@ -52,7 +52,7 @@ public static class SettlementEndpoints
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.NotFound();
     }
 
-    public static async Task<Results<Ok<GetSettlementResponse>, NotFound>> GetSettlement(
+    public static async Task<Results<Ok<GetSettlementQueryResult>, NotFound>> GetSettlement(
         Guid settlementId,
         ISender sender,
         CancellationToken cancellationToken

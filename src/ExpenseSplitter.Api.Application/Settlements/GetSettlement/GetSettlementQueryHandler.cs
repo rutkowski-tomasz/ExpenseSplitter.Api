@@ -6,7 +6,7 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 
-internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQuery, GetSettlementResponse>
+internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQuery, GetSettlementQueryResult>
 {
     private readonly ISettlementRepository settlementRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
@@ -23,27 +23,27 @@ internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQue
         this.participantRepository = participantRepository;
     }
 
-    public async Task<Result<GetSettlementResponse>> Handle(GetSettlementQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetSettlementQueryResult>> Handle(GetSettlementQuery request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.SettlementId);
         if (!await settlementUserRepository.CanUserAccessSettlement(settlementId, cancellationToken))
         {
-            return Result.Failure<GetSettlementResponse>(SettlementErrors.Forbidden);
+            return Result.Failure<GetSettlementQueryResult>(SettlementErrors.Forbidden);
         }
 
         var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         if (settlement is null)
         {
-            return Result.Failure<GetSettlementResponse>(SettlementErrors.NotFound);
+            return Result.Failure<GetSettlementQueryResult>(SettlementErrors.NotFound);
         }
 
         var participants = await participantRepository.GetAllBySettlementId(settlementId, cancellationToken);
 
-        var settlementDto = new GetSettlementResponse(
+        var settlementDto = new GetSettlementQueryResult(
             settlement.Id.Value,
             settlement.Name,
             settlement.InviteCode,
-            participants.Select(x => new GetSettlementResponseParticipant(
+            participants.Select(x => new GetSettlementQueryResultParticipant(
                 x.Id.Value,
                 x.Nickname
             ))

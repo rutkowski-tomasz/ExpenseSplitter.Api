@@ -21,14 +21,14 @@ public class SettlementEndpointsTests
     [Fact]
     public async Task GetAllSettlements_ShouldReturnOk_WhenSettlementsExist()
     {
-        var settlements = new Fixture().Create<GetAllSettlementsQueryResponse>();
+        var settlements = new Fixture().Create<GetAllSettlementsQueryResult>();
         senderMock
             .Setup(x => x.Send(It.IsAny<GetAllSettlementsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(settlements));
 
         var result = await SettlementEndpoints.GetAllSettlements(senderMock.Object, CancellationToken.None, 1, 20);
 
-        var castedResult = result.Result as Ok<GetAllSettlementsQueryResponse>;
+        var castedResult = result.Result as Ok<GetAllSettlementsQueryResult>;
         castedResult!.StatusCode.Should().Be(200);
         castedResult.Value!.Settlements.Should().HaveCount(settlements.Settlements.Count());
     }
@@ -36,14 +36,14 @@ public class SettlementEndpointsTests
     [Fact]
     public async Task GetSettlement_ShouldReturnOk_WhenSettlementExists()
     {
-        var settlement = new Fixture().Create<GetSettlementResponse>();
+        var settlement = new Fixture().Create<GetSettlementQueryResult>();
         senderMock
             .Setup(x => x.Send(It.IsAny<GetSettlementQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(settlement));
 
         var result = await SettlementEndpoints.GetSettlement(Guid.NewGuid(), senderMock.Object, CancellationToken.None);
 
-        var castedResult = result.Result as Ok<GetSettlementResponse>;
+        var castedResult = result.Result as Ok<GetSettlementQueryResult>;
         castedResult!.StatusCode.Should().Be(200);
         castedResult.Value!.Id.Should().Be(settlement.Id);
     }

@@ -4,7 +4,7 @@ using FluentValidation;
 namespace ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
 
 [ExcludeFromCodeCoverage]
-public class JoinSettlementCommandValidator : AbstractValidator<JoinSettlementCommand>
+public sealed class JoinSettlementCommandValidator : AbstractValidator<JoinSettlementCommand>
 {
     public JoinSettlementCommandValidator()
     {

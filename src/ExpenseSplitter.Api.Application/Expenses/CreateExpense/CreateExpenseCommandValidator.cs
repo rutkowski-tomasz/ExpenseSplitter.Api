@@ -4,7 +4,7 @@ using FluentValidation;
 namespace ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 
 [ExcludeFromCodeCoverage]
-public class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseCommand>
+public sealed class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseCommand>
 {
     public CreateExpenseCommandValidator()
     {
@@ -26,7 +26,7 @@ public class CreateExpenseCommandValidator : AbstractValidator<CreateExpenseComm
 }
 
 [ExcludeFromCodeCoverage]
-public class CreateExpenseCommandAllocationValidator : AbstractValidator<CreateExpenseCommandAllocation>
+public sealed class CreateExpenseCommandAllocationValidator : AbstractValidator<CreateExpenseCommandAllocation>
 {
     public CreateExpenseCommandAllocationValidator()
     {

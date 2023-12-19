@@ -6,7 +6,7 @@ using ExpenseSplitter.Api.Domain.Users;
 namespace ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
 
 internal sealed class GetLoggedInUserQueryHandler
-    : IQueryHandler<GetLoggedInUserQuery, GetLoggedInUserResponse>
+    : IQueryHandler<GetLoggedInUserQuery, GetLoggedInUserQueryResult>
 {
     private readonly IUserRepository userRepository;
     private readonly IUserContext userContext;
@@ -19,7 +19,7 @@ internal sealed class GetLoggedInUserQueryHandler
         this.userContext = userContext;
     }
 
-    public async Task<Result<GetLoggedInUserResponse>> Handle(
+    public async Task<Result<GetLoggedInUserQueryResult>> Handle(
         GetLoggedInUserQuery request,
         CancellationToken cancellationToken)
     {
@@ -27,15 +27,14 @@ internal sealed class GetLoggedInUserQueryHandler
 
         if (user is null)
         {
-            return Result.Failure<GetLoggedInUserResponse>(UserErrors.NotFound);
+            return Result.Failure<GetLoggedInUserQueryResult>(UserErrors.NotFound);
         }
 
-        var response = new GetLoggedInUserResponse
-        {
-            Email = user.Email,
-            Nickname = user.Nickname,
-            Id = user.Id.Value
-        };
+        var response = new GetLoggedInUserQueryResult(
+            user.Id.Value,
+            user.Email,
+            user.Nickname
+        );
         
         return Result.Success(response);
     }

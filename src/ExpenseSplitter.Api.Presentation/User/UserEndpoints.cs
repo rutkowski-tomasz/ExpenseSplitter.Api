@@ -42,7 +42,7 @@ public static class UserEndpoints
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
     }
 
-    public static async Task<Results<Ok<LoginUserResponse>, BadRequest<Error>>> Login(
+    public static async Task<Results<Ok<LoginUserResult>, BadRequest<Error>>> Login(
         LoginUserRequest request,
         ISender sender,
         CancellationToken cancellationToken
@@ -55,7 +55,7 @@ public static class UserEndpoints
         return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
     
-    public static async Task<Results<Ok<GetLoggedInUserResponse>, BadRequest>> GetLoggedInUser(
+    public static async Task<Results<Ok<GetLoggedInUserQueryResult>, BadRequest>> GetLoggedInUser(
         ISender sender,
         CancellationToken cancellationToken
     )

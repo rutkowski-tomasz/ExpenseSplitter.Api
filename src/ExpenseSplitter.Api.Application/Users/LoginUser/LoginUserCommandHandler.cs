@@ -4,7 +4,7 @@ using ExpenseSplitter.Api.Domain.Abstractions;
 
 namespace ExpenseSplitter.Api.Application.Users.LoginUser;
 
-internal sealed class LoginUserCommandHandler : ICommandHandler<LoginUserCommand, LoginUserResponse>
+internal sealed class LoginUserCommandHandler : ICommandHandler<LoginUserCommand, LoginUserResult>
 {
     private readonly IJwtService jwtService;
 
@@ -15,7 +15,7 @@ internal sealed class LoginUserCommandHandler : ICommandHandler<LoginUserCommand
         this.jwtService = jwtService;
     }
 
-    public async Task<Result<LoginUserResponse>> Handle(
+    public async Task<Result<LoginUserResult>> Handle(
         LoginUserCommand command,
         CancellationToken cancellationToken)
     {
@@ -23,9 +23,9 @@ internal sealed class LoginUserCommandHandler : ICommandHandler<LoginUserCommand
 
         if (result.IsFailure)
         {
-            return Result.Failure<LoginUserResponse>(result.Error);
+            return Result.Failure<LoginUserResult>(result.Error);
         }
 
-        return new LoginUserResponse(result.Value);
+        return new LoginUserResult(result.Value);
     }
 }

@@ -2,4 +2,4 @@
 
 namespace ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 
-public sealed record GetAllSettlementsQuery(int Page, int PageSize) : IQuery<GetAllSettlementsQueryResponse>;
+public sealed record GetAllSettlementsQuery(int Page, int PageSize) : IQuery<GetAllSettlementsQueryResult>;

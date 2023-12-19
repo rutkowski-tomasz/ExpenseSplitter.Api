@@ -4,7 +4,7 @@ using FluentValidation;
 namespace ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 
 [ExcludeFromCodeCoverage]
-public class CreateSettlementCommandValidator : AbstractValidator<CreateSettlementCommand>
+public sealed class CreateSettlementCommandValidator : AbstractValidator<CreateSettlementCommand>
 {
     public CreateSettlementCommandValidator()
     {

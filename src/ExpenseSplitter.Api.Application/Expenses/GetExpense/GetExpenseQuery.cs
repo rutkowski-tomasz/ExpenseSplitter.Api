@@ -2,4 +2,4 @@
 
 namespace ExpenseSplitter.Api.Application.Expenses.GetExpense;
 
-public sealed record GetExpenseQuery(Guid ExpenseId) : IQuery<GetExpenseResponse>;
+public sealed record GetExpenseQuery(Guid ExpenseId) : IQuery<GetExpenseQueryResult>;

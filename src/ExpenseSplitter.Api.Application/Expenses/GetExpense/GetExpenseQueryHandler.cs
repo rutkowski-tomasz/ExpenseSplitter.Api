@@ -7,7 +7,7 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Expenses.GetExpense;
 
-internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, GetExpenseResponse>
+internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, GetExpenseQueryResult>
 {
     private readonly IExpenseRepository expenseRepository;
     private readonly IAllocationRepository allocationRepository;
@@ -24,29 +24,29 @@ internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, Ge
         this.settlementUserRepository = settlementUserRepository;
     }
 
-    public async Task<Result<GetExpenseResponse>> Handle(GetExpenseQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetExpenseQueryResult>> Handle(GetExpenseQuery request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.ExpenseId);
         var expense = await expenseRepository.GetById(expenseId, cancellationToken);
         if (expense is null)
         {
-            return Result.Failure<GetExpenseResponse>(ExpenseErrors.NotFound);
+            return Result.Failure<GetExpenseQueryResult>(ExpenseErrors.NotFound);
         }
 
         if (!await settlementUserRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
         {
-            return Result.Failure<GetExpenseResponse>(SettlementErrors.Forbidden);
+            return Result.Failure<GetExpenseQueryResult>(SettlementErrors.Forbidden);
         }
 
         var allocations = await allocationRepository.GetAllByExpenseId(expenseId, cancellationToken);
 
-        var response = new GetExpenseResponse(
+        var response = new GetExpenseQueryResult(
             expense.Id.Value,
             expense.Title,
             expense.PayingParticipantId.Value,
             expense.PaymentDate,
             expense.Amount.Value,
-            allocations.Select(x => new GetExpenseResponseAllocation(
+            allocations.Select(x => new GetExpenseQueryResultAllocation(
                 x.Id.Value,
                 x.ParticipantId.Value,
                 x.Amount.Value

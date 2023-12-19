@@ -4,7 +4,7 @@ using FluentValidation;
 namespace ExpenseSplitter.Api.Application.Users.LoginUser;
 
 [ExcludeFromCodeCoverage]
-public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
+public sealed class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
 {
     public LoginUserCommandValidator()
     {

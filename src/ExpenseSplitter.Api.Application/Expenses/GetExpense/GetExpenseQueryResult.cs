@@ -1,15 +1,15 @@
 namespace ExpenseSplitter.Api.Application.Expenses.GetExpense;
 
-public sealed record GetExpenseResponse(
+public sealed record GetExpenseQueryResult(
     Guid Id,
     string Title,
     Guid PayingParticipantId,
     DateTime PaymentDate,
     decimal Amount,
-    IEnumerable<GetExpenseResponseAllocation> Allocations
+    IEnumerable<GetExpenseQueryResultAllocation> Allocations
 );
 
-public sealed record GetExpenseResponseAllocation(
+public sealed record GetExpenseQueryResultAllocation(
     Guid Id,
     Guid ParticipantId,
     decimal Amount

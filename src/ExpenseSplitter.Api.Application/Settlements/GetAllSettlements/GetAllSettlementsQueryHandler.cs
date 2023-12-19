@@ -4,7 +4,7 @@ using ExpenseSplitter.Api.Domain.Settlements;
 
 namespace ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 
-internal sealed class GetSettlementsQueryHandler : IQueryHandler<GetAllSettlementsQuery, GetAllSettlementsQueryResponse>
+internal sealed class GetSettlementsQueryHandler : IQueryHandler<GetAllSettlementsQuery, GetAllSettlementsQueryResult>
 {
     private readonly ISettlementRepository settlementRepository;
 
@@ -13,12 +13,12 @@ internal sealed class GetSettlementsQueryHandler : IQueryHandler<GetAllSettlemen
         this.settlementRepository = settlementRepository;
     }
 
-    public async Task<Result<GetAllSettlementsQueryResponse>> Handle(GetAllSettlementsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetAllSettlementsQueryResult>> Handle(GetAllSettlementsQuery query, CancellationToken cancellationToken)
     {
         var settlements = await settlementRepository.GetAll(query.Page, query.PageSize, cancellationToken);
 
-        var response = new GetAllSettlementsQueryResponse(
-            settlements.Select(settlement => new GetAllSettlementsQueryResponseSettlement(
+        var response = new GetAllSettlementsQueryResult(
+            settlements.Select(settlement => new GetAllSettlementsQueryResultSettlement(
                 settlement.Id.Value,
                 settlement.Name
             ))
