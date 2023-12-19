@@ -36,5 +36,7 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
         
         builder.Property(expenseAllocation => expenseAllocation.Amount)
             .HasConversion(expenseAllocationAmount => expenseAllocationAmount.Value, value => Amount.Create(value).Value);
+
+        builder.Property<uint>("Version").IsRowVersion();
     }
 }

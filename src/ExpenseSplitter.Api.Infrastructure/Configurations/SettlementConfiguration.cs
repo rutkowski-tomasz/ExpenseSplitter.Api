@@ -32,5 +32,7 @@ public class SettlementConfiguration : IEntityTypeConfiguration<Settlement>
         builder.Property(settlement => settlement.CreatedOnUtc);
 
         builder.Property(settlement => settlement.UpdatedOnUtc);
+
+        builder.Property<uint>("Version").IsRowVersion();
     }
 }

@@ -1,0 +1,16 @@
+﻿using ExpenseSplitter.Api.Domain.Abstractions;
+
+namespace ExpenseSplitter.Api.Application.Exceptions;
+
+public sealed class ConcurrencyException : Exception
+{
+    public static readonly Error ConcurrencyError = new(
+        "ConcurrencyException",
+        "Concurrency occurred at database level, please retry."
+    );
+
+    public ConcurrencyException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+}

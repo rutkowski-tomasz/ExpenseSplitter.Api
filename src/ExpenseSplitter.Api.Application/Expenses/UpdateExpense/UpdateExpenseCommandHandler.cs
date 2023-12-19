@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using ExpenseSplitter.Api.Application.Abstraction.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+using ExpenseSplitter.Api.Application.Exceptions;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
@@ -77,7 +78,15 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
             return updateResult;
         }
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch (ConcurrencyException)
+        {
+            return Result.Failure(ConcurrencyException.ConcurrencyError);
+        }
+
         return Result.Success();
     }
 
