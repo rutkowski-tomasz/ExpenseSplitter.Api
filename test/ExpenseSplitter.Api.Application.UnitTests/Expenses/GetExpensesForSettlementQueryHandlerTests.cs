@@ -27,7 +27,7 @@ public class GetExpensesForSettlementQueryHandlerTests
         var expenses = new Fixture()
             .Build<Expense>()
             .FromFactory(
-                (string name, Amount amount, DateTime date)
+                (string name, Amount amount, DateOnly date)
                     => Expense.Create(name, amount, date, SettlementId.New(), ParticipantId.New()).Value
             )
             .CreateMany(2)

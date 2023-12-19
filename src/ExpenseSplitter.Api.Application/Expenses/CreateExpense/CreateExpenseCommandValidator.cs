@@ -10,7 +10,9 @@ public sealed class CreateExpenseCommandValidator : AbstractValidator<CreateExpe
     {
         RuleFor(x => x.Title).NotEmpty();
 
-        RuleFor(x => x.Date).LessThanOrEqualTo(DateTime.Today);
+        RuleFor(x => x.PaymentDate).NotEmpty();
+
+        RuleFor(x => x.PaymentDate.ToDateTime(TimeOnly.MinValue)).LessThanOrEqualTo(DateTime.Today);
 
         RuleFor(x => x.SettlementId).NotEmpty();
 

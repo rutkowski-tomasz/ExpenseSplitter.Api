@@ -2,7 +2,7 @@ namespace ExpenseSplitter.Api.Presentation.Expenses.Models;
 
 public record CreateExpenseRequest(
     string Name,
-    DateTime Date,
+    DateOnly PaymentDate,
     Guid SettlementId,
     Guid PayingParticipantId,
     IEnumerable<CreateExpenseRequestAllocation> Allocations

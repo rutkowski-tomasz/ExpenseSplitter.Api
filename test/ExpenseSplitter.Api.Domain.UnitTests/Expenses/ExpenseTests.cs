@@ -12,7 +12,7 @@ public class ExpenseTests
     {
         var name = new Fixture().Create<string>();
         var amount = new Fixture().Create<Amount>();
-        var date = new Fixture().Create<DateTime>();
+        var date = new Fixture().Create<DateOnly>();
         var settlementId = new Fixture().Create<SettlementId>();
         var participantId = new Fixture().Create<ParticipantId>();
 

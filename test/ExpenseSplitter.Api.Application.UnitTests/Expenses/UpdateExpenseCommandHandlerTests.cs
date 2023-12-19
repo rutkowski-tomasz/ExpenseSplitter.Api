@@ -49,7 +49,7 @@ public class UpdateExpenseCommandHandlerTests
         var expense = new Fixture()
             .Build<Expense>()
             .FromFactory(
-                (string title, Amount amount, DateTime date)
+                (string title, Amount amount, DateOnly date)
                     => Expense.Create(title, amount, date, SettlementId.New(), ParticipantId.New()).Value
             )
             .Create();
@@ -85,7 +85,7 @@ public class UpdateExpenseCommandHandlerTests
         var expense = new Fixture()
             .Build<Expense>()
             .FromFactory(
-                (string title, Amount amount, DateTime date)
+                (string title, Amount amount, DateOnly date)
                     => Expense.Create(title, amount, date, SettlementId.New(), ParticipantId.New()).Value
             )
             .Create();

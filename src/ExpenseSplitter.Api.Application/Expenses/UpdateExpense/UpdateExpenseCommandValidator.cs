@@ -12,7 +12,9 @@ public sealed class UpdateExpenseCommandValidator : AbstractValidator<UpdateExpe
 
         RuleFor(x => x.Title).NotEmpty();
 
-        RuleFor(x => x.Date).LessThanOrEqualTo(DateTime.Today);
+        RuleFor(x => x.PaymentDate).NotEmpty();
+
+        RuleFor(x => x.PaymentDate.ToDateTime(TimeOnly.MinValue)).LessThanOrEqualTo(DateTime.Today);
 
         RuleFor(x => x.PayingParticipantId).NotEmpty();
 

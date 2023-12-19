@@ -10,7 +10,7 @@ public sealed class Expense : Entity<ExpenseId>
     private Expense(
         string title,
         Amount amount,
-        DateTime paymentDate,
+        DateOnly paymentDate,
         ExpenseId id,
         SettlementId settlementId,
         ParticipantId payingParticipantId
@@ -26,13 +26,13 @@ public sealed class Expense : Entity<ExpenseId>
     public SettlementId SettlementId { get; private set; }
     public string Title { get; private set; }
     public Amount Amount { get; private set; }
-    public DateTime PaymentDate { get; private set;  }
+    public DateOnly PaymentDate { get; private set;  }
     public ParticipantId PayingParticipantId { get; private set; }
 
     public static Result<Expense> Create(
         string title,
         Amount amount,
-        DateTime date,
+        DateOnly date,
         SettlementId settlementId,
         ParticipantId payingParticipantId
     )
@@ -70,7 +70,7 @@ public sealed class Expense : Entity<ExpenseId>
         Amount = amount;
     }
 
-    public void SetPaymentDate(DateTime date)
+    public void SetPaymentDate(DateOnly date)
     {
         PaymentDate = date;
     }

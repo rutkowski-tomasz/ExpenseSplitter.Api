@@ -4,7 +4,7 @@ public sealed record GetExpenseQueryResult(
     Guid Id,
     string Title,
     Guid PayingParticipantId,
-    DateTime PaymentDate,
+    DateOnly PaymentDate,
     decimal Amount,
     IEnumerable<GetExpenseQueryResultAllocation> Allocations
 );

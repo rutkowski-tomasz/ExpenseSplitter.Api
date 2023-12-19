@@ -22,7 +22,9 @@ internal sealed class GetExpensesForSettlementQueryHandler : IQueryHandler<GetEx
         var resultExpenses = expenses.Select(x => new GetExpensesForSettlementQueryResultExpense(
             x.Id.Value,
             x.Title,
-            x.Amount.Value
+            x.Amount.Value,
+            x.PayingParticipantId.Value,
+            x.PaymentDate
         ));
         var result = new GetExpensesForSettlementQueryResult(resultExpenses);
         

@@ -64,7 +64,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         var expenseResult = Expense.Create(
             request.Title,
             totalAmountResult.Value,
-            request.Date,
+            request.PaymentDate,
             new SettlementId(request.SettlementId), 
             new ParticipantId(request.PayingParticipantId)
         );

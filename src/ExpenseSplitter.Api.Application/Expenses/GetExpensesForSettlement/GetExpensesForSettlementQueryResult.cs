@@ -7,5 +7,7 @@ public sealed record GetExpensesForSettlementQueryResult(
 public sealed record GetExpensesForSettlementQueryResultExpense(
     Guid Id,
     string Title,
-    decimal Amount
+    decimal Amount,
+    Guid PayingParticipantId,
+    DateOnly PaymentDate
 );

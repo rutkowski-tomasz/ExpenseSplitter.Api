@@ -105,7 +105,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         }
 
         expense.SetAmount(totalAmountResult.Value);
-        expense.SetPaymentDate(request.Date);
+        expense.SetPaymentDate(request.PaymentDate);
         expense.SetPayingParticipantId(new ParticipantId(request.PayingParticipantId));
         return Result.Success();
     }

@@ -31,7 +31,7 @@ public static class ExpensesEndpoints
     {
         var command = new CreateExpenseCommand(
             request.Name,
-            request.Date,
+            request.PaymentDate,
             request.SettlementId,
             request.PayingParticipantId,
             request.Allocations.Select(x => new CreateExpenseCommandAllocation(
@@ -44,7 +44,7 @@ public static class ExpensesEndpoints
 
         if (result.IsFailure)
         {
-            TypedResults.BadRequest(result.Error);
+            return TypedResults.BadRequest(result.Error);
         }
 
         return TypedResults.Ok(result.Value);
@@ -73,7 +73,7 @@ public static class ExpensesEndpoints
         var command = new UpdateExpenseCommand(
             expenseId,
             request.Title,
-            request.Date,
+            request.PaymentDate,
             request.PayingParticipantId,
             request.Allocations.Select(x => new UpdateExpenseCommandAllocation(
                 x.Id,

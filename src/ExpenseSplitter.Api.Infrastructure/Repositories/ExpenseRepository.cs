@@ -22,6 +22,7 @@ internal sealed class ExpenseRepository : Repository<Expense, ExpenseId>, IExpen
         return await DbContext
             .Set<Expense>()
             .Where(x => x.SettlementId == settlementId)
+            .OrderByDescending(x => x.PaymentDate)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
