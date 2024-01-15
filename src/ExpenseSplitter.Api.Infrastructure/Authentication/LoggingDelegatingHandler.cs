@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication
 {
@@ -17,16 +18,24 @@ namespace ExpenseSplitter.Api.Infrastructure.Authentication
         {
             try
             {
-                logger.LogTrace(
+                var requestContent = await request.Content!.ReadAsStringAsync();
+                logger.LogInformation(
                     "Sending HTTP request to {Method} {Uri} with {Content}",
-                    request.Method,
-                    request.RequestUri,
-                    request.Content
+                    request.Method.ToString(),
+                    request.RequestUri!.ToString(),
+                    requestContent
                 );
 
+                var stopWatch = Stopwatch.StartNew();
                 var result = await base.SendAsync(request, cancellationToken);
 
-                logger.LogInformation("After HTTP request");
+                var resultContent = await result.Content.ReadAsStringAsync();
+                logger.LogInformation(
+                    "Received HTTP response {StatusCode} in {Duration}ms with {Content}",
+                    result.StatusCode,
+                    stopWatch.ElapsedMilliseconds,
+                    resultContent
+                );
 
                 return result;
             }
