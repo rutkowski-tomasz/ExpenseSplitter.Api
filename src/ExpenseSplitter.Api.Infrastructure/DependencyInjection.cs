@@ -45,6 +45,7 @@ public static class DependencyInjection
         services.Configure<KeycloakOptions>(configuration.GetSection("Keycloak"));
 
         services.AddTransient<AdminAuthorizationDelegatingHandler>();
+        services.AddTransient<LoggingDelegatingHandler>();
 
         services.AddHttpClient<IAuthenticationService, AuthenticationService>((serviceProvider, httpClient) =>
             {
@@ -52,14 +53,16 @@ public static class DependencyInjection
 
                 httpClient.BaseAddress = new Uri(keycloakOptions.AdminUrl);
             })
-            .AddHttpMessageHandler<AdminAuthorizationDelegatingHandler>();
+            .AddHttpMessageHandler<AdminAuthorizationDelegatingHandler>()
+            .AddHttpMessageHandler<LoggingDelegatingHandler>();
 
         services.AddHttpClient<IJwtService, JwtService>((serviceProvider, httpClient) =>
-        {
-            var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
+            {
+                var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
 
-            httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
-        });
+                httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
+            })
+            .AddHttpMessageHandler<LoggingDelegatingHandler>();
 
         services.AddHttpContextAccessor();
 
