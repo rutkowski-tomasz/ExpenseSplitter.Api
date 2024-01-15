@@ -1,5 +1,4 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
-using ExpenseSplitter.Api.Domain.Abstractions;
+﻿using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

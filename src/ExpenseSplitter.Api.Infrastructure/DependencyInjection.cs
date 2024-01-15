@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Caching;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -10,6 +11,7 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Users;
 using ExpenseSplitter.Api.Infrastructure.Authentication;
 using ExpenseSplitter.Api.Infrastructure.Configurations;
+using ExpenseSplitter.Api.Infrastructure.Caching;
 using ExpenseSplitter.Api.Infrastructure.Repositories;
 using ExpenseSplitter.Api.Infrastructure.Settlements;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,6 +29,8 @@ public static class DependencyInjection
         AddPersistence(services, configuration);
 
         AddAuthentication(services, configuration);
+
+        AddCaching(services, configuration);
 
         return services;
     }
@@ -91,5 +95,11 @@ public static class DependencyInjection
             .AddScoped<IParticipantRepository, ParticipantRepository>()
             .AddScoped<ISettlementUserRepository, SettlementUserRepository>()
         ;
+    }
+
+    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, CacheService>();
     }
 }
