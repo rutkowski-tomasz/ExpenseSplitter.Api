@@ -47,3 +47,6 @@ msbuild.wrn
 
 # Code coverage
 TestResults
+
+# Serilog
+logs/

@@ -80,17 +80,20 @@ public static class SettlementEndpoints
         return result.IsSuccess ? TypedResults.Ok() : TypedResults.NotFound();
     }
 
-    public static async Task<Results<Ok<Guid>, BadRequest>> CreateSettlement(
+    public static async Task<Results<Ok<Guid>, BadRequest<Error>>> CreateSettlement(
         CreateSettlementRequest request,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var command = new CreateSettlementCommand(request.Name, request.ParticipantNames);
+        var command = new CreateSettlementCommand(
+            request.Name,
+            request.ParticipantNames
+        );
 
         var result = await sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
     }
 
     public static async Task<Results<Ok, BadRequest>> UpdateSettlement(

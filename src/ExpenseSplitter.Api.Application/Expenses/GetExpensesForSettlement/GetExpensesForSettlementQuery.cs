@@ -4,9 +4,6 @@ namespace ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 
 public sealed record GetExpensesForSettlementQuery(
     Guid SettlementId
-) : ICachedQuery<GetExpensesForSettlementQueryResult>
+) : IQuery<GetExpensesForSettlementQueryResult>
 {
-    public string Key => $"expenses-for-{SettlementId}";
-
-    public TimeSpan? Expiration => null;
 }

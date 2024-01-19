@@ -1,8 +1,7 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Caching;
-using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using MediatR;
 
-namespace ExpenseSplitter.Api.Application.Abstractions.Behaviors;
+namespace ExpenseSplitter.Api.Application.Abstractions.Caching;
 
 internal sealed class CachingBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
