@@ -52,12 +52,18 @@ public class SettlementEndpointsTests
     public async Task CreateSettlement_ShouldReturnOk_WhenCreationIsSuccessful()
     {
         var settlementId = Guid.NewGuid();
+        var requestId = Guid.NewGuid().ToString();
         var request = new Fixture().Create<CreateSettlementRequest>();
         senderMock
             .Setup(x => x.Send(It.IsAny<CreateSettlementCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(settlementId));
 
-        var result = await SettlementEndpoints.CreateSettlement(request, senderMock.Object, CancellationToken.None);
+        var result = await SettlementEndpoints.CreateSettlement(
+            request,
+            requestId,
+            senderMock.Object,
+            CancellationToken.None
+        );
 
         var castedResult = result.Result as Ok<Guid>;
         castedResult!.StatusCode.Should().Be(200);

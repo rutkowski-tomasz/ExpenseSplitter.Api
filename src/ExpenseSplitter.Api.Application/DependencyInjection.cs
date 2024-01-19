@@ -1,4 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Behaviors;
+using ExpenseSplitter.Api.Application.Abstractions.Caching;
+using ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +17,7 @@ public static class DependencyInjection
             configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
             configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
             configuration.AddOpenBehavior(typeof(CachingBehavior<,>));
+            configuration.AddOpenBehavior(typeof(IdempotentCommandBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);

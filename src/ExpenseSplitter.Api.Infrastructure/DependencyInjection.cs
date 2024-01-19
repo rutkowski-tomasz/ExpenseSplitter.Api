@@ -19,6 +19,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ExpenseSplitter.Api.Infrastructure.Idempotency;
+using ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
@@ -32,8 +34,11 @@ public static class DependencyInjection
 
         AddCaching(services, configuration);
 
+        services.AddScoped<IIdempotencyService, IdempotencyService>();
+
         return services;
     }
+
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthorization();

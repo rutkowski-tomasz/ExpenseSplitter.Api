@@ -6,6 +6,7 @@ using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Expenses.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
@@ -89,11 +90,17 @@ public static class ExpensesEndpoints
 
     public static async Task<Results<Ok, BadRequest<Error>>> DeleteExpense(
         Guid expenseId,
+        [FromHeader(Name = "X-Idempotency-Key")] string? requestId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        var query = new DeleteExpenseCommand(expenseId);
+        if (!Guid.TryParse(requestId, out var parsedRequestId))
+        {
+            return TypedResults.BadRequest(Error.NullValue);
+        }
+
+        var query = new DeleteExpenseCommand(parsedRequestId, expenseId);
 
         var result = await sender.Send(query, cancellationToken);
 
