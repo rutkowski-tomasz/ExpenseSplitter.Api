@@ -15,6 +15,8 @@ public class ApplicationTests
           .InAssembly(Assemblies.Application)
           .That()
           .ImplementInterface(typeof(IQuery<>))
+          .And()
+          .AreNotInterfaces()
           .Should()
           .HaveNameEndingWith("Query")
           .And()
@@ -31,6 +33,8 @@ public class ApplicationTests
             .InAssembly(Assemblies.Application)
             .That()
             .ImplementInterface(typeof(IQuery<>))
+            .And()
+            .AreNotInterfaces()
             .Should()
             .MeetCustomRule(new GenericArgumentsEndWithCustomRule("QueryResult"))
             .GetResult();
