@@ -90,17 +90,11 @@ public static class ExpensesEndpoints
 
     public static async Task<Results<Ok, BadRequest<Error>>> DeleteExpense(
         Guid expenseId,
-        [FromHeader(Name = "X-Idempotency-Key")] string? requestId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        if (!Guid.TryParse(requestId, out var parsedRequestId))
-        {
-            return TypedResults.BadRequest(Error.NullValue);
-        }
-
-        var query = new DeleteExpenseCommand(parsedRequestId, expenseId);
+        var query = new DeleteExpenseCommand(expenseId);
 
         var result = await sender.Send(query, cancellationToken);
 

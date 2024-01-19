@@ -82,18 +82,11 @@ public static class SettlementEndpoints
 
     public static async Task<Results<Ok<Guid>, BadRequest<Error>>> CreateSettlement(
         CreateSettlementRequest request,
-        [FromHeader(Name = "X-Idempotency-Key")] string? requestId,
         ISender sender,
         CancellationToken cancellationToken
     )
     {
-        if (!Guid.TryParse(requestId, out var parsedRequestId))
-        {
-            return TypedResults.BadRequest(Error.NullValue);
-        }
-
         var command = new CreateSettlementCommand(
-            parsedRequestId,
             request.Name,
             request.ParticipantNames
         );

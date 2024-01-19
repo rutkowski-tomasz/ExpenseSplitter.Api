@@ -1,26 +1,55 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Idempotency;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Idempotency;
 
 internal sealed class IdempotencyService : IIdempotencyService
 {
-    private readonly ApplicationDbContext context;
+    private const string IdempotencyKeyHeaderName = "X-Idempotency-Key";
 
-    public IdempotencyService(ApplicationDbContext context)
+    private readonly ApplicationDbContext context;
+    private readonly IHttpContextAccessor contextAccessor;
+
+    public IdempotencyService(
+        ApplicationDbContext context,
+        IHttpContextAccessor contextAccessor
+    )
     {
         this.context = context;
+        this.contextAccessor = contextAccessor;
     }
 
-    public async Task CreateRequest(
-        Guid requestId,
-        string name,
+    public bool IsIdempotencyKeyInHeaders()
+    {
+        var idempotencyKey = GetIdempotencyKeyFromHeaders();
+        return idempotencyKey is not null;
+    }
+
+    public bool TryParseIdempotencyKey(out Guid parsedIdempotencyKey)
+    {
+        var idempotencyKey = GetIdempotencyKeyFromHeaders();
+        var isParsed = Guid.TryParse(idempotencyKey, out parsedIdempotencyKey);
+        return isParsed;
+    }
+
+    public async Task<bool> IsIdempotencyKeyProcessed(
+        Guid parsedIdempotencyKey,
         CancellationToken cancellationToken
     )
     {
+        var isProcessed = await context
+            .Set<IdempotentRequest>()
+            .AnyAsync(x => x.Id == parsedIdempotencyKey, cancellationToken);
+
+        return isProcessed;
+    }
+
+    public async Task SaveIdempotencyKey(Guid parsedIdempotencyKey, string name, CancellationToken cancellationToken)
+    {
         var idempotentRequest = new IdempotentRequest()
         {
-            Id = requestId,
+            Id = parsedIdempotencyKey,
             Name = name,
             CreatedOnUtc = DateTime.UtcNow,
         };
@@ -30,13 +59,10 @@ internal sealed class IdempotencyService : IIdempotencyService
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> RequestExists(
-        Guid requestId,
-        CancellationToken cancellationToken
-    )
+    private string? GetIdempotencyKeyFromHeaders()
     {
-        return await context
-            .Set<IdempotentRequest>()
-            .AnyAsync(x => x.Id == requestId, cancellationToken);
+        var headers = contextAccessor.HttpContext?.Request.Headers;
+        var idempotencyKey = headers![IdempotencyKeyHeaderName].FirstOrDefault();
+        return idempotencyKey;
     }
 }

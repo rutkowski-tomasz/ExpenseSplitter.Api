@@ -2,8 +2,9 @@
 
 public interface IIdempotencyService
 {
-    Task<bool> RequestExists(Guid requestId, CancellationToken cancellationToken);
-
-    Task CreateRequest(Guid requestId, string name, CancellationToken cancellationToken);
+    bool IsIdempotencyKeyInHeaders();
+    bool TryParseIdempotencyKey(out Guid o);
+    Task<bool> IsIdempotencyKeyProcessed(Guid parsedIdempotencyKey, CancellationToken cancellationToken);
+    Task SaveIdempotencyKey(Guid parsedIdempotencyKey, string name, CancellationToken cancellationToken);
 }
 
