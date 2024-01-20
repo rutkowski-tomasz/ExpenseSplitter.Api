@@ -57,7 +57,7 @@ public class JoinSettlementCommandHandlerTests
     {
         settlementRepositoryMock
             .Setup(x => x.GetByInviteCode(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Settlement) null);
+            .ReturnsAsync((Settlement) null!);
 
         var command = fixture.Create<JoinSettlementCommand>();
 

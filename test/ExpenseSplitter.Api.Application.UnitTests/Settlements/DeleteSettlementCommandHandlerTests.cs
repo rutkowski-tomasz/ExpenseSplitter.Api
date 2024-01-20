@@ -53,7 +53,7 @@ public class DeleteSettlementCommandHandlerTests
     {
         settlementRepositoryMock
             .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Settlement) null);
+            .ReturnsAsync((Settlement) null!);
 
         var command = fixture.Create<DeleteSettlementCommand>();
 

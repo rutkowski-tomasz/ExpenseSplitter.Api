@@ -46,7 +46,7 @@ public class LeaveSettlementCommandHandlerTests
     {
         settlementUserRepositoryMock
             .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((SettlementUser) null);
+            .ReturnsAsync((SettlementUser) null!);
 
         var command = fixture.Create<LeaveSettlementCommand>();
 

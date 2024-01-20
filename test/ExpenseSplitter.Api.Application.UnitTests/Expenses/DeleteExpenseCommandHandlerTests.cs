@@ -69,7 +69,7 @@ public class DeleteExpenseCommandHandlerTests
     {
         expenseRepositoryMock
             .Setup(x => x.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Expense) null);
+            .ReturnsAsync((Expense) null!);
 
         var command = fixture.Create<DeleteExpenseCommand>();
 
