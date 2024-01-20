@@ -17,4 +17,9 @@
       <ProjectReference Include="..\ExpenseSplitter.Api.Domain\ExpenseSplitter.Api.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>$(AssemblyName).UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>

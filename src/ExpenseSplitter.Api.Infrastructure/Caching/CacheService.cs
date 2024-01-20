@@ -29,6 +29,6 @@ internal sealed class CacheService : ICacheService
                 return factory(cancellationToken);
             });
 
-        return result;
+        return result!;
     }
 }

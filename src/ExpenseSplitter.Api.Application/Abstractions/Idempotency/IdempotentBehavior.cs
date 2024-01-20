@@ -1,10 +1,12 @@
-﻿using ExpenseSplitter.Api.Domain.Abstractions;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
 internal sealed class IdempotentBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IBaseCommand
     where TResponse : Result
 {
     private static readonly Error IdempotencyKeyIsNotGuid = new(
