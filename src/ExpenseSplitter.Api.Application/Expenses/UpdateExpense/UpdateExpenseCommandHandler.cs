@@ -75,7 +75,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         var updateAllocationsResult = UpdateExistingAllocations(allocations, request);
         if (updateAllocationsResult.IsFailure)
         {
-            return updateResult;
+            return updateAllocationsResult;
         }
 
         try
@@ -154,8 +154,9 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
             .Where(x => x.Id.HasValue)
             .Select(x => new {
                 UpdateModel = x,
-                Entity = allocations.Single(y => y.Id == new AllocationId(x.Id!.Value))
-            });
+                Entity = allocations.SingleOrDefault(y => y.Id == new AllocationId(x.Id!.Value))
+            })
+            .Where(x => x.Entity is not null);
 
         foreach (var update in updates)
         {
@@ -165,7 +166,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
                 return amountResult;
             }
 
-            update.Entity.SetAmount(amountResult.Value);
+            update.Entity!.SetAmount(amountResult.Value);
             update.Entity.SetParticipantId(new ParticipantId(update.UpdateModel.ParticipantId));
         }
 

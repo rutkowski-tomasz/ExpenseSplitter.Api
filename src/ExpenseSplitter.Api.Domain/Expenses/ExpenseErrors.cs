@@ -4,7 +4,7 @@ namespace ExpenseSplitter.Api.Domain.Expenses;
 
 public static class ExpenseErrors
 {
-    public static readonly Error EmptyName = new(
+    public static readonly Error EmptyTitle = new(
         "Expense.EmptyName",
         "Can't create expense with empty name"
     );

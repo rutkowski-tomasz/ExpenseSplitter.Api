@@ -17,7 +17,7 @@ public record Amount
     {
         if (value < 0)
         {
-            return Result.Failure<Amount>(AmountErrors.NonPositiveValue);
+            return Result.Failure<Amount>(AmountErrors.NegativeValue);
         }
 
         return new Amount(value);

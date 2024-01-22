@@ -42,7 +42,7 @@ public sealed class Expense : Entity<ExpenseId>
     {
         if (string.IsNullOrEmpty(title))
         {
-            return Result.Failure<Expense>(ExpenseErrors.EmptyName);
+            return Result.Failure<Expense>(ExpenseErrors.EmptyTitle);
         }
 
         var expense = new Expense(
@@ -61,7 +61,7 @@ public sealed class Expense : Entity<ExpenseId>
     {
         if (string.IsNullOrEmpty(title))
         {
-            return Result.Failure<Expense>(ExpenseErrors.EmptyName);
+            return Result.Failure<Expense>(ExpenseErrors.EmptyTitle);
         }
 
         Title = title;

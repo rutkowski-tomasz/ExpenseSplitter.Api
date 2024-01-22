@@ -110,7 +110,7 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ExpenseErrors.EmptyName);
+        result.Error.Should().Be(ExpenseErrors.EmptyTitle);
     }
     
     
