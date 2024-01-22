@@ -14,9 +14,11 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Dependabot integration, Architecture tests
 7. Docker support with docker-compose orchestration
 
-# 🛹 Model diagram
+# 🛹 Big picture
 
-TODO
+To let you quickly understand the domain and relationships of the project entities I decided to create a class diagram.
+
+![ExpenseSplitter.Api class diagram](ExpenseSplitter.Diagram.drawio.png "Class diagram")
 
 ## 🗺️ Endpoints map
 
