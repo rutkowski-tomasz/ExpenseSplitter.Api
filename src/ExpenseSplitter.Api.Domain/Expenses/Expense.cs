@@ -30,7 +30,7 @@ public sealed class Expense : Entity<ExpenseId>
     public DateOnly PaymentDate { get; private set;  }
     public ParticipantId PayingParticipantId { get; private set; }
 
-    public List<Allocation> Allocations { get; set; }
+    public List<Allocation> Allocations { get; set; } = null!;
 
     public static Result<Expense> Create(
         string title,
