@@ -16,7 +16,7 @@ jobs:
           dotnet-version: '7.0.x'
 
       - name: Test with the dotnet CLI
-        run: dotnet test --collect:"XPlat Code Coverage" --settings=.runsettings *.sln
+        run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
       - name: Restore coverage history
         uses: dawidd6/action-download-artifact@v2
@@ -33,6 +33,7 @@ jobs:
           targetdir: 'CoverageReports'
           historydir: 'CoverageHistory'
           reporttypes: 'HtmlInline;Cobertura'
+          filefilters: '-*/Migrations/*'
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
