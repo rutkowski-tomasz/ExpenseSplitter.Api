@@ -121,12 +121,13 @@ public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCo
             .Where(x => x.Id.HasValue)
             .Select(x => new {
                 UpdateModel = x,
-                Entity = participants.Single(y => y.Id == new ParticipantId(x.Id!.Value))
-            });
+                Entity = participants.SingleOrDefault(y => y.Id == new ParticipantId(x.Id!.Value))
+            })
+            .Where(x => x.Entity is not null);
 
         foreach (var update in updates)
         {
-            var setNicknameResult = update.Entity.SetNickname(update.UpdateModel.Nickname);
+            var setNicknameResult = update.Entity!.SetNickname(update.UpdateModel.Nickname);
             if (setNicknameResult.IsFailure)
             {
                 return setNicknameResult;
