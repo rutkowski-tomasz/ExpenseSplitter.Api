@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using ExpenseSplitter.Api.Application;
 using ExpenseSplitter.Api.Infrastructure;
 using ExpenseSplitter.Api.Presentation.Expenses;
@@ -57,7 +58,17 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app
+var apiVersionSet = app
+    .NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(1))
+    .ReportApiVersions()
+    .Build();
+
+var routeGroupBuilder = app
+    .MapGroup("api/v{version:apiVersion}")
+    .WithApiVersionSet(apiVersionSet);
+
+routeGroupBuilder
     .MapSettlementEndpoints()
     .MapExpensesEndpoints()
     .MapUserEndpoints();

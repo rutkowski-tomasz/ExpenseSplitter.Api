@@ -14,7 +14,7 @@ public static class UserEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = builder.MapGroup("api/user");
+        var routeGroupBuilder = builder.MapGroup("user");
 
         routeGroupBuilder.MapPost("register", Register).AllowAnonymous();
 

@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ExpenseSplitter.Api.Infrastructure.Idempotency;
 using ExpenseSplitter.Api.Application.Abstractions.Idempotency;
+using Asp.Versioning;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
@@ -33,6 +34,8 @@ public static class DependencyInjection
         AddAuthentication(services, configuration);
 
         AddCaching(services, configuration);
+
+        AddVersioning(services);
 
         services.AddScoped<IIdempotencyService, IdempotencyService>();
 
@@ -106,5 +109,20 @@ public static class DependencyInjection
     {
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
+    }
+
+    private static void AddVersioning(IServiceCollection services)
+    {
+        services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1);
+            options.ReportApiVersions = true;
+            options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        })
+        .AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'V";
+            options.SubstituteApiVersionInUrl = true;
+        });
     }
 }

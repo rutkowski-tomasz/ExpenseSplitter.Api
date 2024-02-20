@@ -22,7 +22,7 @@ public static class SettlementEndpoints
     [ExcludeFromCodeCoverage]
     public static IEndpointRouteBuilder MapSettlementEndpoints(this IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = builder.MapGroup("api/settlements").RequireAuthorization();
+        var routeGroupBuilder = builder.MapGroup("settlements").RequireAuthorization();
 
         routeGroupBuilder.MapGet("", GetAllSettlements);
         routeGroupBuilder.MapPost("", CreateSettlement);
