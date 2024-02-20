@@ -4,6 +4,8 @@ using ExpenseSplitter.Api.Presentation.Expenses;
 using ExpenseSplitter.Api.Presentation.Extensions;
 using ExpenseSplitter.Api.Presentation.Settlements;
 using ExpenseSplitter.Api.Presentation.User;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -25,6 +27,10 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
+    .AddUrlGroup(new Uri(builder.Configuration["Keycloak:BaseUrl"]!), HttpMethod.Get, "keycloak");
+
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
 );
@@ -55,6 +61,11 @@ app
     .MapSettlementEndpoints()
     .MapExpensesEndpoints()
     .MapUserEndpoints();
+
+app.MapHealthChecks("health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.Run();
 
