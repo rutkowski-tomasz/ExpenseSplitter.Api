@@ -33,7 +33,7 @@ public static class DependencyInjection
 
         AddAuthentication(services, configuration);
 
-        AddCaching(services, configuration);
+        AddCaching(services);
 
         AddVersioning(services);
 
@@ -90,9 +90,8 @@ public static class DependencyInjection
             throw new ArgumentNullException(nameof(configuration));
 
         services.AddDbContext<ApplicationDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
-        });
+            options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention()
+        );
 
         services
             .AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>())
@@ -105,7 +104,7 @@ public static class DependencyInjection
         ;
     }
 
-    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
+    private static void AddCaching(IServiceCollection services)
     {
         services.AddMemoryCache();
         services.AddSingleton<ICacheService, CacheService>();
