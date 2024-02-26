@@ -3,16 +3,16 @@ using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 using ExpenseSplitter.Api.Application.Expenses.GetExpense;
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Expenses.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
-public static class ExpensesEndpoints
+public class ExpensesEndpoints : IEndpoint
 {
-    public static IEndpointRouteBuilder MapExpensesEndpoints(this IEndpointRouteBuilder builder)
+    public void MapEndpoint(IEndpointRouteBuilder builder)
     {
         var routeGroupBuilder = builder.MapGroup("expenses").RequireAuthorization();
 
@@ -20,8 +20,6 @@ public static class ExpensesEndpoints
         routeGroupBuilder.MapGet("{expenseId}", GetExpense);
         routeGroupBuilder.MapPut("{expenseId}", UpdateExpense);
         routeGroupBuilder.MapDelete("{expenseId}", DeleteExpense);
-
-        return builder;
     }
 
     public static async Task<Results<Ok<Guid>, BadRequest<Error>>> CreateExpense(

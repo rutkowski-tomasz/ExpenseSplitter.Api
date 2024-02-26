@@ -10,6 +10,7 @@ using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
 using ExpenseSplitter.Api.Application.Settlements.LeaveSettlement;
 using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,10 +18,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public static class SettlementEndpoints
+public class SettlementEndpoints : IEndpoint
 {
     [ExcludeFromCodeCoverage]
-    public static IEndpointRouteBuilder MapSettlementEndpoints(this IEndpointRouteBuilder builder)
+    public void MapEndpoint(IEndpointRouteBuilder builder)
     {
         var routeGroupBuilder = builder.MapGroup("settlements").RequireAuthorization();
 
@@ -36,8 +37,6 @@ public static class SettlementEndpoints
         routeGroupBuilder.MapPost("/{settlementId}/leave", LeaveSettlement);
         routeGroupBuilder.MapPatch("/{settlementId}/participants/{participantId}/claim", ClaimParticipant);
         routeGroupBuilder.MapGet("/{settlementId}/reimbrusement", CalculateReimbrusement);
-
-        return builder;
     }
 
     public static async Task<Results<Ok<GetAllSettlementsQueryResult>, NotFound>> GetAllSettlements(

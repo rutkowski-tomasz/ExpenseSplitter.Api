@@ -3,16 +3,17 @@ using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.User.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpenseSplitter.Api.Presentation.User;
 
-public static class UserEndpoints
+public class UserEndpoints : IEndpoint
 {
     [ExcludeFromCodeCoverage]
-    public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder builder)
+    public void MapEndpoint(IEndpointRouteBuilder builder)
     {
         var routeGroupBuilder = builder.MapGroup("user");
 
@@ -21,8 +22,6 @@ public static class UserEndpoints
         routeGroupBuilder.MapPost("login", Login).AllowAnonymous();
 
         routeGroupBuilder.MapGet("me", GetLoggedInUser).RequireAuthorization();
-
-        return builder;
     }
 
     public static async Task<Results<Ok<Guid>, BadRequest>> Register(
