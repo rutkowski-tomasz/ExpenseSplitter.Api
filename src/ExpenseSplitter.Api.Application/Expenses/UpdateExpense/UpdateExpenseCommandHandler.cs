@@ -24,7 +24,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
     public UpdateExpenseCommandHandler(
         IExpenseRepository expenseRepository,
         ISettlementUserRepository settlementUserRepository,
-        IAllocationRepository expenseAllocationRepository,
+        IAllocationRepository allocationRepository,
         ISettlementRepository settlementRepository,
         IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork
@@ -32,7 +32,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
     {
         this.expenseRepository = expenseRepository;
         this.settlementUserRepository = settlementUserRepository;
-        this.allocationRepository = expenseAllocationRepository;
+        this.allocationRepository = allocationRepository;
         this.settlementRepository = settlementRepository;
         this.dateTimeProvider = dateTimeProvider;
         this.unitOfWork = unitOfWork;

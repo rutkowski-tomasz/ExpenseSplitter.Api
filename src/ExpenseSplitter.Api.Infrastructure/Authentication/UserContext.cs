@@ -26,7 +26,9 @@ internal sealed class UserContext : IUserContext
                 .Value;
             
             if (claim is null)
+            {
                 throw new ApplicationException("User context is unavailable");
+            }
 
             var guid = Guid.Parse(claim);
             var userId = new UserId(guid);
