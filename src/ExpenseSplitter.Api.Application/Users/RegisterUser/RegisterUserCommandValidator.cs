@@ -4,7 +4,7 @@ using FluentValidation;
 namespace ExpenseSplitter.Api.Application.Users.RegisterUser;
 
 [ExcludeFromCodeCoverage]
-internal sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
+public sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
 {
     public RegisterUserCommandValidator()
     {

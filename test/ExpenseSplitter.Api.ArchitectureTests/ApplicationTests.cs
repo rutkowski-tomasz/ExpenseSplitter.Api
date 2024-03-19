@@ -101,6 +101,8 @@ public class ApplicationTests
           .HaveNameEndingWith("Validator")
           .And()
           .BeSealed()
+          .And()
+          .BePublic()
           .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
