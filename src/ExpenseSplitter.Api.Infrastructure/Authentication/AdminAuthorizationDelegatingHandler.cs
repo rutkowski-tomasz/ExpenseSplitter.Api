@@ -19,7 +19,7 @@ public sealed class AdminAuthorizationDelegatingHandler : DelegatingHandler
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var authorizationToken = await GetAuthorizationToken(cancellationToken);
+        var authorizationToken = await GetAdminToken(cancellationToken);
 
         request.Headers.Authorization = new AuthenticationHeaderValue(
             JwtBearerDefaults.AuthenticationScheme,
@@ -27,12 +27,10 @@ public sealed class AdminAuthorizationDelegatingHandler : DelegatingHandler
 
         var httpResponseMessage = await base.SendAsync(request, cancellationToken);
 
-        httpResponseMessage.EnsureSuccessStatusCode();
-
         return httpResponseMessage;
     }
 
-    private async Task<AuthorizationToken> GetAuthorizationToken(CancellationToken cancellationToken)
+    private async Task<AuthorizationToken> GetAdminToken(CancellationToken cancellationToken)
     {
         var authorizationRequestParameters = new KeyValuePair<string, string>[]
         {

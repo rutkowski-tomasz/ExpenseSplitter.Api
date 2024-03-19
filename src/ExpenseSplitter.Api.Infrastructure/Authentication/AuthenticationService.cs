@@ -1,21 +1,32 @@
 ﻿using System.Net.Http.Json;
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Infrastructure.Authentication.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 
 internal sealed class AuthenticationService : IAuthenticationService
 {
+    private static readonly Error RegistrationError = new(
+        "Authentication.RegistrationError",
+        "An error occurred during user registration"
+    );
+
     private const string PasswordCredentialType = "password";
 
     private readonly HttpClient httpClient;
+    private readonly ILogger<AuthenticationService> logger;
 
-    public AuthenticationService(HttpClient httpClient)
+
+    public AuthenticationService(HttpClient httpClient, ILogger<AuthenticationService> logger)
     {
         this.httpClient = httpClient;
+        this.logger = logger;
+
     }
 
-    public async Task<string> RegisterAsync(
+    public async Task<Result<string>> RegisterAsync(
         string email,
         string password,
         CancellationToken cancellationToken
@@ -38,6 +49,17 @@ internal sealed class AuthenticationService : IAuthenticationService
             userRepresentationModel,
             cancellationToken);
 
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogWarning(
+                "Keycloak returned non-success response {StatusCode} {Content}",
+                response.StatusCode,
+                await response.Content.ReadAsStringAsync(cancellationToken)
+            );
+
+            return Result.Failure<string>(RegistrationError);
+        }
+
         return ExtractIdentityIdFromLocationHeader(response);
     }
 
@@ -46,19 +68,14 @@ internal sealed class AuthenticationService : IAuthenticationService
     {
         const string usersSegmentName = "users/";
 
-        var locationHeader = httpResponseMessage.Headers.Location?.PathAndQuery;
-
-        if (locationHeader is null)
-        {
-            throw new InvalidOperationException("Location header can't be null");
-        }
+        var locationHeader = httpResponseMessage.Headers.Location?.PathAndQuery
+            ?? throw new InvalidOperationException("Location header can't be null");
 
         var userSegmentValueIndex = locationHeader.IndexOf(
             usersSegmentName,
             StringComparison.InvariantCultureIgnoreCase);
 
-        var userIdentityId = locationHeader.Substring(
-            userSegmentValueIndex + usersSegmentName.Length);
+        var userIdentityId = locationHeader[(userSegmentValueIndex + usersSegmentName.Length)..];
 
         return userIdentityId;
     }

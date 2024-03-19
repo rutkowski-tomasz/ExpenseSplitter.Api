@@ -11,7 +11,7 @@ internal sealed class JwtService : IJwtService
 {
     private static readonly Error AuthenticationFailed = new(
         "JwtService.AuthenticationFailed",
-        "Failed to acquire access token do to authentication failure");
+        "Invalid email or password");
 
     private static readonly Error BadGateway = new(
         "JwtService.BadGateway",
