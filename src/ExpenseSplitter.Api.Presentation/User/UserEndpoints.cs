@@ -24,7 +24,7 @@ public class UserEndpoints : IEndpoint
         routeGroupBuilder.MapGet("me", GetLoggedInUser).RequireAuthorization();
     }
 
-    public static async Task<Results<Ok<Guid>, BadRequest>> Register(
+    public static async Task<Results<Ok<Guid>, BadRequest<Error>>> Register(
         RegisterUserRequest request,
         ISender sender,
         CancellationToken cancellationToken
@@ -38,7 +38,7 @@ public class UserEndpoints : IEndpoint
 
         var result = await sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest();
+        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest<Error>(result.Error);
     }
 
     public static async Task<Results<Ok<LoginUserResult>, BadRequest<Error>>> Login(
