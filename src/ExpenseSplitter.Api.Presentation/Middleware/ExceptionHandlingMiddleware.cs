@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using BadHttpRequestException = Microsoft.AspNetCore.Http.BadHttpRequestException;
 
 namespace ExpenseSplitter.Api.Presentation.Middleware;
 
@@ -41,6 +42,7 @@ public class ExceptionHandlingMiddleware
                 problemDetails.Extensions["errors"] = exceptionDetails.Errors;
             }
 
+            context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = exceptionDetails.Status;
 
             await context.Response.WriteAsJsonAsync(problemDetails);
@@ -51,18 +53,27 @@ public class ExceptionHandlingMiddleware
     {
         return exception switch
         {
+            BadHttpRequestException badHttpRequestException => new ExceptionDetails(
+                StatusCodes.Status400BadRequest,
+                "BadRequest",
+                "Bad request",
+                badHttpRequestException.Message,
+                null
+            ),
             ValidationException validationException => new ExceptionDetails(
                 StatusCodes.Status400BadRequest,
                 "ValidationFailure",
                 "Validation error",
                 "One or more validation errors has occurred",
-                validationException.Errors),
+                validationException.Errors
+            ),
             _ => new ExceptionDetails(
                 StatusCodes.Status500InternalServerError,
                 "ServerError",
                 "Server error",
                 "An unexpected error has occurred",
-                null)
+                null
+            ),
         };
     }
 
@@ -71,5 +82,6 @@ public class ExceptionHandlingMiddleware
         string Type,
         string Title,
         string Detail,
-        IEnumerable<object>? Errors);
+        IEnumerable<object>? Errors
+    );
 }
