@@ -52,6 +52,8 @@ app.UseHttpsRedirection();
 
 app.UseTraceIdMiddleware();
 
+app.UseLoggingMiddleware();
+
 app.UseCustomExceptionHandler();
 
 app.UseAuthentication();
