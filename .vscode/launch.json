@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // "justMyCode": false,
+            "program": "${workspaceFolder}/src/ExpenseSplitter.Api.Presentation/bin/Debug/net7.0/ExpenseSplitter.Api.Presentation.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/ExpenseSplitter.Api.Presentation",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            // "serverReadyAction": {
+            //     "action": "openExternally",
+            //     "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            // },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}

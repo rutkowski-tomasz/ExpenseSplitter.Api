@@ -4,9 +4,7 @@ project.lock.json
 .DS_Store
 *.pyc
 nupkg/
-
-# Visual Studio Code
-.vscode/
+.mono
 
 # Rider
 .idea/
