@@ -9,7 +9,7 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 1. Bold split into: Domain, Application, Infrastructure, and Presentation layers
 2. **Domain layer**: Entities, ValueObjects, DomainEvents, Domain Servies, Strongly typed IDs
 3. **Application Layer**: CQRS using MediatR with ICommand, IQuery, ICommandHandler, IQueryHandler abstractions, Logging for ICommandHandler, Validators with handling middleware, Result-driven communication, Idempotent/duplicated request handling
-4. **Presentation Layer**: Minimal API with Swagger documentation, Trace ID middleware.
+4. **Presentation Layer**: Minimal API with Swagger documentation, Trace ID middleware, Rate limiting.
 5. **Infrastructure Layer**: EF Core (DbContext, Entity mapping, DB migrations, Repositories), Authentication & Authorization, Database migrations
 6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Dependabot integration, Architecture tests
 7. Docker support with docker-compose orchestration

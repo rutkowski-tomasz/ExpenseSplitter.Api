@@ -4,6 +4,7 @@ using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Abstractions;
+using ExpenseSplitter.Api.Presentation.Extensions;
 using ExpenseSplitter.Api.Presentation.User.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,9 +18,13 @@ public class UserEndpoints : IEndpoint
     {
         var routeGroupBuilder = builder.MapGroup("user");
 
-        routeGroupBuilder.MapPost("register", Register).AllowAnonymous();
+        routeGroupBuilder.MapPost("register", Register)
+            .AllowAnonymous()
+            .RequireRateLimiting(RateLimitingExtensions.IpRateLimiting);
 
-        routeGroupBuilder.MapPost("login", Login).AllowAnonymous();
+        routeGroupBuilder.MapPost("login", Login)
+            .AllowAnonymous()
+            .RequireRateLimiting(RateLimitingExtensions.IpRateLimiting);
 
         routeGroupBuilder.MapGet("me", GetLoggedInUser).RequireAuthorization();
     }
