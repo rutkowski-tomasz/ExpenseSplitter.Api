@@ -11,6 +11,7 @@ using ExpenseSplitter.Api.Application.Settlements.LeaveSettlement;
 using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Presentation.Abstractions;
+using ExpenseSplitter.Api.Presentation.Extensions;
 using ExpenseSplitter.Api.Presentation.Settlements.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -25,7 +26,8 @@ public class SettlementEndpoints : IEndpoint
     {
         var routeGroupBuilder = builder.MapGroup("settlements").RequireAuthorization();
 
-        routeGroupBuilder.MapGet("", GetAllSettlements);
+        routeGroupBuilder.MapGet("", GetAllSettlements)
+            .RequireRateLimiting(RateLimitingExtensions.UserRateLimiting);
         routeGroupBuilder.MapPost("", CreateSettlement);
         routeGroupBuilder.MapPut("{settlementId}", UpdateSettlement);
         routeGroupBuilder.MapGet("{settlementId}", GetSettlement);
