@@ -57,7 +57,7 @@ jobs:
         with:
             image-ref: ${{ steps.docker_tag.outputs.DOCKER_TAG }}
             format: 'table'
-            exit-code: '0'
+            exit-code: '1'
             ignore-unfixed: true
             vuln-type: 'os,library'
             severity: 'HIGH,CRITICAL'
