@@ -10,6 +10,8 @@ jobs:
   test:
     name: Unit tests
     uses: ./.github/workflows/workflow-test.yml
+    with:
+      publish_coverage: ${{ github.ref == 'refs/heads/main' }}
 
   tag_release:
     name: Tag release
