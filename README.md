@@ -13,6 +13,7 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 5. **Infrastructure Layer**: EF Core (DbContext, Entity mapping, DB migrations, Repositories), Authentication & Authorization, Database migrations
 6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Dependabot integration, Architecture tests
 7. Docker support with docker-compose orchestration
+8. Semantic release
 
 # 🛹 Big picture
 
