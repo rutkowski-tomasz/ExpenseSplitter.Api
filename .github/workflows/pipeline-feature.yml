@@ -15,7 +15,7 @@ jobs:
 
   tag_release:
     name: Tag release
-    needs: test
+    # TODO: needs: test
     uses: ./.github/workflows/workflow-tag-release.yml
 
   build_scan:
