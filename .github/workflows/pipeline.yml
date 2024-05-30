@@ -15,24 +15,14 @@ jobs:
     name: Tag release
     uses: ./.github/workflows/workflow-tag-release.yml
 
-  print_release_tag:
-    needs: [tag_release]
-    name: Print release tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Printer
-        run: |
-          echo ${{ env.RELEASE_TAG }}
-
   build_scan:
     name: Docker image
     needs: [test, tag_release]
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
-
     with:
       image_name: rutkowski/expensesplitter-api
       enable_push: true
       build_context: src
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
-      release_tag: alpha
+      release_tag: ${{ needs.tag_release.outputs.release_tag }}
     secrets: inherit
