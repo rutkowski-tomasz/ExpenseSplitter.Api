@@ -10,10 +10,11 @@ permissions:
 
 jobs:
   test:
+    name: Unit tests
     uses: ./.github/workflows/workflow-test.yml
 
   build_scan:
-    name: Build and scan docker image
+    name: Docker image
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:
       image_name: rutkowski/expensesplitter-api

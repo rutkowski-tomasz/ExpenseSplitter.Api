@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   test:
+    name: Unit tests
     uses: ./.github/workflows/workflow-test.yml
     with:
       publish_coverage: true
