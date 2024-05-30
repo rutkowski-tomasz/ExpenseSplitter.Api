@@ -27,10 +27,11 @@ jobs:
     name: Docker image
     needs: [test, tag_release]
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
+
     with:
       image_name: rutkowski/expensesplitter-api
       enable_push: true
       build_context: src
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
-      release_tag: ${{ env.RELEASE_TAG }}
+      release_tag: alpha
     secrets: inherit
