@@ -4,8 +4,8 @@
     "branches": [
       "main",
       {
-        "name": "feature/*",
-        "prerelease": "alpha",
+        "name": "*",
+        "prerelease": true,
         "channel": "alpha"
       }
     ],
