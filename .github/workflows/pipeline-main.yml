@@ -20,7 +20,7 @@ jobs:
     uses: ./.github/workflows/workflow-tag-release.yml
 
   build_scan_publish:
-    name: Build, scan and push docker image
+    name: Docker image
     needs: tag_release
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:

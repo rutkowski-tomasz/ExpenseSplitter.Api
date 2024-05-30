@@ -1,4 +1,4 @@
-name: Build, scan and push docker image
+name: Build, scan and push
 
 on:
   workflow_call:
@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   build:
-    name: Build, scan and push docker image
+    name: Build, scan and push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

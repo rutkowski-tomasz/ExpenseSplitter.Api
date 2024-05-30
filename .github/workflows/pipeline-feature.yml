@@ -20,4 +20,4 @@ jobs:
       image_name: rutkowski/expensesplitter-api
       enable_push: false
       build_context: src
-      dockerfile: ExpenseSplitter.Api.Presentation/Dockerfile
+      dockerfile: ./ExpenseSplitter.Api.Presentation/Dockerfile
