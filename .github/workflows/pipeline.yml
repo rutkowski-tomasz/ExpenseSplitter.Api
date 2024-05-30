@@ -15,6 +15,15 @@ jobs:
     name: Tag release
     uses: ./.github/workflows/workflow-tag-release.yml
 
+  print_tag_release:
+    name: Print release tag
+    runs-on: ubuntu-latest
+    needs: [tag_release]
+    steps:
+      - name: Print release tag
+        run: |
+          echo "Release tag: ${{ needs.tag_release.outputs.release_tag }}"
+
   build_scan:
     name: Docker image
     needs: [test, tag_release]

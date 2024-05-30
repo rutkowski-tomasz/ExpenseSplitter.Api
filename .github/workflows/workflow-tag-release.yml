@@ -14,7 +14,7 @@ jobs:
 
       - name: Semantic Release
         id: semantic_release
-        uses: cycjimmy/semantic-release-action@v3
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -33,6 +33,10 @@ jobs:
             @semantic-release/github@8.0.7
             conventional-changelog-conventionalcommits@6.1.0
           extends: conventional-changelog-conventionalcommits@6.1.0
+
+      - name: Print release tag
+        run: |
+          echo "Release tag: ${{ steps.semantic_release.outputs.new_release_version }}"
 
     outputs:
       release_tag: ${{ steps.semantic_release.outputs.new_release_version }}
