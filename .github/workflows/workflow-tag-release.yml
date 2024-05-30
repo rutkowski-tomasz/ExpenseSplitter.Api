@@ -3,7 +3,7 @@ on:
     outputs:
       release_tag:
         description: "The generated semantic release tag"
-        value: ${{ jobs.release.outputs.tag }}
+        value: ${{ jobs.release.outputs.release_tag }}
 
 permissions:
   contents: write
@@ -39,4 +39,4 @@ jobs:
           extends: conventional-changelog-conventionalcommits@6.1.0
 
     outputs:
-      tag: ${{ steps.semantic_release.outputs.new_release_version }}
+      release_tag: ${{ steps.semantic_release.outputs.new_release_version }}

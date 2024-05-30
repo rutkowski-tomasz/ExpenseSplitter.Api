@@ -39,10 +39,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Construct docker tag
-        run: |
-          tag="${{ inputs.image_name }}:${{ inputs.release_tag }}"
-          echo $tag
-          echo "DOCKER_TAG=${tag}" >> $GITHUB_ENV
+        id: docker_tag
+        run: echo "DOCKER_TAG=${{ inputs.image_name }}:${{ inputs.release_tag }}" >> "$GITHUB_OUTPUT"
 
       - name: Build image
         uses: docker/build-push-action@v2
@@ -50,14 +48,14 @@ jobs:
           context: ${{ inputs.build_context }}
           file: ${{ inputs.dockerfile }}
           push: ${{ inputs.enable_push }}
-          tags: ${{ env.DOCKER_TAG }}
+          tags: ${{ steps.docker_tag.outputs.DOCKER_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.20.0
         with:
-            image-ref: ${{ env.DOCKER_TAG }}
+            image-ref: ${{ steps.docker_tag.outputs.DOCKER_TAG }}
             format: 'table'
             exit-code: '1'
             ignore-unfixed: true
@@ -71,6 +69,6 @@ jobs:
           context: ${{ inputs.build_context }}
           file: ${{ inputs.dockerfile }}
           push: true
-          tags: ${{ env.DOCKER_TAG }}
+          tags: ${{ steps.docker_tag.outputs.DOCKER_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
