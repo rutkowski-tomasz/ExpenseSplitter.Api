@@ -17,7 +17,7 @@ jobs:
 
   build_scan:
     name: Docker image
-    needs: tag_release
+    needs: [test, tag_release]
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:
       image_name: rutkowski/expensesplitter-api
