@@ -1,0 +1,73 @@
+{
+    "release": {
+        "tagFormat": "v${version}",
+        "ci": true,
+        "debug": false,
+        "plugins": [
+            [
+                "@semantic-release/commit-analyzer",
+                {
+                    "preset": "conventionalcommits",
+                    "releaseRules": [
+                        {
+                            "type": "revert",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "docs",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "style",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "chore",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "refactor",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "test",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "build",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "ci",
+                            "release": "patch"
+                        },
+                        {
+                            "type": "improvement",
+                            "release": "minor"
+                        }
+                    ],
+                    "parserOpts": {
+                        "noteKeywords": [
+                            "BREAKING CHANGE",
+                            "BREAKING CHANGES"
+                        ]
+                    }
+                }
+            ],
+            "@semantic-release/github",
+            [
+                "@semantic-release/changelog",
+                {
+                    "changelogFile": "docs/CHANGELOG.md"
+                }
+            ]
+        ]
+    },
+    "dependencies": {
+        "@semantic-release/changelog": "^6.0.3",
+        "@semantic-release/commit-analyzer": "^9.0.2",
+        "@semantic-release/github": "^8.0.7",
+        "semantic-release": "^19.0.5",
+        "conventional-changelog-conventionalcommits": "^8.0.0"
+    }
+}
