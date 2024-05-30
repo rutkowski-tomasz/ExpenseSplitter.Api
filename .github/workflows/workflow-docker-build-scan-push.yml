@@ -19,8 +19,12 @@ on:
         type: string
         default: Dockerfile
 
+permissions:
+  contents: write
+
 jobs:
   build:
+    name: Build, scan and push docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,11 +46,6 @@ jobs:
           echo $tag
           echo "DOCKER_TAG=${tag}" >> $GITHUB_ENV
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-
       - name: Build image
         uses: docker/build-push-action@v2
         with:
@@ -54,13 +53,8 @@ jobs:
           file: ${{ inputs.dockerfile }}
           push: ${{ inputs.enable_push }}
           tags: ${{ env.DOCKER_TAG }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Move Docker cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.20.0
@@ -80,5 +74,5 @@ jobs:
           file: ${{ inputs.dockerfile }}
           push: true
           tags: ${{ env.DOCKER_TAG }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
