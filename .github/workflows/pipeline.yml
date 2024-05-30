@@ -12,26 +12,16 @@ jobs:
     uses: ./.github/workflows/workflow-test.yml
 
   tag_release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Tag release
-        id: my_tag_release
-        uses: ./.github/workflows/workflow-tag-release.yml
-      - name: Print release tag
-        run: |
-          echo "Release tag: ${{ steps.my_tag_release.outputs.release_tag }}"
-    outputs:
-      release_tag: ${{ steps.my_tag_release.outputs.release_tag }}
+    name: Tag release
+    uses: ./.github/workflows/workflow-tag-release.yml
 
-  print_tag_release:
-    needs: [tag_release]
+  print_release_tag:
+    name: Print release tag
     runs-on: ubuntu-latest
     steps:
-      - name: Print release tag
+      - name: Printer
         run: |
-          echo "Release tag 1: ${{ needs.tag_release.outputs.release_tag }}"
+          echo ${{ env.RELEASE_TAG }}
 
   build_scan:
     name: Docker image
@@ -42,5 +32,5 @@ jobs:
       enable_push: true
       build_context: src
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
-      release_tag: ${{ needs.tag_release.outputs.release_tag }}
+      release_tag: ${{ env.RELEASE_TAG }}
     secrets: inherit
