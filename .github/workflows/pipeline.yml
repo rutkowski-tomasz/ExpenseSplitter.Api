@@ -1,10 +1,8 @@
-name: CICD main branch
+name: CI/CD pipeline
 
 on:
-  push:
-    branches:
-      - main
-
+  push
+  
 permissions:
   contents: write
 
@@ -12,15 +10,13 @@ jobs:
   test:
     name: Unit tests
     uses: ./.github/workflows/workflow-test.yml
-    with:
-      publish_coverage: true
 
   tag_release:
     name: Tag release
     needs: test
     uses: ./.github/workflows/workflow-tag-release.yml
 
-  build_scan_publish:
+  build_scan:
     name: Docker image
     needs: tag_release
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml

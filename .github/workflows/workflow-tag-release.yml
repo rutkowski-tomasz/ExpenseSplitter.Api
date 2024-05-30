@@ -23,7 +23,7 @@ jobs:
             [
               "main",
               { 
-                "name": "feature/*",
+                "name": "*",
                 "prerelease": "alpha"
               }
             ]
