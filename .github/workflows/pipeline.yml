@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Tag release
-        id: tag_release
+        id: my_tag_release
         uses: ./.github/workflows/workflow-tag-release.yml
       - name: Print release tag
         run: |
-          echo "Release tag: ${{ steps.tag_release.outputs.release_tag }}"
+          echo "Release tag: ${{ steps.my_tag_release.outputs.release_tag }}"
     outputs:
-      release_tag: ${{ steps.tag_release.outputs.release_tag }}
+      release_tag: ${{ steps.my_tag_release.outputs.release_tag }}
 
   print_tag_release:
     needs: [tag_release]
