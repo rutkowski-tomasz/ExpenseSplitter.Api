@@ -18,6 +18,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           working_directory: semantic-release
+          branches: |
+            [
+              "main",
+              { 
+                "name": "*", 
+                "prerelease": true,
+                "channel": "alpha"
+              }
+            ]
           extra_plugins: |
             @semantic-release/changelog@6.0.3
             @semantic-release/commit-analyzer@9.0.2
