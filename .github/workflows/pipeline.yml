@@ -14,6 +14,8 @@ jobs:
   tag_release:
     name: Tag release
     uses: ./.github/workflows/workflow-tag-release.yml
+    outputs:
+      release_tag: ${{ steps.tag_release.outputs.release_tag }}
 
   print_tag_release:
     name: Print release tag
