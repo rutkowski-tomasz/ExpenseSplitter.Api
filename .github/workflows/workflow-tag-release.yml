@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   release:
-    name: Tag release
+    name: Semantic release tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

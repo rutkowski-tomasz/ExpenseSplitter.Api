@@ -16,6 +16,7 @@ jobs:
       publish_coverage: true
 
   tag_release:
+    name: Tag release
     needs: test
     uses: ./.github/workflows/workflow-tag-release.yml
 
