@@ -22,9 +22,8 @@ jobs:
             [
               "main",
               { 
-                "name": "feature/*", 
-                "prerelease": true,
-                "channel": "alpha"
+                "name": "feature/*",
+                "prerelease": "alpha"
               }
             ]
           extra_plugins: |
