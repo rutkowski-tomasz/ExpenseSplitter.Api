@@ -16,6 +16,7 @@ jobs:
     uses: ./.github/workflows/workflow-tag-release.yml
 
   print_release_tag:
+    needs: [tag_release]
     name: Print release tag
     runs-on: ubuntu-latest
     steps:
