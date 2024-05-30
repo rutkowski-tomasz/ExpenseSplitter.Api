@@ -23,7 +23,8 @@ jobs:
               "main",
               { 
                 "name": "feature/*", 
-                "prerelease": true
+                "prerelease": true,
+                "channel": "alpha"
               }
             ]
           extra_plugins: |
