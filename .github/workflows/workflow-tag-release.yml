@@ -1,16 +1,14 @@
-name: CD
+name: Tag release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
 
 permissions:
   contents: write
 
 jobs:
   release:
-    name: Release
+    name: Tag release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,5 +25,11 @@ jobs:
             @semantic-release/changelog@6.0.3
             @semantic-release/commit-analyzer@9.0.2
             @semantic-release/github@8.0.7
-            conventional-changelog-conventionalcommits
+            conventional-changelog-conventionalcommits@6.1.0
           extends: conventional-changelog-conventionalcommits@6.1.0
+
+      - name: Output release tag
+        run: echo "release_tag=$(git describe --tags)" >> $GITHUB_ENV
+
+    outputs:
+      release_tag: ${{ env.release_tag }}

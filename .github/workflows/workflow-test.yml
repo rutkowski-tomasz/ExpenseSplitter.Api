@@ -1,6 +1,14 @@
-name: CI
+name: Test
 
-on: [push]
+on:
+  workflow_call:
+    inputs:
+      publish_coverage:
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
 
 jobs:
   test:
@@ -20,14 +28,16 @@ jobs:
         run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
       - name: Restore coverage history
+        if: ${{ inputs.publish_coverage }}
         uses: dawidd6/action-download-artifact@v2
         with:
-          github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           name: CoverageHistory
           path: CoverageHistory
         # econtinue-on-error: true
 
       - name: ReportGenerator
+        if: ${{ inputs.publish_coverage }}
         uses: danielpalme/ReportGenerator-GitHub-Action@5
         with:
           reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
@@ -37,12 +47,14 @@ jobs:
           filefilters: '-*/Migrations/*'
 
       - name: Upload coverage report
+        if: ${{ inputs.publish_coverage }}
         uses: actions/upload-artifact@v4
         with:
           name: CoverageReports
           path: CoverageReports
 
       - name: Upload coverage history
+        if: ${{ inputs.publish_coverage }}
         uses: actions/upload-artifact@v4
         with:
           name: CoverageHistory

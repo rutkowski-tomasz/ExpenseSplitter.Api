@@ -1,0 +1,27 @@
+name: CICD main branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    uses: ./.github/workflows/workflow-test.yml
+    with:
+      publish_coverage: true
+
+  tag_release:
+    needs: test
+    uses: ./.github/workflows/workflow-tag-release.yml
+
+  build_scan_publish:
+    name: Build, scan and push docker image
+    needs: tag_release
+    uses: ./.github/workflows/workflow-docker-build-scan-push.yml
+    with:
+      image_name: rutkowski/expensesplitter-api
+      enable_push: true
+      build_context: src
+      dockerfile: ExpenseSplitter.Api.Presentation/Dockerfile
+      release_tag: ${{ needs.tag_release.outputs.release_tag }}

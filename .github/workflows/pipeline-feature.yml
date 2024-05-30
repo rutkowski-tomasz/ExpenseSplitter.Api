@@ -1,0 +1,20 @@
+name: CI feature branch
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  test:
+    uses: ./.github/workflows/workflow-test.yml
+
+  build_scan:
+    name: Build and scan docker image
+    needs: tag_release
+    uses: ./.github/workflows/workflow-docker-build-scan-push.yml
+    with:
+      image_name: rutkowski/expensesplitter-api
+      enable_push: false
+      build_context: src
+      dockerfile: ExpenseSplitter.Api.Presentation/Dockerfile
