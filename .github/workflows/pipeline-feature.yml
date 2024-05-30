@@ -15,7 +15,7 @@ jobs:
 
   tag_release:
     name: Tag release
-    # TODO: needs: test
+    needs: test
     uses: ./.github/workflows/workflow-tag-release.yml
 
   build_scan:
@@ -24,7 +24,7 @@ jobs:
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:
       image_name: rutkowski/expensesplitter-api
-      enable_push: false
+      enable_push: true
       build_context: src
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
       release_tag: ${{ needs.tag_release.outputs.release_tag }}
