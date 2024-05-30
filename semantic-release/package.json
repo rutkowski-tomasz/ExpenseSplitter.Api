@@ -5,7 +5,8 @@
       "main",
       {
         "name": "*",
-        "prerelease": true
+        "prerelease": true,
+        "channel": "alpha"
       }
     ],
     "ci": true,
