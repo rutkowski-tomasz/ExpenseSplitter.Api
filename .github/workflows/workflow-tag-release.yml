@@ -34,9 +34,5 @@ jobs:
             conventional-changelog-conventionalcommits@6.1.0
           extends: conventional-changelog-conventionalcommits@6.1.0
 
-      - name: Print release tag
-        run: |
-          echo "Release tag: ${{ steps.semantic_release.outputs.new_release_version }}"
-
     outputs:
       release_tag: ${{ steps.semantic_release.outputs.new_release_version }}
