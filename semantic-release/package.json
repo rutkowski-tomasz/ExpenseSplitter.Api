@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "release": {
     "tagFormat": "v${version}",
     "ci": true,
