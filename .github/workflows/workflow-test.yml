@@ -32,7 +32,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           name: CoverageHistory
           path: CoverageHistory
-        # econtinue-on-error: true
+          continue-on-error: true
 
       - name: ReportGenerator
         if: ${{ inputs.publish_coverage }}
