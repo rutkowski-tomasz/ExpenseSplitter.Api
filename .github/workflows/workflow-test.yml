@@ -26,7 +26,7 @@ jobs:
         run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
       - name: Restore coverage history
-        # if: ${{ inputs.publish_coverage }}
+        if: ${{ inputs.publish_coverage }}
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
