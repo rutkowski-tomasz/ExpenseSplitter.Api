@@ -23,12 +23,14 @@ jobs:
         run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
       - name: Restore coverage history
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
-          name: CoverageHistory
+          github-token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+          pattern: CoverageHistory
           path: CoverageHistory
 
-      - name: Display structure of downloaded files2
+      - name: Display structure of downloaded files
         run: ls -R CoverageHistory
         continue-on-error: true
 
