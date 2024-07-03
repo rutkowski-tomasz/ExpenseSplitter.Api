@@ -7,11 +7,62 @@ permissions: write-all
 
 jobs:
   test:
-    name: Unit tests
-    uses: ./.github/workflows/workflow-test.yml
-    with:
-      publish_coverage: true
-    secrets: inherit
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Test with the dotnet CLI
+        run: dotnet test --collect:"XPlat Code Coverage" *.sln
+
+      - name: Restore coverage history2
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: CoverageHistory
+          path: CoverageHistory2
+
+      - name: Display structure of downloaded files2
+        run: ls -R CoverageHistory2
+        continue-on-error: true
+
+      - name: Restore coverage history
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
+
+      - name: Display structure of downloaded files
+        run: ls -R CoverageHistory
+        continue-on-error: true
+
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
+          targetdir: 'CoverageReports'
+          historydir: 'CoverageHistory'
+          reporttypes: 'HtmlInline;Cobertura'
+          filefilters: '-*/Migrations/*'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverageReports
+          path: CoverageReports
+
+      - name: Upload coverage history
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
 
   tag_release:
     name: Tag release
