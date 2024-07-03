@@ -5,7 +5,8 @@ on:
         type: boolean
         default: false
 
-permissions: write-all
+permissions:
+  contents: read
 
 jobs:
   test:
