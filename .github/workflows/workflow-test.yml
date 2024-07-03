@@ -66,3 +66,7 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
+
+      - name: Display structure of downloaded files
+        run: ls -R CoverageHistory
+        continue-on-error: true
