@@ -11,7 +11,7 @@ jobs:
     name: Unit tests
     uses: ./.github/workflows/workflow-test.yml
     with:
-      publish_coverage: ${{ github.ref == 'refs/heads/main' }}
+      publish_coverage: true
     secrets: inherit
 
   tag_release:
