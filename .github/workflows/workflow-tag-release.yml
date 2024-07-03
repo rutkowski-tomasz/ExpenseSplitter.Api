@@ -1,0 +1,42 @@
+on:
+  workflow_call:
+    outputs:
+      release_tag:
+        description: "The generated semantic release tag"
+        value: ${{ jobs.release.outputs.release_tag }}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Semantic release tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        id: semantic_release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          working_directory: semantic-release
+          branches: |
+            [
+              "main",
+              { 
+                "name": "feature/*",
+                "prerelease": "alpha"
+              }
+            ]
+          extra_plugins: |
+            @semantic-release/changelog@6.0.3
+            @semantic-release/commit-analyzer@12.0.0
+            @semantic-release/github@10.0.5
+            conventional-changelog-conventionalcommits@8.0.0
+          extends: conventional-changelog-conventionalcommits@8.0.0
+
+    outputs:
+      release_tag: ${{ steps.semantic_release.outputs.new_release_version }}
