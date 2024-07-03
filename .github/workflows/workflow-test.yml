@@ -25,6 +25,13 @@ jobs:
       - name: Test with the dotnet CLI
         run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
+      - name: Display structure of downloaded files
+        run: ls -R CoverageHistory
+
       - name: Restore coverage history
         if: ${{ inputs.publish_coverage }}
         uses: dawidd6/action-download-artifact@v2
@@ -57,4 +64,3 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
-          
