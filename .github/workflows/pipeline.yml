@@ -9,11 +9,25 @@ permissions:
 
 jobs:
   test:
-    name: Unit tests
-    uses: ./.github/workflows/workflow-test.yml
-    with:
-      publish_coverage: true
-    secrets: inherit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore coverage history
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          github-token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+          name: CoverageHistory
+          path: CoverageHistory
+  
+      - name: Display structure of downloaded files
+        run: ls -R CoverageHistory
+
+        continue-on-error: true
+      - name: Unit tests
+        uses: ./.github/workflows/workflow-test.yml
+        with:
+          publish_coverage: true
 
   tag_release:
     name: Tag release

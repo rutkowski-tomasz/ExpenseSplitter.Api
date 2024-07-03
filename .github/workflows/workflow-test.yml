@@ -30,9 +30,10 @@ jobs:
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
+          github-token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
           name: CoverageHistory
           path: CoverageHistory
-          #  github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
       - name: Display structure of downloaded files
         run: ls -R CoverageHistory
         continue-on-error: true
@@ -59,11 +60,24 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
+          overwrite: true
 
       - name: Restore coverage history
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
+          name: CoverageHistory
+          path: CoverageHistory
+
+      - name: Display structure of downloaded files
+        run: ls -R CoverageHistory
+        continue-on-error: true
+
+      - name: Restore coverage history
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          github-token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
           name: CoverageHistory
           path: CoverageHistory
 
