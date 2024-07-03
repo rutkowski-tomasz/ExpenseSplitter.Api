@@ -21,17 +21,27 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
-      - name: Test with the dotnet CLI
-        run: dotnet test --collect:"XPlat Code Coverage" *.sln
-
       - name: Restore coverage history
         uses: dawidd6/action-download-artifact@v2
-        if: ${{ github.event.inputs.publish_coverage_history }}
+        if: ${{ inputs.publish_coverage_history }}
         with:
-          github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           name: CoverageHistory
           path: CoverageHistory
         # econtinue-on-error: true
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: CoverageHistory
+          path: CoverageHistoryAlt
+        continue-on-error: true
+
+      - name: Display structure of downloaded files
+        run: ls -R CoverageHistoryAlt
+        continue-on-error: true
+
+      - name: Test with the dotnet CLI
+        run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
       - name: ReportGenerator
         uses: danielpalme/ReportGenerator-GitHub-Action@5
@@ -50,7 +60,7 @@ jobs:
 
       - name: Upload coverage history
         uses: actions/upload-artifact@v4
-        if: ${{ github.event.inputs.publish_coverage_history }}
+        if: ${{ inputs.publish_coverage_history }}
         with:
           name: CoverageHistory
           path: CoverageHistory
