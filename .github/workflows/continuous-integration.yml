@@ -7,19 +7,19 @@ permissions:
 
 jobs:
   test:
-    name: Run all automated tests in solution
+    name: Tests
     uses: ./.github/workflows/workflow-test.yml
     with:
       publish_coverage_history: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
 
-  tag_release:
-    name: Tag release
-    uses: ./.github/workflows/workflow-tag-release.yml
+  version:
+    name: Version
+    uses: ./.github/workflows/workflow-version.yml
 
   build_scan:
     name: Docker image
-    needs: [test, tag_release]
+    needs: [test, version]
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:
       image_name: rutkowski/expensesplitter-api
