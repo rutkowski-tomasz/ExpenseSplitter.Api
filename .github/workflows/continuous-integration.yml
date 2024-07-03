@@ -9,7 +9,7 @@ jobs:
     name: Run all automated tests in solution
     uses: ./.github/workflows/workflow-test.yml
     with:
-      publish_coverage: true
+      publish_coverage_history: true
     secrets: inherit
 
   tag_release:

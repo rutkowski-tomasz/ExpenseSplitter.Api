@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      publish_coverage:
+      publish_coverage_history:
         type: boolean
         default: false
 
@@ -26,6 +26,7 @@ jobs:
 
       - name: Restore coverage history
         uses: dawidd6/action-download-artifact@v2
+        if: ${{ github.event.inputs.publish_coverage_history }}
         with:
           github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
           name: CoverageHistory
@@ -49,6 +50,7 @@ jobs:
 
       - name: Upload coverage history
         uses: actions/upload-artifact@v4
+        if: ${{ github.event.inputs.publish_coverage_history }}
         with:
           name: CoverageHistory
           path: CoverageHistory
