@@ -31,10 +31,6 @@ jobs:
                 "prerelease": "alpha"
               }
             ]
-          extra_plugins: |
-            @semantic-release/commit-analyzer@12.0.0
-            @semantic-release/github@10.0.5
-          extends: conventional-changelog-conventionalcommits@8.0.0
 
     outputs:
       release_tag: ${{ steps.semantic_release.outputs.new_release_version }}
