@@ -5,8 +5,7 @@ on:
         description: "The generated semantic release tag"
         value: ${{ jobs.release.outputs.release_tag }}
 
-permissions:
-  contents: write
+permissions: write-all
 
 jobs:
   release:
