@@ -25,15 +25,18 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         if: ${{ inputs.publish_coverage_history }}
         with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           name: CoverageHistory
           path: CoverageHistory
-        # econtinue-on-error: true
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        continue-on-error: true
 
-      - uses: actions/download-artifact@v4
+      - name: Restore coverage history Alternative
+        uses: actions/download-artifact@v4
+        if: ${{ inputs.publish_coverage_history }}
         with:
           name: CoverageHistory
           path: CoverageHistoryAlt
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         continue-on-error: true
 
       - name: Display structure of downloaded files
