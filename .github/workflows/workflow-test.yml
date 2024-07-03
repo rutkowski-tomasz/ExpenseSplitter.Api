@@ -37,6 +37,17 @@ jobs:
           pattern: CoverageHistory
           path: CoverageHistoryAlt
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+        continue-on-error: true
+
+      - name: Restore coverage history Alternative
+        uses: actions/download-artifact@v4
+        if: ${{ inputs.publish_coverage_history }}
+        with:
+          name: CoverageHistory
+          path: CoverageHistoryAlt
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
         continue-on-error: true
 
       - name: Display structure of downloaded files
