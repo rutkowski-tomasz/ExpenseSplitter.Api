@@ -25,5 +25,5 @@ jobs:
       enable_push: true
       build_context: src
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
-      release_tag: ${{ needs.tag_release.outputs.release_tag }}
+      release_tag: ${{ needs.version.outputs.release_tag }}
     secrets: inherit
