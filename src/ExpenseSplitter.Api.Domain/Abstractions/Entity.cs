@@ -10,6 +10,7 @@ public abstract class Entity<TEntityId> : IEntity
     }
 
     public TEntityId Id { get; init; }
+    public DateTime LastModified { get; set; }
 
     public IReadOnlyList<IDomainEvent> GetDomainEvents()
     {

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ExpenseSplitter.Api.Application.Abstraction.Clock;
 using ExpenseSplitter.Api.Application.Exceptions;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Users;
@@ -12,13 +13,16 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<User> Users { get; set; }
 
     private readonly IPublisher publisher;
+    private readonly IDateTimeProvider dateTimeProvider;
 
     public ApplicationDbContext(
         DbContextOptions options,
-        IPublisher publisher
+        IPublisher publisher,
+        IDateTimeProvider dateTimeProvider
     ) : base(options)
     {
         this.publisher = publisher;
+        this.dateTimeProvider = dateTimeProvider;
     }
 
     [ExcludeFromCodeCoverage]
@@ -33,6 +37,8 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     {
         try
         {
+            UpdateLastModifiedDateForChangedEntries();
+
             var result = await base.SaveChangesAsync(cancellationToken);
 
             await PublishDomainEvents();
@@ -42,6 +48,19 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
         catch (DbUpdateConcurrencyException ex)
         {
             throw new ConcurrencyException("Concurrency exception occurred.", ex);
+        }
+    }
+
+    private void UpdateLastModifiedDateForChangedEntries()
+    {
+        var entities = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Modified || e.State == EntityState.Added)
+            .Select(x => x.Entity as IEntity)
+            .Where(x => x is not null);
+
+        foreach (var entity in entities)
+        {
+            entity!.LastModified = dateTimeProvider.UtcNow;
         }
     }
 
