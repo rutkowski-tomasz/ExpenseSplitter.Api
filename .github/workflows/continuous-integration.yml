@@ -5,6 +5,11 @@ on: [push]
 permissions: write-all
 
 jobs:
+  scan:
+    name: Scan
+    uses: ./.github/workflows/workflow-scan.yml
+    secrets: inherit
+
   test:
     name: Tests
     uses: ./.github/workflows/workflow-test.yml
@@ -18,7 +23,7 @@ jobs:
 
   build_scan:
     name: Docker image
-    needs: [test, version]
+    needs: [scan, test, version]
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:
       image_name: rutkowski/expensesplitter-api
