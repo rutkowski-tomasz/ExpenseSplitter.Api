@@ -5,7 +5,13 @@
     "debug": false,
     "plugins": [
       "@semantic-release/commit-analyzer",
-      "@semantic-release/github"
+      [
+        "@semantic-release/github",
+        {
+          "successComment": false,
+          "failTitle": false
+        }
+      ]
     ]
   }
 }

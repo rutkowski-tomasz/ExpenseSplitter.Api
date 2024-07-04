@@ -21,7 +21,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          working_directory: semantic-release
+          tag_format: v${version}
+          extra_plugins: |
+            "@semantic-release/commit-analyzer",
+            [
+              "@semantic-release/github",
+              {
+                "successComment": false,
+                "failTitle": false
+              }
+            ]
           branches: |
             [
               "main",
