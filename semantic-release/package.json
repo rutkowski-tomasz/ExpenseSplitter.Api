@@ -1,6 +1,6 @@
 {
   "release": {
-    "tagFormat": "v${version}",
+    "tagFormat": "${version}",
     "ci": true,
     "debug": false,
     "branches": [

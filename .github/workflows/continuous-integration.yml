@@ -2,7 +2,10 @@ name: Continuous integration
 
 on: [push]
 
-permissions: write-all
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 
 jobs:
   scan:
