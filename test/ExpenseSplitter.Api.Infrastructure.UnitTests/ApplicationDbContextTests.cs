@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Domain.Abstractions;
+﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +17,9 @@ public class ApplicationDbContextTests
             .Options;
 
         mockPublisher = new Mock<IPublisher>();
+        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
 
-        context = new TestApplicationDbContext(options, mockPublisher.Object);
+        context = new TestApplicationDbContext(options, mockPublisher.Object, dateTimeProviderMock.Object);
     }
 
     [Fact]
@@ -59,8 +61,8 @@ public class ApplicationDbContextTests
     
     private class TestApplicationDbContext : ApplicationDbContext
     {
-        public TestApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher)
-            : base(options, publisher)
+        public TestApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher, IDateTimeProvider dateTimeProvider)
+            : base(options, publisher, dateTimeProvider)
         {
         }
 
