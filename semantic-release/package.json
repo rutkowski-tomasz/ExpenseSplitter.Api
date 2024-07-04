@@ -1,4 +1,11 @@
 {
+  "branches": [
+    "main",
+    { 
+      "name": "feature/*",
+      "prerelease": "alpha"
+    }
+  ],
   "release": {
     "tagFormat": "v${version}",
     "ci": true,

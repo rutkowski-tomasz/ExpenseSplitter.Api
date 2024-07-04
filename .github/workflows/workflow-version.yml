@@ -5,7 +5,10 @@ on:
         description: "The generated semantic release tag"
         value: ${{ jobs.release.outputs.release_tag }}
 
-permissions: write-all
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 
 jobs:
   release:
@@ -21,24 +24,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_format: v${version}
-          extra_plugins: |
-            "@semantic-release/commit-analyzer",
-            [
-              "@semantic-release/github",
-              {
-                "successComment": false,
-                "failTitle": false
-              }
-            ]
-          branches: |
-            [
-              "main",
-              { 
-                "name": "feature/*",
-                "prerelease": "alpha"
-              }
-            ]
+          working_directory: semantic-release
 
     outputs:
       release_tag: ${{ steps.semantic_release.outputs.new_release_version }}
