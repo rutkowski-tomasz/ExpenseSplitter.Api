@@ -2,47 +2,28 @@ name: Continuous integration
 
 on: [push]
 
+permissions: write-all
+
 jobs:
   test:
-    name: Run all automated tests in solution
-    runs-on: ubuntu-latest
+    name: Tests
+    uses: ./.github/workflows/workflow-test.yml
+    with:
+      publish_coverage_history: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
 
-    steps:
-      - uses: actions/checkout@v4
+  version:
+    name: Version
+    uses: ./.github/workflows/workflow-version.yml
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '7.0.x'
-
-      - name: Test with the dotnet CLI
-        run: dotnet test --collect:"XPlat Code Coverage" *.sln
-
-      - name: Restore coverage history
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
-          name: CoverageHistory
-          path: CoverageHistory
-        # econtinue-on-error: true
-
-      - name: ReportGenerator
-        uses: danielpalme/ReportGenerator-GitHub-Action@5
-        with:
-          reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
-          targetdir: 'CoverageReports'
-          historydir: 'CoverageHistory'
-          reporttypes: 'HtmlInline;Cobertura'
-          filefilters: '-*/Migrations/*'
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: CoverageReports
-          path: CoverageReports
-
-      - name: Upload coverage history
-        uses: actions/upload-artifact@v4
-        with:
-          name: CoverageHistory
-          path: CoverageHistory
+  build_scan:
+    name: Docker image
+    needs: [test, version]
+    uses: ./.github/workflows/workflow-docker-build-scan-push.yml
+    with:
+      image_name: rutkowski/expensesplitter-api
+      enable_push: true
+      build_context: src
+      dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
+      release_tag: ${{ needs.version.outputs.release_tag }}
+    secrets: inherit

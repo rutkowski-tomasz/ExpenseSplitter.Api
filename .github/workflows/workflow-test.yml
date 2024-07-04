@@ -1,0 +1,57 @@
+on:
+  workflow_call:
+    inputs:
+      publish_coverage_history:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Restore coverage history
+        uses: dawidd6/action-download-artifact@v2
+        if: ${{ inputs.publish_coverage_history }}
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Test with the dotnet CLI
+        run: dotnet test --collect:"XPlat Code Coverage" *.sln
+
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
+          targetdir: 'CoverageReports'
+          historydir: 'CoverageHistory'
+          reporttypes: 'HtmlInline;Cobertura'
+          filefilters: '-*/Migrations/*'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverageReports
+          path: CoverageReports
+
+      - name: Upload coverage history
+        uses: actions/upload-artifact@v4
+        if: ${{ inputs.publish_coverage_history }}
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
