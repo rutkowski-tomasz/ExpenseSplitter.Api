@@ -1,0 +1,19 @@
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v2.3.0
+        with:
+          projectBaseDir: src
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
