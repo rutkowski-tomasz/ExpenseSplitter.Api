@@ -7,7 +7,7 @@
       "main",
       { 
         "name": "feature/*",
-        "prerelease": "alpha"
+        "prerelease": true
       }
     ],
     "plugins": [
