@@ -6,7 +6,7 @@
     "branches": [
       "main",
       {
-        "name": "feature/.+",
+        "name": "feature/*",
         "prerelease": "alpha",
         "channel": "alpha"
       }
