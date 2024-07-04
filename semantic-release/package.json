@@ -1,13 +1,14 @@
 {
   "release": {
-    "tagFormat": "v${version}",
+    "tagFormat": "${version}",
     "ci": true,
-    "debug": false,
+    "debug": true,
     "branches": [
       "main",
-      { 
-        "name": "feature/*",
-        "prerelease": "alpha"
+      {
+        "name": "feature/.+",
+        "prerelease": "alpha",
+        "channel": "alpha"
       }
     ],
     "plugins": [
