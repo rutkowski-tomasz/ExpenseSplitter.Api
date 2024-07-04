@@ -1,24 +1,18 @@
 {
-  "branches": [
-    "main",
-    { 
-      "name": "feature/*",
-      "prerelease": "alpha"
-    }
-  ],
   "release": {
     "tagFormat": "v${version}",
     "ci": true,
     "debug": false,
+    "branches": [
+      "main",
+      { 
+        "name": "feature/*",
+        "prerelease": "alpha"
+      }
+    ],
     "plugins": [
       "@semantic-release/commit-analyzer",
-      [
-        "@semantic-release/github",
-        {
-          "successComment": false,
-          "failTitle": false
-        }
-      ]
+      "@semantic-release/github"
     ]
   }
 }
