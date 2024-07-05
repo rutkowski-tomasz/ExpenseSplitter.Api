@@ -5,7 +5,7 @@ namespace ExpenseSplitter.Api.Domain.Shared;
 public static class AmountErrors
 {
     public static readonly Error NegativeValue = new(
-        "AmountErrors.NonPositiveValue",
+        ErrorType.Validation,
         "Money value must be positive"
     );
 }

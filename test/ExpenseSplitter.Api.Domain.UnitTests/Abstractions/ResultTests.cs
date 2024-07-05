@@ -22,8 +22,8 @@ public class ResultTests
 
         result.IsSuccess.Should().BeFalse();
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(error.Code);
-        result.Error.Name.Should().Be(error.Name);
+        result.Error.Type.Should().Be(error.Type);
+        result.Error.Description.Should().Be(error.Description);
     }
 
     [Fact]
@@ -44,6 +44,6 @@ public class ResultTests
 
         result.IsSuccess.Should().BeFalse();
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(Error.NullValue);
+        result.Error.Should().Be(Error.None);
     }
 }

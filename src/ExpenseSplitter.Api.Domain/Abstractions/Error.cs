@@ -1,8 +1,6 @@
 ﻿namespace ExpenseSplitter.Api.Domain.Abstractions;
 
-public record Error(string Code, string Name)
+public record Error(ErrorType Type, string Description)
 {
-    public static Error None = new(string.Empty, string.Empty);
-
-    public static Error NullValue = new("Error.NullValue", "Null value was provided");
+    public static Error None = new(ErrorType.None, string.Empty);
 }

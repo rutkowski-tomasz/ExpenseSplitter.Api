@@ -65,7 +65,7 @@ public class GetSettlementQueryHandlerTests
         var response = await handler.Handle(query, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Code.Should().Be(SettlementErrors.NotFound.Code);
+        response.Error.Type.Should().Be(SettlementErrors.NotFound.Type);
     }
 
     [Fact]

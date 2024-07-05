@@ -75,7 +75,7 @@ public class ClaimParticipantCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Code.Should().Be(SettlementErrors.Forbidden.Code);
+        response.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class ClaimParticipantCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Code.Should().Be(ParticipantErrors.NotFound.Code);
+        response.Error.Type.Should().Be(ParticipantErrors.NotFound.Type);
     }
 
     [Fact]

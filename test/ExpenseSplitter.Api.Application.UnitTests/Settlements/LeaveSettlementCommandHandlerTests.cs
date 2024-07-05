@@ -53,7 +53,7 @@ public class LeaveSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Code.Should().Be(SettlementErrors.Forbidden.Code);
+        response.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 
     [Fact]

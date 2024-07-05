@@ -5,17 +5,17 @@ namespace ExpenseSplitter.Api.Domain.Settlements;
 public static class SettlementErrors
 {
     public static readonly Error EmptyName = new(
-        "Settlement.EmptyName",
+        ErrorType.Validation,
         "Can't create settlement with empty name"
     );
 
     public static readonly Error NotFound = new(
-        "Settlement.NotFound",
+        ErrorType.NotFound,
         "The settlement with the specified identifier was not found"
     );
 
     public static readonly Error Forbidden = new(
-        "Settlement.Forbidden",
+        ErrorType.Forbidden,
         "Can't access this settlement"
     );
 }

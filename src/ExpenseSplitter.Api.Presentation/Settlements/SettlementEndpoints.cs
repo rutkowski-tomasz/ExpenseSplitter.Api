@@ -81,7 +81,7 @@ public class SettlementEndpoints : IEndpoint
         return result.IsSuccess ? TypedResults.Ok() : TypedResults.NotFound();
     }
 
-    public static async Task<Results<Ok<Guid>, BadRequest<Error>>> CreateSettlement(
+    public static async Task<Results<Ok<Guid>, BadRequest<string>, IResult>> CreateSettlement(
         CreateSettlementRequest request,
         ISender sender,
         CancellationToken cancellationToken
@@ -94,7 +94,16 @@ public class SettlementEndpoints : IEndpoint
 
         var result = await sender.Send(command, cancellationToken);
 
-        return result.IsSuccess ? TypedResults.Ok(result.Value) : TypedResults.BadRequest(result.Error);
+        if (result.IsSuccess)
+        {
+            return TypedResults.Ok(result.Value);
+        }
+
+        return result.Error.Type switch
+        {
+            ErrorType.Validation => TypedResults.BadRequest(result.Error.Description),
+            _ => TypedResults.Json(result.Error.Description, statusCode: StatusCodes.Status500InternalServerError)
+        };
     }
 
     public static async Task<Results<Ok, BadRequest>> UpdateSettlement(

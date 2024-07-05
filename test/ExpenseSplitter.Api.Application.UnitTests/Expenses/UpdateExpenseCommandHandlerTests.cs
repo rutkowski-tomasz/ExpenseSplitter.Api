@@ -113,7 +113,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ExpenseErrors.EmptyTitle.Code);
+        result.Error.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(AmountErrors.NegativeValue.Code);
+        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ExpenseErrors.EmptyTitle.Code);
+        result.Error.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(AmountErrors.NegativeValue.Code);
+        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
     
     [Fact]
@@ -213,7 +213,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(AmountErrors.NegativeValue.Code);
+        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
     
     [Fact]
@@ -251,6 +251,6 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ConcurrencyException.ConcurrencyError.Code);
+        result.Error.Type.Should().Be(ConcurrencyException.ConcurrencyError.Type);
     }
 }

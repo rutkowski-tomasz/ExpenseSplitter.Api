@@ -60,7 +60,7 @@ public class UpdateSettlementCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(SettlementErrors.Forbidden.Code);
+        result.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
     
     [Fact]
@@ -74,7 +74,7 @@ public class UpdateSettlementCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(SettlementErrors.NotFound.Code);
+        result.Error.Type.Should().Be(SettlementErrors.NotFound.Type);
     }
     
     [Fact]
@@ -112,7 +112,7 @@ public class UpdateSettlementCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(SettlementErrors.EmptyName.Code);
+        result.Error.Type.Should().Be(SettlementErrors.EmptyName.Type);
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public class UpdateSettlementCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ParticipantErrors.NicknameEmpty.Code);
+        result.Error.Type.Should().Be(ParticipantErrors.NicknameEmpty.Type);
     }
     
     [Fact]
@@ -208,6 +208,6 @@ public class UpdateSettlementCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ParticipantErrors.NicknameEmpty.Code);
+        result.Error.Type.Should().Be(ParticipantErrors.NicknameEmpty.Type);
     }
 }

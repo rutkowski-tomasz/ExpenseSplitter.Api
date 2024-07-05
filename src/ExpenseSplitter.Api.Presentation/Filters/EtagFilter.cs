@@ -1,12 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
-using ExpenseSplitter.Api.Domain.Abstractions;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ExpenseSplitter.Api.Presentation.Filters;
 
@@ -47,9 +42,10 @@ public class EtagFilter : IEndpointFilter
         return result;
     }
 
-    private object? GetResultValue(object result)
+    private object? GetResultValue(object? result)
     {
-        if (result is INestedHttpResult nestedHttpResult
+        if (result is not null
+            && result is INestedHttpResult nestedHttpResult
             && nestedHttpResult.Result is IValueHttpResult valueHttpResult)
         {
             return valueHttpResult.Value;
