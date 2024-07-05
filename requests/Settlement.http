@@ -1,0 +1,35 @@
+# @name login
+POST {{baseUrl}}/api/v1/user/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password"
+}
+
+###
+
+# @name listSettlements
+GET {{baseUrl}}/api/v1/settlements
+Authorization: Bearer {{login.response.body.accessToken}}
+
+###
+
+# @name createSettlement
+POST {{baseUrl}}/api/v1/settlements/b
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+    "name": "Postman settlement",
+    "participantNames": [
+        "Agata",
+        "Blazej"
+    ]
+}
+
+### 
+
+# @name getSettlement
+GET {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}
+Authorization: Bearer {{login.response.body.accessToken}}
