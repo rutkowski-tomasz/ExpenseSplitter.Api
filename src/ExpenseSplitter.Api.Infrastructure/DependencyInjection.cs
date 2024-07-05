@@ -66,7 +66,8 @@ public static class DependencyInjection
                 httpClient.BaseAddress = new Uri(keycloakOptions.AdminUrl);
             })
             .AddHttpMessageHandler<AdminAuthorizationDelegatingHandler>()
-            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+            .AddHttpMessageHandler<LoggingDelegatingHandler>()
+            .AddStandardResilienceHandler();
 
         services.AddHttpClient<IJwtService, JwtService>((serviceProvider, httpClient) =>
             {
@@ -74,7 +75,8 @@ public static class DependencyInjection
 
                 httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
             })
-            .AddHttpMessageHandler<LoggingDelegatingHandler>();
+            .AddHttpMessageHandler<LoggingDelegatingHandler>()
+            .AddStandardResilienceHandler();
 
         services.AddHttpContextAccessor();
 
