@@ -9,7 +9,7 @@ namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 internal sealed class AuthenticationService : IAuthenticationService
 {
     private static readonly Error RegistrationError = new(
-        "Authentication.RegistrationError",
+        ErrorType.BadRequest,
         "An error occurred during user registration"
     );
 

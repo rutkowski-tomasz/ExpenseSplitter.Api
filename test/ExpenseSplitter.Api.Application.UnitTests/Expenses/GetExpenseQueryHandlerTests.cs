@@ -61,7 +61,7 @@ public class GetExpenseQueryHandlerTests
         var result = await handler.Handle(query, default);
         
         result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ExpenseErrors.NotFound.Code);
+        result.Error.Type.Should().Be(ExpenseErrors.NotFound.Type);
     }
 
     [Fact]
@@ -75,6 +75,6 @@ public class GetExpenseQueryHandlerTests
         var result = await handler.Handle(query, default);
         
         result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(SettlementErrors.Forbidden.Code);
+        result.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 }

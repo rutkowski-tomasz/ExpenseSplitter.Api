@@ -5,12 +5,12 @@ namespace ExpenseSplitter.Api.Domain.Participants;
 public static class ParticipantErrors
 {
     public static readonly Error NicknameEmpty = new(
-        "Participant.NicknameEmpty",
+        ErrorType.Validation,
         "Can't create participant with empty nickname"
     );
 
     public static readonly Error NotFound = new(
-        "Participant.NotFound",
+        ErrorType.Validation,
         "Can't find participant with given id"
     );
 }

@@ -61,7 +61,7 @@ public class IdempotentBehaviorTests
         var result = await behavior.Handle(new TestCommand(), next, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("Idempotency.IdempotentKeyNotGuid");
+        result.Error.Type.Should().Be(ErrorType.PreConditionFailed);
     }
     
     [Fact]
@@ -76,7 +76,7 @@ public class IdempotentBehaviorTests
         var result = await behavior.Handle(new TestCommand(), next, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("Idempotency.IdempotentKeyAlreadyProcessed");
+        result.Error.Type.Should().Be(ErrorType.Conflict);
     }
     
     [Fact]

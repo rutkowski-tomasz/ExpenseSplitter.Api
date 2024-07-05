@@ -26,7 +26,7 @@ public class UserTests
         var user = User.Create("", email, UserId.New());
 
         user.IsFailure.Should().BeTrue();
-        user.Error.Code.Should().Be(UserErrors.EmptyNickname.Code);
+        user.Error.Type.Should().Be(UserErrors.EmptyNickname.Type);
     }
 
     [Fact]

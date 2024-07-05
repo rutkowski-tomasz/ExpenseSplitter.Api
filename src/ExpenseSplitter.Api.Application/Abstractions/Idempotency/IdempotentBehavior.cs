@@ -10,12 +10,12 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>
     where TResponse : Result
 {
     private static readonly Error IdempotencyKeyIsNotGuid = new(
-        "Idempotency.IdempotentKeyNotGuid",
+        ErrorType.PreConditionFailed,
         "The idempotency key from headers is not a valid guid"
     );
     
     private static readonly Error IdempotentKeyAlreadyProcessed = new(
-        "Idempotency.IdempotentKeyAlreadyProcessed",
+        ErrorType.Conflict,
         "The idempotency key from headers was already processed"
     );
 
@@ -69,14 +69,14 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>
             Name: nameof(Result.Failure)
         });
         var genericFailureMethod = failureMethod.MakeGenericMethod(resultType);
-        var resultFailureObject = genericFailureMethod.Invoke(null, new object[] { error });
+        var resultFailureObject = genericFailureMethod.Invoke(null, [error]);
 
         return (TResponse) resultFailureObject!;
     }
 
     private static bool IsGenericResult()
     {
-        return typeof(TResponse).IsGenericType && 
-               typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>);
+        return typeof(TResponse).IsGenericType
+            && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>);
     }
 }

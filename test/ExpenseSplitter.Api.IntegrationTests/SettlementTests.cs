@@ -17,11 +17,11 @@ public class SettlementTests : BaseIntegrationTest
 
         var result = await Sender.Send(command);
 
-        result.Value.Should().NotBeEmpty();
+        result.Value.SettlementId.Should().NotBeEmpty();
 
         DbContext
             .Set<Settlement>()
-            .FirstOrDefault(x => x.Id == new SettlementId(result.Value))
+            .FirstOrDefault(x => x.Id == new SettlementId(result.Value.SettlementId))
             .Should()
             .NotBeNull();
     }

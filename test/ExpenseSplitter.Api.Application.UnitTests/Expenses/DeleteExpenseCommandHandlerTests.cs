@@ -76,7 +76,7 @@ public class DeleteExpenseCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Code.Should().Be(ExpenseErrors.NotFound.Code);
+        response.Error.Type.Should().Be(ExpenseErrors.NotFound.Type);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class DeleteExpenseCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Code.Should().Be(SettlementErrors.Forbidden.Code);
+        response.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 
     [Fact]

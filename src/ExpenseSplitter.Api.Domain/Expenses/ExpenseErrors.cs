@@ -5,12 +5,12 @@ namespace ExpenseSplitter.Api.Domain.Expenses;
 public static class ExpenseErrors
 {
     public static readonly Error EmptyTitle = new(
-        "Expense.EmptyName",
+        ErrorType.Validation,
         "Can't create expense with empty name"
     );
 
     public static readonly Error NotFound = new(
-        "Expense.NotFound",
+        ErrorType.NotFound,
         "The expense with the specified identifier was not found"
     );
 }

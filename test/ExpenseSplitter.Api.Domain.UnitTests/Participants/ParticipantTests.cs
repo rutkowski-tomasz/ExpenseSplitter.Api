@@ -27,7 +27,7 @@ public class ParticipantTests
         var participant = Participant.Create(settlementId, "");
 
         participant.IsFailure.Should().BeTrue();
-        participant.Error.Code.Should().Be(ParticipantErrors.NicknameEmpty.Code);
+        participant.Error.Type.Should().Be(ParticipantErrors.NicknameEmpty.Type);
     }
 
     [Fact]
