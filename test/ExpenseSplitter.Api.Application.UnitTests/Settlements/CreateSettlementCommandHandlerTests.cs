@@ -58,7 +58,7 @@ public class CreateSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsSuccess.Should().BeTrue();
-        response.Value.SettlementId.Should().NotBeEmpty();
+        response.Value.Should().NotBeEmpty();
 
         settlementRepositoryMock.Verify(x => x.Add(It.Is<Settlement>(y => y.Name == command.Name)), Times.Once);
     }
