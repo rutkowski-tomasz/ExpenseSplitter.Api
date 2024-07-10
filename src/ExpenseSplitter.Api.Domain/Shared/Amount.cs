@@ -4,10 +4,7 @@ namespace ExpenseSplitter.Api.Domain.Shared;
 
 public record Amount
 {
-    public static Amount operator +(Amount first, Amount second)
-    {
-        return new Amount(first.Value + second.Value);
-    }
+    public static Amount operator +(Amount first, Amount second) => new(first.Value + second.Value);
 
     private Amount(decimal value) => Value = value;
 

@@ -1,0 +1,89 @@
+# @name login
+POST {{baseUrl}}/api/v1/users/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password"
+}
+
+###
+
+# @name createSettlement
+POST {{baseUrl}}/api/v1/settlements
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+    "name": "Postman settlement",
+    "participantNames": [
+        "Agata",
+        "Blazej"
+    ]
+}
+
+### 
+
+# @name getSettlement
+GET {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}
+Authorization: Bearer {{login.response.body.accessToken}}
+
+###
+
+# @name createExpense
+POST {{baseUrl}}/api/v1/expenses
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+    "name": "Postman expense",
+    "paymentDate": "2021-10-01",
+    "settlementId": "{{getSettlement.response.body.id}}",
+    "payingParticipantId": "{{getSettlement.response.body.participants[0].id}}",
+    "allocations": [
+        {
+            "participantId": "{{getSettlement.response.body.participants[0].id}}",
+            "value": 100
+        },
+        {
+            "participantId": "{{getSettlement.response.body.participants[1].id}}",
+            "value": 50
+        }
+    ]
+}
+
+###
+
+# @name getExpense
+GET {{baseUrl}}/api/v1/expenses/{{createExpense.response.body.$}}
+Authorization: Bearer {{login.response.body.accessToken}}
+
+###
+
+# @name updateExpense
+PUT {{baseUrl}}/api/v1/expenses/{{getExpense.response.body.id}}
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+    "title": "Postman expense updated",
+    "paymentDate": "2021-10-02",
+    "settlementId": "{{getSettlement.response.body.id}}",
+    "payingParticipantId": "{{getSettlement.response.body.participants[0].id}}",
+    "allocations": [
+        {
+            "participantId": "{{getSettlement.response.body.participants[0].id}}",
+            "value": 200
+        },
+        {
+            "participantId": "{{getSettlement.response.body.participants[1].id}}",
+            "value": 100
+        }
+    ]
+}
+
+### 
+
+# @name deleteExpense
+DELETE {{baseUrl}}/api/v1/expenses/{{getExpense.response.body.id}}
+Authorization: Bearer {{login.response.body.accessToken}}
