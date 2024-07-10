@@ -14,5 +14,5 @@ public class Assemblies
 
     public static Assembly Infrastructure => typeof(ApplicationDbContext).Assembly;
 
-    public static Assembly Presentation => typeof(SettlementEndpoints).Assembly;
+    public static Assembly Presentation => typeof(Program).Assembly;
 }

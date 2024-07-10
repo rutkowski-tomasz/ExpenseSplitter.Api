@@ -1,6 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -8,29 +7,18 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
 
-internal sealed class CalculateReimbrusementQueryHandler : IQueryHandler<CalculateReimbrusementQuery, CalculateReimbrusementQueryResult>
+internal sealed class CalculateReimbrusementQueryHandler(
+    ISettlementUserRepository settlementUserRepository,
+    IExpenseRepository expenseRepository,
+    IParticipantRepository participantRepository
+) : IQueryHandler<CalculateReimbrusementQuery, CalculateReimbrusementQueryResult>
 {
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IExpenseRepository expenseRepository;
-    private readonly IParticipantRepository participantRepository;
-
-    public CalculateReimbrusementQueryHandler(
-        ISettlementUserRepository settlementUserRepository,
-        IExpenseRepository expenseRepository,
-        IParticipantRepository participantRepository
-    )
-    {
-        this.settlementUserRepository = settlementUserRepository;
-        this.expenseRepository = expenseRepository;
-        this.participantRepository = participantRepository;
-    }
-
     public async Task<Result<CalculateReimbrusementQueryResult>> Handle(CalculateReimbrusementQuery request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.SettlementId);
         if (!await settlementUserRepository.CanUserAccessSettlement(settlementId, cancellationToken))
         {
-            return Result.Failure<CalculateReimbrusementQueryResult>(SettlementErrors.Forbidden);
+            return SettlementErrors.Forbidden;
         }
 
         var expenses = await expenseRepository.GetAllBySettlementId(settlementId, cancellationToken);

@@ -18,4 +18,14 @@ public static class SettlementErrors
         ErrorType.Forbidden,
         "Can't access this settlement"
     );
+
+    public static readonly Error IfMatchHeaderConflict = new(
+        ErrorType.PreConditionFailed,
+        "ETag is not matching with If-Match header value"
+    );
+
+    public static readonly Error IfNoneMatchNotModified = new(
+        ErrorType.NotModified,
+        "ETag is matching with If-None-Match header value"
+    );
 }

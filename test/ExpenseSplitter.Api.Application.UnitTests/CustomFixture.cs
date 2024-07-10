@@ -30,7 +30,7 @@ public class CustomFixutre
         ));
         fixture.Customize<SettlementUser>(x => x.FromFactory(
             () =>
-                SettlementUser.Create(SettlementId.New(), UserId.New()).Value
+                SettlementUser.Create(SettlementId.New(), UserId.New())
         ));
         fixture.Customize<Participant>(x => x.FromFactory(
             (string nickname) =>

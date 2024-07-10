@@ -4,7 +4,6 @@ using ExpenseSplitter.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using Asp.Versioning;
-using ExpenseSplitter.Api.Presentation.Filters;
 
 namespace ExpenseSplitter.Api.Presentation.Extensions;
 
@@ -42,7 +41,6 @@ public static class ApplicationBuilderExtensions
 
         var versionedRouteGroupBuilder = webApplication
             .MapGroup("api/v{version:apiVersion}")
-            .AddEndpointFilter<EtagFilter>()
             .WithApiVersionSet(apiVersionSet);
 
         var endpoints = webApplication.Services.GetRequiredService<IEnumerable<IEndpoint>>();

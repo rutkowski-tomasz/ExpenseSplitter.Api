@@ -44,7 +44,7 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
 
         if (settlementResult.IsFailure)
         {
-            return Result.Failure<Guid>(settlementResult.Error);
+            return settlementResult.Error;
         }
         
         var settlement = settlementResult.Value;
@@ -53,36 +53,19 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
         foreach (var participantName in request.ParticipantNames)
         {
             var participantResult = Participant.Create(settlement.Id, participantName);
-
             if (participantResult.IsFailure)
             {
-                return Result.Failure<Guid>(participantResult.Error);
+                return participantResult.Error;
             }
 
             participantRepository.Add(participantResult.Value);
         }
 
-        var error = CreateSettlementUser(settlement);
-        if (error is not null)
-        {
-            return Result.Failure<Guid>(error);
-        }
+        var settlementUser = SettlementUser.Create(settlement.Id, userContext.UserId);
+        settlementUserRepository.Add(settlementUser);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return settlementResult.Value.Id.Value;
-    }
-
-    private Error? CreateSettlementUser(Settlement settlement)
-    {
-        var settlementUserResult = SettlementUser.Create(settlement.Id, userContext.UserId);
-        if (settlementUserResult.IsFailure)
-        {
-            return settlementUserResult.Error;
-        }
-
-        var settlementUser = settlementUserResult.Value;
-        settlementUserRepository.Add(settlementUser);
-        return null;
     }
 }

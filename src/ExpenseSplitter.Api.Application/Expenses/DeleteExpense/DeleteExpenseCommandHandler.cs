@@ -7,29 +7,14 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 
-public class DeleteExpenseCommandHandler : ICommandHandler<DeleteExpenseCommand>
-{
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IExpenseRepository expenseRepository;
-    private readonly ISettlementRepository settlementRepository;
-    private readonly IDateTimeProvider dateTimeProvider;
-    private readonly IUnitOfWork unitOfWork;
-
-    public DeleteExpenseCommandHandler(
+public class DeleteExpenseCommandHandler(
         ISettlementUserRepository settlementUserRepository,
         IExpenseRepository expenseRepository,
         ISettlementRepository settlementRepository,
         IDateTimeProvider dateTimeProvider,
         IUnitOfWork unitOfWork
-    )
-    {
-        this.settlementUserRepository = settlementUserRepository;
-        this.expenseRepository = expenseRepository;
-        this.settlementRepository = settlementRepository;
-        this.dateTimeProvider = dateTimeProvider;
-        this.unitOfWork = unitOfWork;
-    }
-
+) : ICommandHandler<DeleteExpenseCommand>
+{
     public async Task<Result> Handle(DeleteExpenseCommand request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.Id);

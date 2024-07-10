@@ -36,13 +36,13 @@ public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCo
         var settlementId = new SettlementId(request.Id);
         if (!await settlementUserRepository.CanUserAccessSettlement(settlementId, cancellationToken))
         {
-            return Result.Failure(SettlementErrors.Forbidden);
+            return SettlementErrors.Forbidden;
         }
 
         var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         if (settlement is null)
         {
-            return Result.Failure(SettlementErrors.NotFound);
+            return SettlementErrors.NotFound;
         }
 
         settlement.SetUpdatedOnUtc(dateTimeProvider.UtcNow);

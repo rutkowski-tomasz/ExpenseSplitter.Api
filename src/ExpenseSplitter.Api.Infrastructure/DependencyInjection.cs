@@ -22,6 +22,8 @@ using Microsoft.Extensions.Options;
 using ExpenseSplitter.Api.Infrastructure.Idempotency;
 using ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 using Asp.Versioning;
+using ExpenseSplitter.Api.Application.Abstractions.Etag;
+using ExpenseSplitter.Api.Infrastructure.Etag;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
@@ -83,6 +85,7 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
         services.AddScoped<IInviteCodeService, InviteCodeService>();
         services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+        services.AddScoped<IEtagService, EtagService>();
     }
 
     private static void AddPersistence(IServiceCollection services, IConfiguration configuration)

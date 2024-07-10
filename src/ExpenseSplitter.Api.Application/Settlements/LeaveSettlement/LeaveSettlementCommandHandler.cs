@@ -5,27 +5,18 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.LeaveSettlement;
 
-public class LeaveSettlementCommandHandler : ICommandHandler<LeaveSettlementCommand>
+public class LeaveSettlementCommandHandler(
+    ISettlementUserRepository settlementUserRepository,
+    IUnitOfWork unitOfWork
+) : ICommandHandler<LeaveSettlementCommand>
 {
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IUnitOfWork unitOfWork;
-
-    public LeaveSettlementCommandHandler(
-        ISettlementUserRepository settlementUserRepository,
-        IUnitOfWork unitOfWork
-    )
-    {
-        this.settlementUserRepository = settlementUserRepository;
-        this.unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> Handle(LeaveSettlementCommand request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.SettlemetId);
         var settlementUser = await settlementUserRepository.GetBySettlementId(settlementId, cancellationToken);
         if (settlementUser is null)
         {
-            return Result.Failure(SettlementErrors.Forbidden);
+            return SettlementErrors.Forbidden;
         }
 
         settlementUserRepository.Remove(settlementUser);
