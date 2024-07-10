@@ -1,5 +1,5 @@
 # @name register
-POST {{baseUrl}}/api/v1/user/register
+POST {{baseUrl}}/api/v1/users/register
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 ### 
 
 # @name login
-POST {{baseUrl}}/api/v1/user/login
+POST {{baseUrl}}/api/v1/users/login
 Content-Type: application/json
 
 {
@@ -22,6 +22,5 @@ Content-Type: application/json
 ###
 
 # @name me
-GET {{baseUrl}}/api/v1/user/me
+GET {{baseUrl}}/api/v1/users/me
 Authorization: Bearer {{login.response.body.accessToken}}
-

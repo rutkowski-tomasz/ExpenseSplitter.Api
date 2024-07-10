@@ -15,6 +15,14 @@ public static class RouteBuilderExtensions
             .RequireAuthorization();
     }
 
+    public static RouteGroupBuilder Users(this IEndpointRouteBuilder builder)
+    {
+        return builder
+            .MapGroup(nameof(Application.Users).ToLower())
+            .WithTags(nameof(Application.Users))
+            .RequireRateLimiting(RateLimitingExtensions.IpRateLimiting);
+    }
+
     public static RouteHandlerBuilder Post<TRequest, TCommand, TCommandResult, TResponse>(
         this RouteGroupBuilder builder,
         string pattern

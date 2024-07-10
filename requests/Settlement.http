@@ -67,6 +67,13 @@ Content-Type: application/json
 DELETE {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}
 Authorization: Bearer {{login.response.body.accessToken}}
 
+###
+
+# @name deleteSettlementWithIfMatchHeader
+DELETE {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}
+Authorization: Bearer {{login.response.body.accessToken}}
+If-Match: {{getSettlement.response.headers.ETag}}
+
 ### 
 
 # @name joinSettlement
