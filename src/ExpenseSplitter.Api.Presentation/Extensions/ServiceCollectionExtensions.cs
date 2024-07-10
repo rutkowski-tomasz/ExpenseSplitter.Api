@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.TryAddEnumerable(serviceDescriptors);
 
         services.AddTransient(typeof(IHandler<,,,>), typeof(Handler<,,,>));
+        services.AddTransient(typeof(IHandlerEmptyRequest<,,>), typeof(HandlerEmptyRequest<,,>));
         services.AddTransient(typeof(IHandlerEmptyResponse<,>), typeof(HandlerEmptyResponse<,>));
 
         AddMappers(services, assembly);

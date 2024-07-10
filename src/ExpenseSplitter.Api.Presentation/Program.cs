@@ -1,11 +1,6 @@
-using System.Threading.RateLimiting;
-using Asp.Versioning;
 using ExpenseSplitter.Api.Application;
 using ExpenseSplitter.Api.Infrastructure;
-using ExpenseSplitter.Api.Presentation.Expenses;
 using ExpenseSplitter.Api.Presentation.Extensions;
-using ExpenseSplitter.Api.Presentation.Settlements;
-using ExpenseSplitter.Api.Presentation.User;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
