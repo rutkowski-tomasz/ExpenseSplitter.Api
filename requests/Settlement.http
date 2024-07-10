@@ -10,7 +10,7 @@ Content-Type: application/json
 ###
 
 # @name listSettlements
-GET {{baseUrl}}/api/v1/settlements/test2
+GET {{baseUrl}}/api/v1/settlements
 ?page=1
 &pageSize=10
 Authorization: Bearer {{login.response.body.accessToken}}
@@ -18,7 +18,7 @@ Authorization: Bearer {{login.response.body.accessToken}}
 ###
 
 # @name createSettlement
-POST {{baseUrl}}/api/v1/settlements/test
+POST {{baseUrl}}/api/v1/settlements
 Authorization: Bearer {{login.response.body.accessToken}}
 Content-Type: application/json
 
@@ -35,3 +35,28 @@ Content-Type: application/json
 # @name getSettlement
 GET {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}
 Authorization: Bearer {{login.response.body.accessToken}}
+
+
+### 
+
+# @name updateSettlement
+PUT {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+    "name": "Updated settlement",
+    "participants": [
+        {
+            "id": "{{getSettlement.response.body.participants[0].id}}",
+            "nickname": "Updated Agata"
+        },
+        {
+            "id": "{{getSettlement.response.body.participants[1].id}}",
+            "nickname": "Updated Blazej"
+        },
+        {
+            "nickname": "New participant"
+        }
+    ]
+}

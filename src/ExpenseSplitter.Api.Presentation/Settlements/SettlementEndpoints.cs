@@ -45,48 +45,38 @@ public class SettlementEndpoints : IEndpoint
         //         await handler.Handle(request, ct))
         //     .WithErrors<Guid>(StatusCodes.Status400BadRequest);
 
-        routeGroupBuilder.MapPost("", async
-            (CreateSettlementRequest request, ISender sender, CancellationToken cancellationToken) => {
-                var command = new CreateSettlementCommand(
-                    request.Name,
-                    request.ParticipantNames
-                );
+        // routeGroupBuilder.MapPost("", async
+        //     (CreateSettlementRequest request, ISender sender, CancellationToken cancellationToken) => {
+        //         var command = new CreateSettlementCommand(
+        //             request.Name,
+        //             request.ParticipantNames
+        //         );
 
-                var result = await sender.Send(command, cancellationToken);
-                return result.ToHttpResult();
-            })
-            .Produces<Ok<Guid>>()
-            .Produces<string>(StatusCodes.Status400BadRequest);
+        //         var result = await sender.Send(command, cancellationToken);
+        //         return result.ToHttpResult();
+        //     })
+        //     .Produces<Ok<Guid>>()
+        //     .Produces<string>(StatusCodes.Status400BadRequest);
 
-        routeGroupBuilder.MapPut("{settlementId}", async
-            (Guid settlementId, UpdateSettlementRequest request, ISender sender, CancellationToken cancellationToken) => {
+        // routeGroupBuilder.MapPut("{settlementId}", async
+        //     (Guid settlementId, UpdateSettlementRequest request, ISender sender, CancellationToken cancellationToken) => {
 
-                var command = new UpdateSettlementCommand(
-                    settlementId,
-                    request.Name,
-                    request.Participants.Select(x => new UpdateSettlementCommandParticipant(
-                        x.Id,
-                        x.Nickname
-                    ))
-                );
+        //         var command = new UpdateSettlementCommand(
+        //             settlementId,
+        //             request.Name,
+        //             request.Participants.Select(x => new UpdateSettlementCommandParticipant(
+        //                 x.Id,
+        //                 x.Nickname
+        //             ))
+        //         );
 
-                var result = await sender.Send(command, cancellationToken);
-                return result.ToHttpResult();
-            })
-            .Produces<Ok>()
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
+        //         var result = await sender.Send(command, cancellationToken);
+        //         return result.ToHttpResult();
+        //     })
+        //     .Produces<Ok>()
+        //     .Produces<string>(StatusCodes.Status403Forbidden)
+        //     .Produces<string>(StatusCodes.Status404NotFound);
 
-        routeGroupBuilder.MapGet("{settlementId}", async
-            (Guid settlementId, ISender sender, CancellationToken cancellationToken) => {
-                var query = new GetSettlementQuery(settlementId);
-                var result = await sender.Send(query, cancellationToken);
-                return result.ToHttpResult();
-            })
-            .Produces<Ok<GetSettlementQueryResult>>()
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound)
-            .Produces<string>(StatusCodes.Status304NotModified);
 
         routeGroupBuilder.MapDelete("{settlementId}", async
             (Guid settlementId, ISender sender, CancellationToken cancellationToken) => {

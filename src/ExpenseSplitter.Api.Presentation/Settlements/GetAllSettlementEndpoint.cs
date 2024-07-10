@@ -38,7 +38,7 @@ public class GetAllSettlementsEndpoint : IEndpoint,
     {
         builder
             .Settlements()
-            .MapGet("test2", (
+            .MapGet("", (
                 [AsParameters] GetAllSettlementsRequest request,
                 IHandler<
                     GetAllSettlementsRequest,

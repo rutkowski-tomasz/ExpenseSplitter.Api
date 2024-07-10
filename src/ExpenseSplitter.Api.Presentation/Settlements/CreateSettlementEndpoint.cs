@@ -29,7 +29,7 @@ public class CreateSettlementEndpoint : IEndpoint
     {
         builder
             .Settlements()
-            .Post<CreateSettlementRequest, CreateSettlementCommand, Guid, Guid>("test")
+            .Post<CreateSettlementRequest, CreateSettlementCommand, Guid, Guid>("")
             .WithErrors(StatusCodes.Status400BadRequest);
     }
 }
