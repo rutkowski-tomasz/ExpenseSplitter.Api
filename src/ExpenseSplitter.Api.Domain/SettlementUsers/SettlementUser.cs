@@ -21,7 +21,7 @@ public sealed class SettlementUser : Entity<SettlementUserId>
     public UserId UserId { get; private set; }
     public ParticipantId? ParticipantId { get; private set; }
 
-    public static Result<SettlementUser> Create(SettlementId settlementId, UserId userId)
+    public static SettlementUser Create(SettlementId settlementId, UserId userId)
     {
         var settlementUser = new SettlementUser(SettlementUserId.New(), settlementId, userId);
         return settlementUser;

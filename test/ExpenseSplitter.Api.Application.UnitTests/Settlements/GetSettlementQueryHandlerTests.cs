@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Etag;
+using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -23,12 +24,14 @@ public class GetSettlementQueryHandlerTests
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var participantRepositoryMock = new Mock<IParticipantRepository>();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
+        var etagServiceMock = new Mock<IEtagService>();
 
         handler = new GetSettlementQueryHandler(
             settlementRepositoryMock.Object,
             settlementUserRepositoryMock.Object,
             participantRepositoryMock.Object,
-            expenseRepositoryMock.Object
+            expenseRepositoryMock.Object,
+            etagServiceMock.Object
         );
     }
 

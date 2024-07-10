@@ -10,13 +10,15 @@ Content-Type: application/json
 ###
 
 # @name listSettlements
-GET {{baseUrl}}/api/v1/settlements
+GET {{baseUrl}}/api/v1/settlements/test2
+?page=1
+&pageSize=10
 Authorization: Bearer {{login.response.body.accessToken}}
 
 ###
 
 # @name createSettlement
-POST {{baseUrl}}/api/v1/settlements/b
+POST {{baseUrl}}/api/v1/settlements/test
 Authorization: Bearer {{login.response.body.accessToken}}
 Content-Type: application/json
 

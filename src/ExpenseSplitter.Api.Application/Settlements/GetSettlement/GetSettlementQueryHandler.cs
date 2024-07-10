@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+using ExpenseSplitter.Api.Application.Abstractions.Etag;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -7,39 +8,33 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 
-internal sealed class GetSettlementQueryHandler : IQueryHandler<GetSettlementQuery, GetSettlementQueryResult>
+internal sealed class GetSettlementQueryHandler(
+    ISettlementRepository settlementRepository,
+    ISettlementUserRepository settlementUserRepository,
+    IParticipantRepository participantRepository,
+    IExpenseRepository expenseRepository,
+    IEtagService etagService
+) : IQueryHandler<GetSettlementQuery, GetSettlementQueryResult>
 {
-    private readonly ISettlementRepository settlementRepository;
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IParticipantRepository participantRepository;
-    private readonly IExpenseRepository expenseRepository;
-
-    public GetSettlementQueryHandler(
-        ISettlementRepository settlementRepository,
-        ISettlementUserRepository settlementUserRepository,
-        IParticipantRepository participantRepository,
-        IExpenseRepository expenseRepository
-    )
-    {
-        this.settlementRepository = settlementRepository;
-        this.settlementUserRepository = settlementUserRepository;
-        this.participantRepository = participantRepository;
-        this.expenseRepository = expenseRepository;
-    }
-
     public async Task<Result<GetSettlementQueryResult>> Handle(GetSettlementQuery request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.SettlementId);
         var settlementUser = await settlementUserRepository.GetBySettlementId(settlementId, cancellationToken);
         if (settlementUser is null)
         {
-            return Result.Failure<GetSettlementQueryResult>(SettlementErrors.Forbidden);
+            return SettlementErrors.Forbidden;
         }
 
         var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         if (settlement is null)
         {
-            return Result.Failure<GetSettlementQueryResult>(SettlementErrors.NotFound);
+            return SettlementErrors.NotFound;
+        }
+
+        etagService.AttachEtagToResponse(settlement);
+        if (etagService.HasIfNoneMatchConflict(settlement))
+        {
+            return SettlementErrors.IfNoneMatchNotModified;
         }
 
         var participants = await participantRepository.GetAllBySettlementId(settlementId, cancellationToken);

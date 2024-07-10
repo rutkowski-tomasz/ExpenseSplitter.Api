@@ -1,4 +1,5 @@
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Etag;
 using ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -19,6 +20,7 @@ public class DeleteSettlementCommandHandlerTests
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         userContext = new Mock<IUserContext>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var etagServiceMock = new Mock<IEtagService>();
 
         var settlement = fixture.Create<Settlement>();
         userContext.Setup(x => x.UserId).Returns(settlement.CreatorUserId);
@@ -30,7 +32,8 @@ public class DeleteSettlementCommandHandlerTests
         handler = new DeleteSettlementCommandHandler(
             settlementRepositoryMock.Object,
             userContext.Object,
-            unitOfWorkMock.Object
+            unitOfWorkMock.Object,
+            etagServiceMock.Object
         );
     }
 

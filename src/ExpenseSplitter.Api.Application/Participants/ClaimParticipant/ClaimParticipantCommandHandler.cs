@@ -6,23 +6,12 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
 
-internal sealed class ClaimParticipantCommandHandler : ICommandHandler<ClaimParticipantCommand>
+internal sealed class ClaimParticipantCommandHandler(
+    ISettlementUserRepository settlementUserRepository,
+    IParticipantRepository participantRepository,
+    IUnitOfWork unitOfWork
+) : ICommandHandler<ClaimParticipantCommand>
 {
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IParticipantRepository participantRepository;
-    private readonly IUnitOfWork unitOfWork;
-
-    public ClaimParticipantCommandHandler(
-        ISettlementUserRepository settlementUserRepository,
-        IParticipantRepository participantRepository,
-        IUnitOfWork unitOfWork
-    )
-    {
-        this.settlementUserRepository = settlementUserRepository;
-        this.participantRepository = participantRepository;
-        this.unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> Handle(ClaimParticipantCommand request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.SettlementId);
@@ -31,12 +20,12 @@ internal sealed class ClaimParticipantCommandHandler : ICommandHandler<ClaimPart
         var settlementUser = await settlementUserRepository.GetBySettlementId(settlementId, cancellationToken);
         if (settlementUser is null)
         {
-            return Result.Failure(SettlementErrors.Forbidden);
+            return SettlementErrors.Forbidden;
         }
 
         if (!await participantRepository.IsParticipantInSettlement(settlementId, participantId, cancellationToken))
         {
-            return Result.Failure(ParticipantErrors.NotFound);
+            return ParticipantErrors.NotFound;
         }
 
         settlementUser.SetParticipantId(participantId);
