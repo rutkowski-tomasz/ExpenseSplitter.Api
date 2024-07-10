@@ -23,6 +23,14 @@ public static class RouteBuilderExtensions
             .RequireRateLimiting(RateLimitingExtensions.IpRateLimiting);
     }
 
+    public static RouteGroupBuilder Expenses(this IEndpointRouteBuilder builder)
+    {
+        return builder
+            .MapGroup(nameof(Application.Expenses).ToLower())
+            .WithTags(nameof(Application.Expenses))
+            .RequireAuthorization();
+    }
+
     public static RouteHandlerBuilder Post<TRequest, TCommand, TCommandResult, TResponse>(
         this RouteGroupBuilder builder,
         string pattern
