@@ -1,15 +1,7 @@
 {
   "release": {
-    "tagFormat": "${version}",
-    "ci": true,
-    "debug": true,
     "branches": [
-      "main",
-      {
-        "name": "feature/*",
-        "prerelease": "alpha",
-        "channel": "alpha"
-      }
+      "main"
     ],
     "plugins": [
       "@semantic-release/commit-analyzer",

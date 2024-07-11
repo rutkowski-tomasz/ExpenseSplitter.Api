@@ -19,12 +19,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Semantic Release
+        if: ${{ github.ref == 'refs/heads/main' }}
         id: semantic_release
         uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           working_directory: semantic-release
+        continue-on-error: true
 
     outputs:
-      release_tag: ${{ steps.semantic_release.outputs.new_release_version }}
+      release_tag: ${{ steps.semantic_release.outputs.new_release_version || format('alpha-{0}', github.sha) }}
