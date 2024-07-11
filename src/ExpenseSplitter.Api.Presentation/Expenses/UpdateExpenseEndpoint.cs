@@ -26,12 +26,12 @@ public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpe
     Route: "{expenseId}",
     Group: EndpointGroup.Expenses,
     Method: EndpointMethod.Put,
-    MapRequest: source => new (
-        source.ExpenseId,
-        source.Body.Title,
-        source.Body.PaymentDate,
-        source.Body.PayingParticipantId,
-        source.Body.Allocations.Select(x => new UpdateExpenseCommandAllocation(
+    MapRequest: request => new (
+        request.ExpenseId,
+        request.Body.Title,
+        request.Body.PaymentDate,
+        request.Body.PayingParticipantId,
+        request.Body.Allocations.Select(x => new UpdateExpenseCommandAllocation(
             x.Id,
             x.ParticipantId,
             x.Value
