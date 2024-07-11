@@ -1,7 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
@@ -24,31 +22,24 @@ public sealed record UpdateExpenseRequestAllocation(
     decimal Value
 );
 
-public class UpdateExpenseEndpoint : EndpointEmptyResponse<UpdateExpenseRequest, UpdateExpenseCommand>
-{
-    public override UpdateExpenseCommand MapRequest(UpdateExpenseRequest source)
-    {
-        return new UpdateExpenseCommand(
-            source.ExpenseId,
-            source.Body.Title,
-            source.Body.PaymentDate,
-            source.Body.PayingParticipantId,
-            source.Body.Allocations.Select(x => new UpdateExpenseCommandAllocation(
-                x.Id,
-                x.ParticipantId,
-                x.Value
-            ))
-        );
-    }
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapPut("{expenseId}", ([AsParameters] UpdateExpenseRequest request, ISender sender)
-                => Handle(request, sender))
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpenseCommand>(
+    Route: "{expenseId}",
+    Group: EndpointGroup.Expenses,
+    Method: EndpointMethod.Put,
+    MapRequest: source => new (
+        source.ExpenseId,
+        source.Body.Title,
+        source.Body.PaymentDate,
+        source.Body.PayingParticipantId,
+        source.Body.Allocations.Select(x => new UpdateExpenseCommandAllocation(
+            x.Id,
+            x.ParticipantId,
+            x.Value
+        ))
+    ),
+    ErrorStatusCodes: [
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ]
+);

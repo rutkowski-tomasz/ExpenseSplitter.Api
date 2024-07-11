@@ -1,7 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
@@ -18,33 +16,24 @@ public sealed record CreateExpenseRequestAllocation(
     decimal Value
 );
 
-public class CreateExpenseEndpoint
-    : Endpoint<CreateExpenseRequest, CreateExpenseCommand, Guid, Guid>
-{
-    public override CreateExpenseCommand MapRequest(CreateExpenseRequest source)
-    {
-        return new CreateExpenseCommand(
-            source.Name,
-            source.PaymentDate,
-            source.SettlementId,
-            source.PayingParticipantId,
-            source.Allocations.Select(x => new CreateExpenseCommandAllocation(
-                x.ParticipantId,
-                x.Value
-            ))
-        );
-    }
-
-    public override Guid MapResponse(Guid result) => result;
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapPost("", (CreateExpenseRequest request, ISender sender)
-                => Handle(request, sender))
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class CreateExpenseEndpoint() : Endpoint<CreateExpenseRequest, CreateExpenseCommand, Guid, Guid>(
+    Route: "",
+    Group: EndpointGroup.Expenses,
+    Method: EndpointMethod.Post,
+    MapRequest: request => new (
+        request.Name,
+        request.PaymentDate,
+        request.SettlementId,
+        request.PayingParticipantId,
+        request.Allocations.Select(x => new CreateExpenseCommandAllocation(
+            x.ParticipantId,
+            x.Value
+        ))
+    ),
+    MapResponse: result => result,
+    ErrorStatusCodes: [
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ]
+);

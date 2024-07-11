@@ -20,36 +20,25 @@ public sealed record GetExpenseResponseAllocation(
     decimal Amount
 );
 
-
-public class GetExpenseEndpoint : Endpoint<Guid, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>
-{
-    public override GetExpenseQuery MapRequest(Guid source)
-    {
-        return new GetExpenseQuery(source);
-    }
-
-    public override GetExpenseResponse MapResponse(GetExpenseQueryResult source)
-    {
-        return new GetExpenseResponse(
-            source.Id,
-            source.Title,
-            source.PayingParticipantId,
-            source.PaymentDate,
-            source.Amount,
-            source.Allocations.Select(x => new GetExpenseResponseAllocation(
-                x.Id,
-                x.ParticipantId,
-                x.Amount
-            ))
-        );
-    }
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapGet("{expenseId}", (Guid expenseId, ISender sender) => Handle(expenseId, sender))
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class GetExpenseEndpoint() : Endpoint<Guid, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>(
+    Route: "{expenseId}",
+    Group: EndpointGroup.Expenses,
+    Method: EndpointMethod.Post,
+    MapRequest: request => new (request),
+    MapResponse: result => new (
+        result.Id,
+        result.Title,
+        result.PayingParticipantId,
+        result.PaymentDate,
+        result.Amount,
+        result.Allocations.Select(x => new GetExpenseResponseAllocation(
+            x.Id,
+            x.ParticipantId,
+            x.Amount
+        ))
+    ),
+    ErrorStatusCodes: [
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ]
+);

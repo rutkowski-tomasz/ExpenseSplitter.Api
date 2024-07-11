@@ -1,24 +1,20 @@
 using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
-public class DeleteExpenseEndpoint : EndpointEmptyResponse<Guid, DeleteExpenseCommand>
-{
-    public override DeleteExpenseCommand MapRequest(Guid source)
-    {
-        return new DeleteExpenseCommand(source);
-    }
+public record DeleteExpenseRequest(
+    [FromRoute] Guid ExpenseId
+);
 
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapDelete("{expenseId}", (Guid expenseId, ISender sender)
-                => Handle(expenseId, sender))
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class DeleteExpenseEndpoint() : Endpoint<DeleteExpenseRequest, DeleteExpenseCommand>(
+    Route: "{expenseId}",
+    Group: EndpointGroup.Expenses,
+    Method: EndpointMethod.Delete,
+    MapRequest: request => new (request.ExpenseId),
+    ErrorStatusCodes: [
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ]
+);
