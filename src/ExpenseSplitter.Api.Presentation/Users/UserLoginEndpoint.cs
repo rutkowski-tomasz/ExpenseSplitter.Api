@@ -1,39 +1,23 @@
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
 
-public sealed record UserLoginRequest(string Email, string Password);
+public record UserLoginRequest([FromBody] UserLoginRequestBody Body);
 
-public sealed record LoginUserResponse(string AccessToken);
+public record UserLoginRequestBody(string Email, string Password);
 
-public class UserLoginEndpoint
-    : Endpoint<UserLoginRequest, LoginUserCommand, LoginUserResult, LoginUserResponse>
-{
-    public override LoginUserCommand MapRequest(UserLoginRequest source)
-    {
-        return new LoginUserCommand(
-            source.Email,
-            source.Password
-        );
-    }
+public record LoginUserResponse(string AccessToken);
 
-    public override LoginUserResponse MapResponse(LoginUserResult source)
-    {
-        return new LoginUserResponse(
-            source.AccessToken
-        );
-    }
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Users()
-            .MapPost("login", (UserLoginRequest request, ISender sender)
-                => Handle(request, sender))
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status401Unauthorized);
-    }
-}
+public class UserLoginEndpoint() : Endpoint<UserLoginRequest, LoginUserCommand, LoginUserResult, LoginUserResponse>(
+    Route: "login",
+    Group: EndpointGroup.Users,
+    Method: EndpointMethod.Post,
+    MapRequest: request => new LoginUserCommand(request.Body.Email, request.Body.Password),
+    MapResponse: result => new LoginUserResponse(result.AccessToken),
+    ErrorStatusCodes: [
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status401Unauthorized
+    ]
+);

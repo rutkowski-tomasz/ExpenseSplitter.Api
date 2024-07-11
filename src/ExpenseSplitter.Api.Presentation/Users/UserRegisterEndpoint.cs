@@ -1,7 +1,5 @@
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
 
@@ -11,23 +9,17 @@ public sealed record UserRegisterRequest(
     string Password
 );
 
-public class UserRegisterEndpoint : EndpointEmptyResponse<UserRegisterRequest, RegisterUserCommand>
-{
-    public override RegisterUserCommand MapRequest(UserRegisterRequest source)
-    {
-        return new RegisterUserCommand(
-            source.Email,
-            source.Nickname,
-            source.Password
-        );
-    }
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Users()
-            .MapPost("register", (UserRegisterRequest request, ISender sender)
-                => Handle(request, sender))
-            .Produces<string>(StatusCodes.Status400BadRequest);
-    }
-}
+public class UserRegisterEndpoint() : Endpoint<UserRegisterRequest, RegisterUserCommand>(
+    Route: "register",
+    Group: EndpointGroup.Users,
+    Method: EndpointMethod.Post,
+    MapRequest: request => new RegisterUserCommand(
+        request.Email,
+        request.Nickname,
+        request.Password
+    ),
+    ErrorStatusCodes: [
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status401Unauthorized
+    ]
+);
