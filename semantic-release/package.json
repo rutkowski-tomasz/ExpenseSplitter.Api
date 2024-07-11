@@ -4,8 +4,7 @@
       "main",
       {
         "name": "feature/*",
-        "prerelease": "alpha",
-        "channel": "alpha"
+        "prerelease": true
       }
     ],
     "plugins": [
