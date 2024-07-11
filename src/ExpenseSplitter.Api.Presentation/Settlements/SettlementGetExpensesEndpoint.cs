@@ -1,7 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -17,32 +15,22 @@ public sealed record GetExpensesForSettlementResponseExpense(
     DateOnly PaymentDate
 );
 
-
-public class SettlementGetExpensesEndpoint : Endpoint<Guid, GetExpensesForSettlementQuery, GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>
-{
-    public override GetExpensesForSettlementQuery MapRequest(Guid source)
-    {
-        return new(source);
-    }
-
-    public override GetExpensesForSettlementResponse MapResponse(GetExpensesForSettlementQueryResult source)
-    {
-        return new(
-            source.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
-                expense.Id,
-                expense.Title,
-                expense.Amount,
-                expense.PayingParticipantId,
-                expense.PaymentDate
-            ))
-        );
-    }
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapGet("{settlementId}/expenses", (Guid settlementId, ISender sender)
-                => Handle(settlementId, sender));
-    }
-}
+public class SettlementGetExpensesEndpoint() : Endpoint<Guid, GetExpensesForSettlementQuery, GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>(
+    Route: "{settlementId}/expenses",
+    Group: EndpointGroup.Settlements,
+    Method: EndpointMethod.Get,
+    MapRequest: request => new(request),
+    MapResponse: result => new(
+        result.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
+            expense.Id,
+            expense.Title,
+            expense.Amount,
+            expense.PayingParticipantId,
+            expense.PaymentDate
+        ))
+    ),
+    ErrorStatusCodes: [
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ]
+);

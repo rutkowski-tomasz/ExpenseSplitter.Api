@@ -1,7 +1,5 @@
 using ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -21,34 +19,23 @@ public sealed record SettlementReimbrusementResponseSuggestedReimbrusement(
     decimal Value
 );
 
-public class SettlementReimbrusementEndpoint : Endpoint<Guid, CalculateReimbrusementQuery, CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>
-{
-    public override CalculateReimbrusementQuery MapRequest(Guid source)
-    {
-        return new(source);
-    }
-
-    public override SettlementReimbrusementResponse MapResponse(CalculateReimbrusementQueryResult source)
-    {
-        return new(
-            source.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
-                balance.ParticipantId,
-                balance.Value
-            )),
-            source.SuggestedReimbrusements.Select(suggestedReimbrusement => new SettlementReimbrusementResponseSuggestedReimbrusement(
-                suggestedReimbrusement.FromParticipantId,
-                suggestedReimbrusement.ToParticipantId,
-                suggestedReimbrusement.Value
-            ))
-        );
-    }
-
-    public override void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapGet("/{settlementId}/reimbrusement", (Guid settlementId, ISender sender)
-                => Handle(settlementId, sender))
-            .Produces<string>(StatusCodes.Status403Forbidden);
-    }
-}
+public class SettlementReimbrusementEndpoint() : Endpoint<Guid, CalculateReimbrusementQuery, CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>(
+    Route: "{settlementId}/reimbrusement",
+    Group: EndpointGroup.Settlements,
+    Method: EndpointMethod.Get,
+    MapRequest: request => new (request),
+    MapResponse: result => new(
+        result.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
+            balance.ParticipantId,
+            balance.Value
+        )),
+        result.SuggestedReimbrusements.Select(suggestedReimbrusement => new SettlementReimbrusementResponseSuggestedReimbrusement(
+            suggestedReimbrusement.FromParticipantId,
+            suggestedReimbrusement.ToParticipantId,
+            suggestedReimbrusement.Value
+        ))
+    ),
+    ErrorStatusCodes: [
+        StatusCodes.Status403Forbidden,
+    ]
+);

@@ -29,6 +29,7 @@ public abstract class Endpoint<TRequest, TCommand>(
             EndpointMethod.Post => routeGroupBuilder.MapPost(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             EndpointMethod.Put => routeGroupBuilder.MapPut(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             EndpointMethod.Delete => routeGroupBuilder.MapDelete(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Patch => routeGroupBuilder.MapPatch(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             _ => throw new NotImplementedException()
         };
     }
@@ -72,6 +73,7 @@ public abstract class Endpoint<TRequest, TCommand, TCommandResult, TResponse>(
             EndpointMethod.Post => routeGroupBuilder.MapPost(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             EndpointMethod.Put => routeGroupBuilder.MapPut(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             EndpointMethod.Delete => routeGroupBuilder.MapDelete(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Patch => routeGroupBuilder.MapPatch(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             _ => throw new NotImplementedException()
         };
     }
@@ -113,6 +115,7 @@ public abstract class Endpoint<TCommand, TCommandResult, TResponse>(
             EndpointMethod.Post => routeGroupBuilder.MapPost(Route, (ISender sender) => Handle(sender)),
             EndpointMethod.Put => routeGroupBuilder.MapPut(Route, (ISender sender) => Handle(sender)),
             EndpointMethod.Delete => routeGroupBuilder.MapDelete(Route, (ISender sender) => Handle(sender)),
+            EndpointMethod.Patch => routeGroupBuilder.MapPatch(Route, (ISender sender) => Handle(sender)),
             _ => throw new NotImplementedException()
         };
     }
@@ -150,7 +153,8 @@ public enum EndpointMethod
     Get,
     Post,
     Put,
-    Delete
+    Delete,
+    Patch
 }
 
 public class EndpointGroup(Func<IEndpointRouteBuilder, RouteGroupBuilder> Map)
