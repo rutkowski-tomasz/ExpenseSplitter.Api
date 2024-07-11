@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -18,16 +19,14 @@ public sealed record GetSettlementResponseParticipant(
     string Nickname
 );
 
-public class GetSettlementEndpoint : IEndpoint,
-    IMapper<Guid, GetSettlementQuery>,
-    IMapper<GetSettlementQueryResult, GetSettlementResponse>
+public class GetSettlementEndpoint : Endpoint<Guid, GetSettlementQuery, GetSettlementQueryResult, GetSettlementResponse>
 {
-    public GetSettlementQuery Map(Guid source)
+    public override GetSettlementQuery MapRequest(Guid source)
     {
         return new GetSettlementQuery(source);
     }
 
-    public GetSettlementResponse Map(GetSettlementQueryResult source)
+    public override GetSettlementResponse MapResponse(GetSettlementQueryResult source)
     {
         return new GetSettlementResponse(
             source.Id,
@@ -42,19 +41,12 @@ public class GetSettlementEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .MapGet("{settlementId}", (
-                Guid settlementId,
-                IHandler<
-                    Guid,
-                    GetSettlementQuery,
-                    GetSettlementQueryResult,
-                    GetSettlementResponse
-                > handler) => handler.Handle(settlementId)
-            )
+            .MapGet("{settlementId}", (Guid settlementId, ISender sender)
+                => Handle(settlementId, sender))
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status404NotFound)
             .Produces<string>(StatusCodes.Status304NotModified);

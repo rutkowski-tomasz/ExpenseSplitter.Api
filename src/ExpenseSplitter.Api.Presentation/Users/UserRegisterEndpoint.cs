@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
 
@@ -10,10 +11,9 @@ public sealed record UserRegisterRequest(
     string Password
 );
 
-public class UserRegisterEndpoint : IEndpoint,
-    IMapper<UserRegisterRequest, RegisterUserCommand>
+public class UserRegisterEndpoint : EndpointEmptyResponse<UserRegisterRequest, RegisterUserCommand>
 {
-    public RegisterUserCommand Map(UserRegisterRequest source)
+    public override RegisterUserCommand MapRequest(UserRegisterRequest source)
     {
         return new RegisterUserCommand(
             source.Email,
@@ -22,19 +22,12 @@ public class UserRegisterEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Users()
-            .MapPost("register", (
-                UserRegisterRequest request,
-                IHandler<
-                    UserRegisterRequest,
-                    RegisterUserCommand,
-                    Guid,
-                    Guid
-                > handler) => handler.Handle(request)
-            )
+            .MapPost("register", (UserRegisterRequest request, ISender sender)
+                => Handle(request, sender))
             .Produces<string>(StatusCodes.Status400BadRequest);
     }
 }

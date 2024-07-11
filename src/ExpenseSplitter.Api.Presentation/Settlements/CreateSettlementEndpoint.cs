@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -9,27 +10,24 @@ public sealed record CreateSettlementRequest(
     IEnumerable<string> ParticipantNames
 );
 
-public class CreateSettlementRequestMapper : IMapper<CreateSettlementRequest, CreateSettlementCommand>
+public class CreateSettlementEndpoint : Endpoint<CreateSettlementRequest, CreateSettlementCommand, Guid, Guid>
 {
-    public CreateSettlementCommand Map(CreateSettlementRequest source) =>
-        new (
-            source.Name,
-            source.ParticipantNames
+    public override CreateSettlementCommand MapRequest(CreateSettlementRequest request)
+    {
+        return new CreateSettlementCommand(
+            request.Name,
+            request.ParticipantNames
         );
-}
+    }
 
-public class CreateSettlementResponseMapper : IMapper<Guid, Guid>
-{
-    public Guid Map(Guid source) => source;
-}
+    public override Guid MapResponse(Guid result) => result;
 
-public class CreateSettlementEndpoint : IEndpoint
-{
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .Post<CreateSettlementRequest, CreateSettlementCommand, Guid, Guid>("")
-            .WithErrors(StatusCodes.Status400BadRequest);
+            .MapPost("", (CreateSettlementRequest request, ISender sender) => 
+                Handle(request, sender))
+            .Produces<string>(StatusCodes.Status400BadRequest);
     }
 }

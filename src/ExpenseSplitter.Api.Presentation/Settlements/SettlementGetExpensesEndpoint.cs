@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -17,16 +18,14 @@ public sealed record GetExpensesForSettlementResponseExpense(
 );
 
 
-public class SettlementGetExpensesEndpoint : IEndpoint,
-    IMapper<Guid, GetExpensesForSettlementQuery>,
-    IMapper<GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>
+public class SettlementGetExpensesEndpoint : Endpoint<Guid, GetExpensesForSettlementQuery, GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>
 {
-    public GetExpensesForSettlementQuery Map(Guid source)
+    public override GetExpensesForSettlementQuery MapRequest(Guid source)
     {
         return new(source);
     }
 
-    public GetExpensesForSettlementResponse Map(GetExpensesForSettlementQueryResult source)
+    public override GetExpensesForSettlementResponse MapResponse(GetExpensesForSettlementQueryResult source)
     {
         return new(
             source.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
@@ -39,18 +38,11 @@ public class SettlementGetExpensesEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .MapGet("{settlementId}/expenses", (
-                Guid settlementId,
-                IHandler<
-                    Guid,
-                    GetExpensesForSettlementQuery,
-                    GetExpensesForSettlementQueryResult,
-                    GetExpensesForSettlementResponse
-                > handler) => handler.Handle(settlementId)
-            );
+            .MapGet("{settlementId}/expenses", (Guid settlementId, ISender sender)
+                => Handle(settlementId, sender));
     }
 }

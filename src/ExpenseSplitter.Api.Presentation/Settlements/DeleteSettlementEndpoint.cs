@@ -1,28 +1,23 @@
 using ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public class DeleteSettlementEndpoint : IEndpoint,
-    IMapper<Guid, DeleteSettlementCommand>
+public class DeleteSettlementEndpoint : EndpointEmptyResponse<Guid, DeleteSettlementCommand>
 {
-    public DeleteSettlementCommand Map(Guid source)
+    public override DeleteSettlementCommand MapRequest(Guid source)
     {
         return new(source);
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .MapDelete("{settlementId}", (
-                Guid settlementId,
-                IHandlerEmptyResponse<
-                    Guid,
-                    DeleteSettlementCommand
-                > handler) => handler.Handle(settlementId)
-            )
+            .MapDelete("{settlementId}", (Guid settlementId, ISender sender)
+                => Handle(settlementId, sender))
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status412PreconditionFailed)
             .Produces<string>(StatusCodes.Status404NotFound);

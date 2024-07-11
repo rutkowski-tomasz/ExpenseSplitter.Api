@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -15,16 +16,14 @@ public record GetAllSettlementsResponseSettlement(
     string Name
 );
 
-public class GetAllSettlementsEndpoint : IEndpoint,
-    IMapper<GetAllSettlementsRequest, GetAllSettlementsQuery>,
-    IMapper<GetAllSettlementsQueryResult, GetAllSettlementsResponse>
+public class GetAllSettlementsEndpoint : Endpoint<GetAllSettlementsRequest, GetAllSettlementsQuery, GetAllSettlementsQueryResult, GetAllSettlementsResponse>
 {
-    public GetAllSettlementsQuery Map(GetAllSettlementsRequest source)
+    public override GetAllSettlementsQuery MapRequest(GetAllSettlementsRequest source)
     {
         return new GetAllSettlementsQuery(source.Page, source.PageSize);
     }
 
-    public GetAllSettlementsResponse Map(GetAllSettlementsQueryResult source)
+    public override GetAllSettlementsResponse MapResponse(GetAllSettlementsQueryResult source)
     {
         return new GetAllSettlementsResponse(
             source.Settlements.Select(settlement => new GetAllSettlementsResponseSettlement(
@@ -34,19 +33,12 @@ public class GetAllSettlementsEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .MapGet("", (
-                [AsParameters] GetAllSettlementsRequest request,
-                IHandler<
-                    GetAllSettlementsRequest,
-                    GetAllSettlementsQuery,
-                    GetAllSettlementsQueryResult,
-                    GetAllSettlementsResponse
-                > handler) => handler.Handle(request)
-            )
+            .MapGet("", ([AsParameters] GetAllSettlementsRequest request, ISender sender)
+                => Handle(request, sender))
             .RequireRateLimiting(RateLimitingExtensions.UserRateLimiting);
     }
 }

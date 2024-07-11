@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
@@ -20,10 +21,9 @@ public sealed record UpdateSettlementRequestParticipant(
     string Nickname
 );
 
-public class UpdateSettlementEndpoint : IEndpoint,
-    IMapper<UpdateSettlementRequest, UpdateSettlementCommand>
+public class UpdateSettlementEndpoint : EndpointEmptyResponse<UpdateSettlementRequest, UpdateSettlementCommand>
 {
-    public UpdateSettlementCommand Map(UpdateSettlementRequest source)
+    public override UpdateSettlementCommand MapRequest(UpdateSettlementRequest source)
     {
         return new(
             source.SettlementId,
@@ -35,17 +35,12 @@ public class UpdateSettlementEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .MapPut("{settlementId}", (
-                [AsParameters] UpdateSettlementRequest request,
-                IHandlerEmptyResponse<
-                    UpdateSettlementRequest,
-                    UpdateSettlementCommand
-                > handler) => handler.Handle(request)
-            )
+            .MapPut("{settlementId}", ([AsParameters] UpdateSettlementRequest request, ISender sender)
+                => Handle(request, sender))
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status404NotFound);
     }

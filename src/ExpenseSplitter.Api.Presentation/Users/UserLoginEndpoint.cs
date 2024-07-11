@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
 
@@ -8,11 +9,10 @@ public sealed record UserLoginRequest(string Email, string Password);
 
 public sealed record LoginUserResponse(string AccessToken);
 
-public class UserLoginEndpoint : IEndpoint,
-    IMapper<UserLoginRequest, LoginUserCommand>,
-    IMapper<LoginUserResult, LoginUserResponse>
+public class UserLoginEndpoint
+    : Endpoint<UserLoginRequest, LoginUserCommand, LoginUserResult, LoginUserResponse>
 {
-    public LoginUserCommand Map(UserLoginRequest source)
+    public override LoginUserCommand MapRequest(UserLoginRequest source)
     {
         return new LoginUserCommand(
             source.Email,
@@ -20,26 +20,19 @@ public class UserLoginEndpoint : IEndpoint,
         );
     }
 
-    public LoginUserResponse Map(LoginUserResult source)
+    public override LoginUserResponse MapResponse(LoginUserResult source)
     {
         return new LoginUserResponse(
             source.AccessToken
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Users()
-            .MapPost("login", (
-                UserLoginRequest request,
-                IHandler<
-                    UserLoginRequest,
-                    LoginUserCommand,
-                    LoginUserResult,
-                    LoginUserResponse
-                > handler) => handler.Handle(request)
-            )
+            .MapPost("login", (UserLoginRequest request, ISender sender)
+                => Handle(request, sender))
             .Produces<string>(StatusCodes.Status400BadRequest)
             .Produces<string>(StatusCodes.Status401Unauthorized);
     }

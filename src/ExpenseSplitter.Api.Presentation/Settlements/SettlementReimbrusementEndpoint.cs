@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -20,16 +21,14 @@ public sealed record SettlementReimbrusementResponseSuggestedReimbrusement(
     decimal Value
 );
 
-public class SettlementReimbrusementEndpoint : IEndpoint,
-    IMapper<Guid, CalculateReimbrusementQuery>,
-    IMapper<CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>
+public class SettlementReimbrusementEndpoint : Endpoint<Guid, CalculateReimbrusementQuery, CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>
 {
-    public CalculateReimbrusementQuery Map(Guid source)
+    public override CalculateReimbrusementQuery MapRequest(Guid source)
     {
         return new(source);
     }
 
-    public SettlementReimbrusementResponse Map(CalculateReimbrusementQueryResult source)
+    public override SettlementReimbrusementResponse MapResponse(CalculateReimbrusementQueryResult source)
     {
         return new(
             source.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
@@ -44,19 +43,12 @@ public class SettlementReimbrusementEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Settlements()
-            .MapGet("/{settlementId}/reimbrusement", (
-                Guid settlementId,
-                IHandler<
-                    Guid,
-                    CalculateReimbrusementQuery,
-                    CalculateReimbrusementQueryResult,
-                    SettlementReimbrusementResponse
-                > handler) => handler.Handle(settlementId)
-            )
+            .MapGet("/{settlementId}/reimbrusement", (Guid settlementId, ISender sender)
+                => Handle(settlementId, sender))
             .Produces<string>(StatusCodes.Status403Forbidden);
     }
 }

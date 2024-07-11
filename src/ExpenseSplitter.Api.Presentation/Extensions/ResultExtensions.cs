@@ -4,15 +4,11 @@ namespace ExpenseSplitter.Api.Presentation.Extensions;
 
 public static class ResultExtensions
 {
-    public static IResult ToHttpResult(this Result result)
-    {
-        return result.IsSuccess ? Results.Ok() : MapResultError(result.Error);
-    }
+    public static IResult ToHttpResult<TCommandResult, TResponse>(this Result<TCommandResult> result, Func<TCommandResult, TResponse> mapResponse)
+        => result.IsSuccess ? TypedResults.Ok(mapResponse(result.Value)) : MapResultError(result.Error);
 
-    public static IResult ToHttpResult<T>(this Result<T> result)
-    {
-        return result.IsSuccess ? Results.Ok(result.Value) : MapResultError(result.Error);
-    }
+    public static IResult ToHttpResult(this Result result)
+        => result.IsSuccess ? TypedResults.Ok() : MapResultError(result.Error);
 
     private static IResult MapResultError(Error error)
     {

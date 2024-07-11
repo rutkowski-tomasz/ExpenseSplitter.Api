@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
@@ -23,10 +24,9 @@ public sealed record UpdateExpenseRequestAllocation(
     decimal Value
 );
 
-public class UpdateExpenseEndpoint : IEndpoint,
-    IMapper<UpdateExpenseRequest, UpdateExpenseCommand>
+public class UpdateExpenseEndpoint : EndpointEmptyResponse<UpdateExpenseRequest, UpdateExpenseCommand>
 {
-    public UpdateExpenseCommand Map(UpdateExpenseRequest source)
+    public override UpdateExpenseCommand MapRequest(UpdateExpenseRequest source)
     {
         return new UpdateExpenseCommand(
             source.ExpenseId,
@@ -41,17 +41,12 @@ public class UpdateExpenseEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Expenses()
-            .MapPut("{expenseId}", (
-                [AsParameters] UpdateExpenseRequest request,
-                IHandlerEmptyResponse<
-                    UpdateExpenseRequest,
-                    UpdateExpenseCommand
-                > handler) => handler.Handle(request)
-            )
+            .MapPut("{expenseId}", ([AsParameters] UpdateExpenseRequest request, ISender sender)
+                => Handle(request, sender))
             .Produces<string>(StatusCodes.Status400BadRequest)
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status404NotFound);

@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
@@ -17,11 +18,10 @@ public sealed record CreateExpenseRequestAllocation(
     decimal Value
 );
 
-
-public class CreateExpenseEndpoint : IEndpoint,
-    IMapper<CreateExpenseRequest, CreateExpenseCommand>
+public class CreateExpenseEndpoint
+    : Endpoint<CreateExpenseRequest, CreateExpenseCommand, Guid, Guid>
 {
-    public CreateExpenseCommand Map(CreateExpenseRequest source)
+    public override CreateExpenseCommand MapRequest(CreateExpenseRequest source)
     {
         return new CreateExpenseCommand(
             source.Name,
@@ -35,19 +35,14 @@ public class CreateExpenseEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override Guid MapResponse(Guid result) => result;
+
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Expenses()
-            .MapPost("", (
-                CreateExpenseRequest request,
-                IHandler<
-                    CreateExpenseRequest,
-                    CreateExpenseCommand,
-                    Guid,
-                    Guid
-                > handler) => handler.Handle(request)
-            )
+            .MapPost("", (CreateExpenseRequest request, ISender sender)
+                => Handle(request, sender))
             .Produces<string>(StatusCodes.Status400BadRequest)
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status404NotFound);

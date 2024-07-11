@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
@@ -20,16 +21,14 @@ public sealed record GetExpenseResponseAllocation(
 );
 
 
-public class GetExpenseEndpoint : IEndpoint,
-    IMapper<Guid, GetExpenseQuery>,
-    IMapper<GetExpenseQueryResult, GetExpenseResponse>
+public class GetExpenseEndpoint : Endpoint<Guid, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>
 {
-    public GetExpenseQuery Map(Guid source)
+    public override GetExpenseQuery MapRequest(Guid source)
     {
         return new GetExpenseQuery(source);
     }
 
-    public GetExpenseResponse Map(GetExpenseQueryResult source)
+    public override GetExpenseResponse MapResponse(GetExpenseQueryResult source)
     {
         return new GetExpenseResponse(
             source.Id,
@@ -45,19 +44,11 @@ public class GetExpenseEndpoint : IEndpoint,
         );
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Expenses()
-            .MapGet("{expenseId}", (
-                Guid expenseId,
-                IHandler<
-                    Guid,
-                    GetExpenseQuery,
-                    GetExpenseQueryResult,
-                    GetExpenseResponse
-                > handler) => handler.Handle(expenseId)
-            )
+            .MapGet("{expenseId}", (Guid expenseId, ISender sender) => Handle(expenseId, sender))
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status404NotFound);
     }

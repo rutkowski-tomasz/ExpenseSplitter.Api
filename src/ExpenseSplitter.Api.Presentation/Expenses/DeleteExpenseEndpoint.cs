@@ -1,28 +1,23 @@
 using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
-public class DeleteExpenseEndpoint : IEndpoint,
-    IMapper<Guid, DeleteExpenseCommand>
+public class DeleteExpenseEndpoint : EndpointEmptyResponse<Guid, DeleteExpenseCommand>
 {
-    public DeleteExpenseCommand Map(Guid source)
+    public override DeleteExpenseCommand MapRequest(Guid source)
     {
         return new DeleteExpenseCommand(source);
     }
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
+    public override void MapEndpoint(IEndpointRouteBuilder builder)
     {
         builder
             .Expenses()
-            .MapDelete("{expenseId}", (
-                Guid expenseId,
-                IHandlerEmptyResponse<
-                    Guid,
-                    DeleteExpenseCommand
-                > handler) => handler.Handle(expenseId)
-            )
+            .MapDelete("{expenseId}", (Guid expenseId, ISender sender)
+                => Handle(expenseId, sender))
             .Produces<string>(StatusCodes.Status403Forbidden)
             .Produces<string>(StatusCodes.Status404NotFound);
     }
