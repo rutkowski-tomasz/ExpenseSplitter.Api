@@ -1,5 +1,5 @@
 using ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;

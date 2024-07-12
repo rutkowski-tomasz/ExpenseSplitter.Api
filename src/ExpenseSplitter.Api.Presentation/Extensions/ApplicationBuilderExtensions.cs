@@ -2,8 +2,8 @@
 using ExpenseSplitter.Api.Presentation.Middleware;
 using ExpenseSplitter.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using ExpenseSplitter.Api.Presentation.Abstractions;
 using Asp.Versioning;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 namespace ExpenseSplitter.Api.Presentation.Extensions;
 
@@ -43,7 +43,7 @@ public static class ApplicationBuilderExtensions
             .MapGroup("api/v{version:apiVersion}")
             .WithApiVersionSet(apiVersionSet);
 
-        var endpoints = webApplication.Services.GetRequiredService<IEnumerable<IEndpoint>>();
+        var endpoints = webApplication.Services.GetRequiredService<IEnumerable<EndpointBase>>();
 
         foreach (var endpoint in endpoints)
         {

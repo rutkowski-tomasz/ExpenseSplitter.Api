@@ -1,4 +1,4 @@
-﻿using ExpenseSplitter.Api.Presentation.Abstractions;
+﻿using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 
@@ -13,8 +13,8 @@ public static class ServiceCollectionExtensions
         var serviceDescriptors = assembly
             .DefinedTypes
             .Where(type => type is { IsAbstract: false, IsInterface: false }
-                && type.IsAssignableTo(typeof(IEndpoint)))
-            .Select(type => ServiceDescriptor.Transient(typeof(IEndpoint), type))
+                && type.IsAssignableTo(typeof(EndpointBase)))
+            .Select(type => ServiceDescriptor.Transient(typeof(EndpointBase), type))
             .ToArray();
 
         services.TryAddEnumerable(serviceDescriptors);

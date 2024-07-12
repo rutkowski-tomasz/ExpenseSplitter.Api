@@ -1,5 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 

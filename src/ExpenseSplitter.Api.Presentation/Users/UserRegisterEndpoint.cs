@@ -1,5 +1,5 @@
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
-using ExpenseSplitter.Api.Presentation.Abstractions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
