@@ -3,21 +3,23 @@ using MediatR;
 
 namespace ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
+public partial class EndpointGroups;
+
 public abstract class EndpointBase(
-    AutoEndpoint AutoEndpoint,
+    Endpoints EndpointDefinition,
     Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
-)
+) : EndpointGroups
 {
     public abstract Delegate Handle();
 
     public RouteHandlerBuilder CreateRouteHandlerBuilder(RouteGroupBuilder routeGroupBuilder)
     {
-        return AutoEndpoint.Method.Map(routeGroupBuilder, AutoEndpoint.Route, Handle());
+        return EndpointDefinition.Map(routeGroupBuilder, EndpointDefinition.Route, Handle());
     }
 
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = AutoEndpoint.GroupBuilder(builder);
+        var routeGroupBuilder = EndpointDefinition.GroupBuilder(builder);
         var routeHandlerBuilder = CreateRouteHandlerBuilder(routeGroupBuilder);
 
         if (RouteHandlerCustomization is not null)
@@ -25,7 +27,7 @@ public abstract class EndpointBase(
             RouteHandlerCustomization(routeHandlerBuilder);
         }
 
-        foreach (var statusCode in AutoEndpoint.ErrorCodes ?? [])
+        foreach (var statusCode in EndpointDefinition.ErrorCodes ?? [])
         {
             routeHandlerBuilder.Produces<string>(statusCode);
         }
@@ -67,10 +69,10 @@ public abstract class EndpointBase(
 }
 
 public abstract class Endpoint<TRequest, TCommand>(
-    AutoEndpoint AutoEndpoint,
+    Endpoints EndpointDefinition,
     Func<TRequest, TCommand> MapRequest,
     Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
-) : EndpointBase(AutoEndpoint, RouteHandlerCustomization)
+) : EndpointBase(EndpointDefinition, RouteHandlerCustomization)
     where TCommand : IRequest<Result>
     where TRequest : notnull
 {
@@ -79,11 +81,11 @@ public abstract class Endpoint<TRequest, TCommand>(
 }
 
 public abstract class Endpoint<TRequest, TCommand, TCommandResult, TResponse>(
-    AutoEndpoint AutoEndpoint,
+    Endpoints EndpointDefinition,
     Func<TRequest, TCommand> MapRequest,
     Func<TCommandResult, TResponse> MapResponse,
     Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
-) : EndpointBase(AutoEndpoint, RouteHandlerCustomization)
+) : EndpointBase(EndpointDefinition, RouteHandlerCustomization)
     where TCommand : IRequest<Result<TCommandResult>>
     where TRequest : notnull
 {
@@ -92,10 +94,10 @@ public abstract class Endpoint<TRequest, TCommand, TCommandResult, TResponse>(
 }
 
 public abstract class Endpoint<TCommand, TCommandResult, TResponse>(
-    AutoEndpoint AutoEndpoint,
+    Endpoints EndpointDefinition,
     Func<TCommandResult, TResponse> MapResponse,
     Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
-) : EndpointBase(AutoEndpoint, RouteHandlerCustomization)
+) : EndpointBase(EndpointDefinition, RouteHandlerCustomization)
     where TCommand : IRequest<Result<TCommandResult>>, new()
 {
     public override Delegate Handle() =>
