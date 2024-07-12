@@ -4,6 +4,11 @@ namespace ExpenseSplitter.Api.Presentation;
 
 public class Endpoints
 {
+    public static EndpointDefinition Root = EndpointDefinition.CreateGroup(builder => builder
+        .MapGroup(string.Empty)
+        .WithTags(typeof(Program).Assembly.GetName().Name!)
+    );
+
     public static EndpointDefinition Expenses = EndpointDefinition.CreateGroup(builder => builder
         .MapGroup(nameof(Application.Expenses).ToLower())
         .WithTags(nameof(Application.Expenses))

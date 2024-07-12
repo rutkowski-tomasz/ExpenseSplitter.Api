@@ -8,8 +8,6 @@ public abstract class EndpointBase(
     Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
 )
 {
-    public static EndpointDefinition Root => EndpointDefinition.CreateGroup(builder => builder);
-
     public abstract Delegate Handle();
 
     public void MapEndpoint(IEndpointRouteBuilder builder)
