@@ -16,11 +16,12 @@ public sealed record GetExpensesForSettlementResponseExpense(
 );
 
 public class SettlementGetExpensesEndpoint() : Endpoint<Guid, GetExpensesForSettlementQuery, GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>(
-    Route: "{settlementId}/expenses",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Get,
-    MapRequest: request => new(request),
-    MapResponse: result => new(
+    Endpoints.Settlements.Get("{settlementId}/expenses").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new(request),
+    result => new(
         result.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
             expense.Id,
             expense.Title,
@@ -28,9 +29,5 @@ public class SettlementGetExpensesEndpoint() : Endpoint<Guid, GetExpensesForSett
             expense.PayingParticipantId,
             expense.PaymentDate
         ))
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status403Forbidden,
-        StatusCodes.Status404NotFound
-    ]
+    )
 );

@@ -20,11 +20,11 @@ public sealed record SettlementReimbrusementResponseSuggestedReimbrusement(
 );
 
 public class SettlementReimbrusementEndpoint() : Endpoint<Guid, CalculateReimbrusementQuery, CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>(
-    Route: "{settlementId}/reimbrusement",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Get,
-    MapRequest: request => new (request),
-    MapResponse: result => new(
+    Endpoints.Settlements.Get("{settlementId}/reimbrusement").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden
+    ),
+    request => new (request),
+    result => new(
         result.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
             balance.ParticipantId,
             balance.Value
@@ -34,8 +34,5 @@ public class SettlementReimbrusementEndpoint() : Endpoint<Guid, CalculateReimbru
             suggestedReimbrusement.ToParticipantId,
             suggestedReimbrusement.Value
         ))
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status403Forbidden,
-    ]
+    )
 );

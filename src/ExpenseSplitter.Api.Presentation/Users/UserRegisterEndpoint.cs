@@ -10,16 +10,13 @@ public sealed record UserRegisterRequest(
 );
 
 public class UserRegisterEndpoint() : Endpoint<UserRegisterRequest, RegisterUserCommand>(
-    Route: "register",
-    Group: EndpointGroup.Users,
-    Method: EndpointMethod.Post,
-    MapRequest: request => new RegisterUserCommand(
+    Endpoints.Users.Post("register").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status401Unauthorized
+    ),
+    request => new RegisterUserCommand(
         request.Email,
         request.Nickname,
         request.Password
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status400BadRequest,
-        StatusCodes.Status401Unauthorized
-    ]
+    )
 );

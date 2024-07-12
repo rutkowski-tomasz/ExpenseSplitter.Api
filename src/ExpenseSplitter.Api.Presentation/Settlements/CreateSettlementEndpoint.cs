@@ -1,21 +1,24 @@
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public sealed record CreateSettlementRequest(
+public record CreateSettlementRequest([FromBody] CreateSettlementRequestBody Body);
+
+public record CreateSettlementRequestBody(
     string Name,
     IEnumerable<string> ParticipantNames
 );
 
 public class CreateSettlementEndpoint() : Endpoint<CreateSettlementRequest, CreateSettlementCommand, Guid, Guid>(
-    Route: "",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Post,
-    MapRequest: request => new (request.Name, request.ParticipantNames),
-    MapResponse: result => result,
-    ErrorStatusCodes: [
+    Endpoints.Settlements.Post("").ProducesErrorCodes(
         StatusCodes.Status400BadRequest
-    ]
+    ),
+    request => new (
+        request.Body.Name,
+        request.Body.ParticipantNames
+    ),
+    result => result
 );
 

@@ -23,10 +23,12 @@ public sealed record UpdateExpenseRequestAllocation(
 );
 
 public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpenseCommand>(
-    Route: "{expenseId}",
-    Group: EndpointGroup.Expenses,
-    Method: EndpointMethod.Put,
-    MapRequest: request => new (
+    Endpoints.Expenses.Put("{expenseId}").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new (
         request.ExpenseId,
         request.Body.Title,
         request.Body.PaymentDate,
@@ -36,10 +38,5 @@ public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpe
             x.ParticipantId,
             x.Value
         ))
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status400BadRequest,
-        StatusCodes.Status403Forbidden,
-        StatusCodes.Status404NotFound
-    ]
+    )
 );

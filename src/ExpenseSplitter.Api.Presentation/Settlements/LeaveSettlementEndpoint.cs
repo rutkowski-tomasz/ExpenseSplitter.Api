@@ -4,11 +4,8 @@ using ExpenseSplitter.Api.Presentation.Abstractions;
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
 public class LeaveSettlementEndpoint() : Endpoint<Guid, LeaveSettlementCommand>(
-    Route: "{settlementId}/leave",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Post,
-    MapRequest: request => new (request),
-    ErrorStatusCodes: [
+    Endpoints.Settlements.Post("{settlementId}/leave").ProducesErrorCodes(
         StatusCodes.Status403Forbidden
-    ]
+    ),
+    MapRequest: request => new (request)
 );

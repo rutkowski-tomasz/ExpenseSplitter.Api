@@ -15,15 +15,12 @@ public record GetAllSettlementsResponseSettlement(
 );
 
 public class GetAllSettlementsEndpoint() : Endpoint<GetAllSettlementsRequest, GetAllSettlementsQuery, GetAllSettlementsQueryResult, GetAllSettlementsResponse>(
-    Route: "{settlementId}",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Get,
-    MapRequest: request => new (request.Page, request.PageSize),
-    MapResponse: result => new GetAllSettlementsResponse(
+    Endpoints.Settlements.Get(""),
+    request => new (request.Page, request.PageSize),
+    result => new GetAllSettlementsResponse(
         result.Settlements.Select(settlement => new GetAllSettlementsResponseSettlement(
             settlement.Id,
             settlement.Name
         ))
-    ),
-    ErrorStatusCodes: []
+    )
 );

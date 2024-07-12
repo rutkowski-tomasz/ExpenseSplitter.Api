@@ -25,9 +25,9 @@ To let you quickly understand the domain and relationships of the project entiti
 
 | Method  | Path   | Notes  |
 |---|---|---|
-| 🟩 POST | /user/login | |
-| 🟩 POST | /user/register | |
-| 🟦 GET | /user/me | |
+| 🟩 POST | /users/login | |
+| 🟩 POST | /users/register | |
+| 🟦 GET | /users/me | |
 | 🟩 POST | /settlements | Generates invite code |
 | 🟦 GET | /settlements | |
 | 🟦 GET | /settlements/{settlementId} | |

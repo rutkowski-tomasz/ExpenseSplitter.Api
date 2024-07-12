@@ -9,12 +9,9 @@ public record DeleteExpenseRequest(
 );
 
 public class DeleteExpenseEndpoint() : Endpoint<DeleteExpenseRequest, DeleteExpenseCommand>(
-    Route: "{expenseId}",
-    Group: EndpointGroup.Expenses,
-    Method: EndpointMethod.Delete,
-    MapRequest: request => new (request.ExpenseId),
-    ErrorStatusCodes: [
+    Endpoints.Expenses.Delete("{expenseId}").ProducesErrorCodes(
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ]
+    ),
+    request => new (request.ExpenseId)
 );

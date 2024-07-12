@@ -1,11 +1,12 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpense;
 using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
-using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
-public sealed record GetExpenseResponse(
+public record GetExpenseRequest([FromRoute] Guid ExpenseId);
+
+public record GetExpenseResponse(
     Guid Id,
     string Title,
     Guid PayingParticipantId,
@@ -14,18 +15,19 @@ public sealed record GetExpenseResponse(
     IEnumerable<GetExpenseResponseAllocation> Allocations
 );
 
-public sealed record GetExpenseResponseAllocation(
+public record GetExpenseResponseAllocation(
     Guid Id,
     Guid ParticipantId,
     decimal Amount
 );
 
-public class GetExpenseEndpoint() : Endpoint<Guid, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>(
-    Route: "{expenseId}",
-    Group: EndpointGroup.Expenses,
-    Method: EndpointMethod.Post,
-    MapRequest: request => new (request),
-    MapResponse: result => new (
+public class GetExpenseEndpoint() : Endpoint<GetExpenseRequest, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>(
+    Endpoints.Expenses.Get("{expenseId}").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new (request.ExpenseId),
+    result => new (
         result.Id,
         result.Title,
         result.PayingParticipantId,
@@ -36,9 +38,5 @@ public class GetExpenseEndpoint() : Endpoint<Guid, GetExpenseQuery, GetExpenseQu
             x.ParticipantId,
             x.Amount
         ))
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status403Forbidden,
-        StatusCodes.Status404NotFound
-    ]
+    )
 );

@@ -11,35 +11,37 @@ public interface IEndpoint
 }
 
 public abstract class Endpoint<TRequest, TCommand>(
-    [StringSyntax("Route")] 
-    string Route,
-    EndpointGroup Group,
-    EndpointMethod Method,
+    AutoEndpoint AutoEndpoint,
     Func<TRequest, TCommand> MapRequest,
-    IEnumerable<int>? ErrorStatusCodes
+    Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
 ) : IEndpoint
     where TCommand : IRequest<Result>
     where TRequest : notnull
 {
     private RouteHandlerBuilder CreateRouteHandlerBuilder(RouteGroupBuilder routeGroupBuilder)
     {
-        return Method switch
+        return AutoEndpoint.Method switch
         {
-            EndpointMethod.Get => routeGroupBuilder.MapGet(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Post => routeGroupBuilder.MapPost(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Put => routeGroupBuilder.MapPut(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Delete => routeGroupBuilder.MapDelete(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Patch => routeGroupBuilder.MapPatch(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Get => routeGroupBuilder.MapGet(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Post => routeGroupBuilder.MapPost(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Put => routeGroupBuilder.MapPut(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Delete => routeGroupBuilder.MapDelete(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Patch => routeGroupBuilder.MapPatch(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             _ => throw new NotImplementedException()
         };
     }
 
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = Group.Map(builder);
+        var routeGroupBuilder = AutoEndpoint.GroupBuilder(builder);
         var routeHandlerBuilder = CreateRouteHandlerBuilder(routeGroupBuilder);
 
-        foreach (var statusCode in ErrorStatusCodes ?? [])
+        if (RouteHandlerCustomization is not null)
+        {
+            RouteHandlerCustomization(routeHandlerBuilder);
+        }
+
+        foreach (var statusCode in AutoEndpoint.ErrorCodes ?? [])
         {
             routeHandlerBuilder.Produces<string>(statusCode);
         }
@@ -54,36 +56,38 @@ public abstract class Endpoint<TRequest, TCommand>(
 }
 
 public abstract class Endpoint<TRequest, TCommand, TCommandResult, TResponse>(
-    [StringSyntax("Route")] 
-    string Route,
-    EndpointGroup Group,
-    EndpointMethod Method,
+    AutoEndpoint AutoEndpoint,
     Func<TRequest, TCommand> MapRequest,
     Func<TCommandResult, TResponse> MapResponse,
-    IEnumerable<int>? ErrorStatusCodes
+    Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
 ) : IEndpoint
     where TCommand : IRequest<Result<TCommandResult>>
     where TRequest : notnull
 {
     private RouteHandlerBuilder CreateRouteHandlerBuilder(RouteGroupBuilder routeGroupBuilder)
     {
-        return Method switch
+        return AutoEndpoint.Method switch
         {
-            EndpointMethod.Get => routeGroupBuilder.MapGet(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Post => routeGroupBuilder.MapPost(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Put => routeGroupBuilder.MapPut(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Delete => routeGroupBuilder.MapDelete(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
-            EndpointMethod.Patch => routeGroupBuilder.MapPatch(Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Get => routeGroupBuilder.MapGet(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Post => routeGroupBuilder.MapPost(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Put => routeGroupBuilder.MapPut(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Delete => routeGroupBuilder.MapDelete(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
+            EndpointMethod.Patch => routeGroupBuilder.MapPatch(AutoEndpoint.Route, ([AsParameters] TRequest request, ISender sender) => Handle(request, sender)),
             _ => throw new NotImplementedException()
         };
     }
 
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = Group.Map(builder);
+        var routeGroupBuilder = AutoEndpoint.GroupBuilder(builder);
         var routeHandlerBuilder = CreateRouteHandlerBuilder(routeGroupBuilder);
 
-        foreach (var statusCode in ErrorStatusCodes ?? [])
+        if (RouteHandlerCustomization is not null)
+        {
+            RouteHandlerCustomization(routeHandlerBuilder);
+        }
+
+        foreach (var statusCode in AutoEndpoint.ErrorCodes ?? [])
         {
             routeHandlerBuilder.Produces<string>(statusCode);
         }
@@ -98,34 +102,36 @@ public abstract class Endpoint<TRequest, TCommand, TCommandResult, TResponse>(
 }
 
 public abstract class Endpoint<TCommand, TCommandResult, TResponse>(
-    [StringSyntax("Route")] 
-    string Route,
-    EndpointGroup Group,
-    EndpointMethod Method,
+    AutoEndpoint AutoEndpoint,
     Func<TCommandResult, TResponse> MapResponse,
-    IEnumerable<int>? ErrorStatusCodes
+    Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
 ) : IEndpoint
     where TCommand : IRequest<Result<TCommandResult>>, new()
 {
     private RouteHandlerBuilder CreateRouteHandlerBuilder(RouteGroupBuilder routeGroupBuilder)
     {
-        return Method switch
+        return AutoEndpoint.Method switch
         {
-            EndpointMethod.Get => routeGroupBuilder.MapGet(Route, (ISender sender) => Handle(sender)),
-            EndpointMethod.Post => routeGroupBuilder.MapPost(Route, (ISender sender) => Handle(sender)),
-            EndpointMethod.Put => routeGroupBuilder.MapPut(Route, (ISender sender) => Handle(sender)),
-            EndpointMethod.Delete => routeGroupBuilder.MapDelete(Route, (ISender sender) => Handle(sender)),
-            EndpointMethod.Patch => routeGroupBuilder.MapPatch(Route, (ISender sender) => Handle(sender)),
+            EndpointMethod.Get => routeGroupBuilder.MapGet(AutoEndpoint.Route, (ISender sender) => Handle(sender)),
+            EndpointMethod.Post => routeGroupBuilder.MapPost(AutoEndpoint.Route, (ISender sender) => Handle(sender)),
+            EndpointMethod.Put => routeGroupBuilder.MapPut(AutoEndpoint.Route, (ISender sender) => Handle(sender)),
+            EndpointMethod.Delete => routeGroupBuilder.MapDelete(AutoEndpoint.Route, (ISender sender) => Handle(sender)),
+            EndpointMethod.Patch => routeGroupBuilder.MapPatch(AutoEndpoint.Route, (ISender sender) => Handle(sender)),
             _ => throw new NotImplementedException()
         };
     }
 
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = Group.Map(builder);
+        var routeGroupBuilder = AutoEndpoint.GroupBuilder(builder);
         var routeHandlerBuilder = CreateRouteHandlerBuilder(routeGroupBuilder);
 
-        foreach (var statusCode in ErrorStatusCodes ?? [])
+        if (RouteHandlerCustomization is not null)
+        {
+            RouteHandlerCustomization(routeHandlerBuilder);
+        }
+
+        foreach (var statusCode in AutoEndpoint.ErrorCodes ?? [])
         {
             routeHandlerBuilder.Produces<string>(statusCode);
         }
@@ -139,15 +145,6 @@ public abstract class Endpoint<TCommand, TCommandResult, TResponse>(
     }
 }
 
-public record EndpointDefinition<TRequest, TCommand>(
-    [StringSyntax("Route")] 
-    string Route,
-    EndpointGroup Group,
-    EndpointMethod Method,
-    Func<TRequest, TCommand> MapRequest,
-    IEnumerable<int>? ErrorStatusCodes
-);
-
 public enum EndpointMethod
 {
     Get,
@@ -157,25 +154,56 @@ public enum EndpointMethod
     Patch
 }
 
-public class EndpointGroup(Func<IEndpointRouteBuilder, RouteGroupBuilder> Map)
+public record AutoEndpointBuilder(Func<IEndpointRouteBuilder, RouteGroupBuilder> GroupBuilder)
 {
-    public static EndpointGroup Expenses = new(builder => builder
+    public AutoEndpoint Post([StringSyntax("Route")] string route)
+        => new(route, EndpointMethod.Post, GroupBuilder);
+
+    public AutoEndpoint Put([StringSyntax("Route")] string route)
+        => new(route, EndpointMethod.Put, GroupBuilder);
+
+    public AutoEndpoint Get([StringSyntax("Route")] string route)
+        => new(route, EndpointMethod.Get, GroupBuilder);
+
+    public AutoEndpoint Delete([StringSyntax("Route")] string route)
+        => new(route, EndpointMethod.Delete, GroupBuilder);
+
+    public AutoEndpoint Patch([StringSyntax("Route")] string route)
+        => new(route, EndpointMethod.Patch, GroupBuilder);
+}
+
+public record AutoEndpoint(
+    string Route,
+    EndpointMethod Method,
+    Func<IEndpointRouteBuilder, RouteGroupBuilder> GroupBuilder
+)
+{
+    public IEnumerable<int> ErrorCodes { get; private set; }
+
+    public AutoEndpoint ProducesErrorCodes(params int[] errorCodes)
+    {
+        ErrorCodes = errorCodes;
+        return this;
+    }
+}
+
+public class Endpoints
+{
+    public static AutoEndpointBuilder Expenses = new(builder => builder
         .MapGroup(nameof(Application.Expenses).ToLower())
         .WithTags(nameof(Application.Expenses))
         .RequireAuthorization()
     );
 
-    public static EndpointGroup Settlements = new(builder => builder
+    public static AutoEndpointBuilder Settlements = new(builder => builder
         .MapGroup(nameof(Application.Settlements).ToLower())
         .WithTags(nameof(Application.Settlements))
         .RequireAuthorization()
     );
 
-    public static EndpointGroup Users = new(builder => builder
+    public static AutoEndpointBuilder Users = new(builder => builder
         .MapGroup(nameof(Application.Users).ToLower())
         .WithTags(nameof(Application.Users))
         .RequireRateLimiting(RateLimitingExtensions.IpRateLimiting)
     );
-
-    public Func<IEndpointRouteBuilder, RouteGroupBuilder> Map { get; } = Map;
 }

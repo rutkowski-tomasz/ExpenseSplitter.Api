@@ -18,11 +18,13 @@ public sealed record GetSettlementResponseParticipant(
 );
 
 public class GetSettlementEndpoint() : Endpoint<Guid, GetSettlementQuery, GetSettlementQueryResult, GetSettlementResponse>(
-    Route: "{settlementId}",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Get,
-    MapRequest: request => new (request),
-    MapResponse: result => new (
+    Endpoints.Settlements.Get("{settlementId}").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound,
+        StatusCodes.Status304NotModified
+    ),
+    request => new (request),
+    result => new (
         result.Id,
         result.Name,
         result.InviteCode,
@@ -32,10 +34,5 @@ public class GetSettlementEndpoint() : Endpoint<Guid, GetSettlementQuery, GetSet
             participant.Id,
             participant.Nickname
         ))
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status403Forbidden,
-        StatusCodes.Status404NotFound,
-        StatusCodes.Status304NotModified
-    ]
+    )
 );

@@ -20,19 +20,16 @@ public sealed record UpdateSettlementRequestParticipant(
 );
 
 public class UpdateSettlementEndpoint() : Endpoint<UpdateSettlementRequest, UpdateSettlementCommand>(
-    Route: "{settlementId}",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Put,
-    MapRequest: request => new(
+    Endpoints.Settlements.Put("{settlementId}").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new(
         request.SettlementId,
         request.Body.Name,
         request.Body.Participants.Select(x => new UpdateSettlementCommandParticipant(
             x.Id,
             x.Nickname
         ))
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status403Forbidden,
-        StatusCodes.Status404NotFound
-    ]
+    )
 );

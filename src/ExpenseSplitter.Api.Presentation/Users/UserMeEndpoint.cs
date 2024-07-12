@@ -10,15 +10,12 @@ public sealed record UserMeResponse(
 );
 
 public class UserMeEndpoint() : Endpoint<GetLoggedInUserQuery, GetLoggedInUserQueryResult, UserMeResponse>(
-    Route: "me",
-    Group: EndpointGroup.Users,
-    Method: EndpointMethod.Get,
-    MapResponse: result => new UserMeResponse(
+    Endpoints.Users.Get("me").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest
+    ),
+    result => new UserMeResponse(
         result.Id,
         result.Email,
         result.Nickname
-    ),
-    ErrorStatusCodes: [
-        StatusCodes.Status400BadRequest
-    ]
+    )
 );

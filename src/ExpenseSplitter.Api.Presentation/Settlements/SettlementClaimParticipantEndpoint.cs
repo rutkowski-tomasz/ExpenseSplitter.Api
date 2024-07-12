@@ -10,12 +10,9 @@ public sealed record SettlementlementClaimParticipantRequest(
 );
 
 public class SettlementClaimParticipantEndpoint() : Endpoint<SettlementlementClaimParticipantRequest, ClaimParticipantCommand>(
-    Route: "{settlementId}/participants/{participantId}/claim",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Patch,
-    MapRequest: request => new(request.SettlementId, request.ParticipantId),
-    ErrorStatusCodes: [
+    Endpoints.Settlements.Patch("{settlementId}/participants/{participantId}/claim").ProducesErrorCodes(
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ]
+    ),
+    request => new(request.SettlementId, request.ParticipantId)
 );

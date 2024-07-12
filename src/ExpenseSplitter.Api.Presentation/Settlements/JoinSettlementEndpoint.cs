@@ -6,12 +6,9 @@ namespace ExpenseSplitter.Api.Presentation.Settlements;
 public sealed record JoinSettlementRequest(string InviteCode);
 
 public class CreateExpenseEndpoint() : Endpoint<JoinSettlementRequest, JoinSettlementCommand>(
-    Route: "join",
-    Group: EndpointGroup.Settlements,
-    Method: EndpointMethod.Post,
-    MapRequest: request => new (request.InviteCode),
-    ErrorStatusCodes: [
+    Endpoints.Settlements.Post("join").ProducesErrorCodes(
         StatusCodes.Status400BadRequest,
         StatusCodes.Status404NotFound
-    ]
+    ),
+    request => new (request.InviteCode)
 );
