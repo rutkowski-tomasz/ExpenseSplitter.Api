@@ -10,15 +10,10 @@ public abstract class EndpointBase(
 {
     public abstract Delegate Handle();
 
-    public RouteHandlerBuilder CreateRouteHandlerBuilder(RouteGroupBuilder routeGroupBuilder)
-    {
-        return EndpointDefinition.Map(routeGroupBuilder, EndpointDefinition.Route, Handle());
-    }
-
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        var routeGroupBuilder = EndpointDefinition.GroupBuilder(builder);
-        var routeHandlerBuilder = CreateRouteHandlerBuilder(routeGroupBuilder);
+        builder = EndpointDefinition.GroupBuilder(builder);
+        var routeHandlerBuilder = EndpointDefinition.Map(builder, EndpointDefinition.Route, Handle());
 
         if (RouteHandlerCustomization is not null)
         {

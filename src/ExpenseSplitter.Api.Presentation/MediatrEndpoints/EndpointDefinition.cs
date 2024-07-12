@@ -5,25 +5,20 @@ namespace ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 public record EndpointDefinition
 {
     public Func<IEndpointRouteBuilder, RouteGroupBuilder> GroupBuilder { get; set; }
-    public Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> Map { get; set; }
+    public Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> Map { get; set; }
     public string Route { get; set; }
     public IEnumerable<int> ErrorCodes { get; set; } = [];
 
-    public readonly static Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> MapGet =
-        (RouteGroupBuilder routeGroupBuilder, string route, Delegate handler)
-            => routeGroupBuilder.MapGet(route, handler);
-    public readonly static Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> MapPost =
-        (RouteGroupBuilder routeGroupBuilder, string route, Delegate handler)
-            => routeGroupBuilder.MapPost(route, handler);
-    public readonly static Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> MapPut =
-        (RouteGroupBuilder routeGroupBuilder, string route, Delegate handler)
-            => routeGroupBuilder.MapPut(route, handler);
-    public readonly static Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> MapPatch =
-        (RouteGroupBuilder routeGroupBuilder, string route, Delegate handler)
-            => routeGroupBuilder.MapPatch(route, handler);
-    public readonly static Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> MapDelete =
-        (RouteGroupBuilder routeGroupBuilder, string route, Delegate handler)
-            => routeGroupBuilder.MapDelete(route, handler);
+    public readonly static Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> MapGet =
+        (IEndpointRouteBuilder builder, string route, Delegate handler) => builder.MapGet(route, handler);
+    public readonly static Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> MapPost =
+        (IEndpointRouteBuilder builder, string route, Delegate handler) => builder.MapPost(route, handler);
+    public readonly static Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> MapPut =
+        (IEndpointRouteBuilder builder, string route, Delegate handler) => builder.MapPut(route, handler);
+    public readonly static Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> MapPatch =
+        (IEndpointRouteBuilder builder, string route, Delegate handler) => builder.MapPatch(route, handler);
+    public readonly static Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> MapDelete =
+        (IEndpointRouteBuilder builder, string route, Delegate handler) => builder.MapDelete(route, handler);
 
     private EndpointDefinition()
     {
