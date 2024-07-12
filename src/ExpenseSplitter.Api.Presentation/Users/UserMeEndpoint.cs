@@ -1,6 +1,5 @@
 using ExpenseSplitter.Api.Application.Users.GetLoggedInUser;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
 
@@ -10,30 +9,13 @@ public sealed record UserMeResponse(
     string Nickname
 );
 
-public class UserMeEndpoint : IEndpoint,
-    IMapper<GetLoggedInUserQueryResult, UserMeResponse>
-{
-    public UserMeResponse Map(GetLoggedInUserQueryResult source)
-    {
-        return new UserMeResponse(
-            source.Id,
-            source.Email,
-            source.Nickname
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Users()
-            .RequireAuthorization()
-            .MapGet("me", (
-                IHandlerEmptyRequest<
-                    GetLoggedInUserQuery,
-                    GetLoggedInUserQueryResult,
-                    UserMeResponse
-                > handler) => handler.Handle()
-            )
-            .Produces<string>(StatusCodes.Status400BadRequest);
-    }
-}
+public class UserMeEndpoint() : Endpoint<GetLoggedInUserQuery, GetLoggedInUserQueryResult, UserMeResponse>(
+    Endpoints.Users.Get("me").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest
+    ),
+    result => new UserMeResponse(
+        result.Id,
+        result.Email,
+        result.Nickname
+    )
+);

@@ -1,62 +1,41 @@
 using ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public sealed record SettlementReimbrusementResponse(
+public record CalculateReimbrusementRequest([FromRoute] Guid SettlementId);
+
+public record SettlementReimbrusementResponse(
     IEnumerable<SettlementReimbrusementResponseBalance> Balances,
     IEnumerable<SettlementReimbrusementResponseSuggestedReimbrusement> SuggestedReimbrusements
 );
 
-public sealed record SettlementReimbrusementResponseBalance(
+public record SettlementReimbrusementResponseBalance(
     Guid ParticipantId,
     decimal Value
 );
 
-public sealed record SettlementReimbrusementResponseSuggestedReimbrusement(
+public record SettlementReimbrusementResponseSuggestedReimbrusement(
     Guid FromParticipantId,
     Guid ToParticipantId,
     decimal Value
 );
 
-public class SettlementReimbrusementEndpoint : IEndpoint,
-    IMapper<Guid, CalculateReimbrusementQuery>,
-    IMapper<CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>
-{
-    public CalculateReimbrusementQuery Map(Guid source)
-    {
-        return new(source);
-    }
-
-    public SettlementReimbrusementResponse Map(CalculateReimbrusementQueryResult source)
-    {
-        return new(
-            source.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
-                balance.ParticipantId,
-                balance.Value
-            )),
-            source.SuggestedReimbrusements.Select(suggestedReimbrusement => new SettlementReimbrusementResponseSuggestedReimbrusement(
-                suggestedReimbrusement.FromParticipantId,
-                suggestedReimbrusement.ToParticipantId,
-                suggestedReimbrusement.Value
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapGet("/{settlementId}/reimbrusement", (
-                Guid settlementId,
-                IHandler<
-                    Guid,
-                    CalculateReimbrusementQuery,
-                    CalculateReimbrusementQueryResult,
-                    SettlementReimbrusementResponse
-                > handler) => handler.Handle(settlementId)
-            )
-            .Produces<string>(StatusCodes.Status403Forbidden);
-    }
-}
+public class SettlementReimbrusementEndpoint() : Endpoint<CalculateReimbrusementRequest, CalculateReimbrusementQuery, CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>(
+    Endpoints.Settlements.Get("{settlementId}/reimbrusement").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden
+    ),
+    request => new (request.SettlementId),
+    result => new(
+        result.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
+            balance.ParticipantId,
+            balance.Value
+        )),
+        result.SuggestedReimbrusements.Select(suggestedReimbrusement => new SettlementReimbrusementResponseSuggestedReimbrusement(
+            suggestedReimbrusement.FromParticipantId,
+            suggestedReimbrusement.ToParticipantId,
+            suggestedReimbrusement.Value
+        ))
+    )
+);

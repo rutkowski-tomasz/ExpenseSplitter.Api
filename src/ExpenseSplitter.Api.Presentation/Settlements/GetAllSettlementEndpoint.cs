@@ -1,6 +1,5 @@
 using ExpenseSplitter.Api.Application.Settlements.GetAllSettlements;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -15,38 +14,13 @@ public record GetAllSettlementsResponseSettlement(
     string Name
 );
 
-public class GetAllSettlementsEndpoint : IEndpoint,
-    IMapper<GetAllSettlementsRequest, GetAllSettlementsQuery>,
-    IMapper<GetAllSettlementsQueryResult, GetAllSettlementsResponse>
-{
-    public GetAllSettlementsQuery Map(GetAllSettlementsRequest source)
-    {
-        return new GetAllSettlementsQuery(source.Page, source.PageSize);
-    }
-
-    public GetAllSettlementsResponse Map(GetAllSettlementsQueryResult source)
-    {
-        return new GetAllSettlementsResponse(
-            source.Settlements.Select(settlement => new GetAllSettlementsResponseSettlement(
-                settlement.Id,
-                settlement.Name
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapGet("", (
-                [AsParameters] GetAllSettlementsRequest request,
-                IHandler<
-                    GetAllSettlementsRequest,
-                    GetAllSettlementsQuery,
-                    GetAllSettlementsQueryResult,
-                    GetAllSettlementsResponse
-                > handler) => handler.Handle(request)
-            )
-            .RequireRateLimiting(RateLimitingExtensions.UserRateLimiting);
-    }
-}
+public class GetAllSettlementsEndpoint() : Endpoint<GetAllSettlementsRequest, GetAllSettlementsQuery, GetAllSettlementsQueryResult, GetAllSettlementsResponse>(
+    Endpoints.Settlements.Get(""),
+    request => new (request.Page, request.PageSize),
+    result => new GetAllSettlementsResponse(
+        result.Settlements.Select(settlement => new GetAllSettlementsResponseSettlement(
+            settlement.Id,
+            settlement.Name
+        ))
+    )
+);

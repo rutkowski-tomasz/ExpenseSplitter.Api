@@ -1,6 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
@@ -16,41 +15,19 @@ public sealed record GetExpensesForSettlementResponseExpense(
     DateOnly PaymentDate
 );
 
-
-public class SettlementGetExpensesEndpoint : IEndpoint,
-    IMapper<Guid, GetExpensesForSettlementQuery>,
-    IMapper<GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>
-{
-    public GetExpensesForSettlementQuery Map(Guid source)
-    {
-        return new(source);
-    }
-
-    public GetExpensesForSettlementResponse Map(GetExpensesForSettlementQueryResult source)
-    {
-        return new(
-            source.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
-                expense.Id,
-                expense.Title,
-                expense.Amount,
-                expense.PayingParticipantId,
-                expense.PaymentDate
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapGet("{settlementId}/expenses", (
-                Guid settlementId,
-                IHandler<
-                    Guid,
-                    GetExpensesForSettlementQuery,
-                    GetExpensesForSettlementQueryResult,
-                    GetExpensesForSettlementResponse
-                > handler) => handler.Handle(settlementId)
-            );
-    }
-}
+public class SettlementGetExpensesEndpoint() : Endpoint<Guid, GetExpensesForSettlementQuery, GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>(
+    Endpoints.Settlements.Get("{settlementId}/expenses").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new(request),
+    result => new(
+        result.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
+            expense.Id,
+            expense.Title,
+            expense.Amount,
+            expense.PayingParticipantId,
+            expense.PaymentDate
+        ))
+    )
+);

@@ -1,46 +1,20 @@
 using ExpenseSplitter.Api.Application.Users.LoginUser;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Users;
 
-public sealed record UserLoginRequest(string Email, string Password);
+public record UserLoginRequest([FromBody] UserLoginRequestBody Body);
 
-public sealed record LoginUserResponse(string AccessToken);
+public record UserLoginRequestBody(string Email, string Password);
 
-public class UserLoginEndpoint : IEndpoint,
-    IMapper<UserLoginRequest, LoginUserCommand>,
-    IMapper<LoginUserResult, LoginUserResponse>
-{
-    public LoginUserCommand Map(UserLoginRequest source)
-    {
-        return new LoginUserCommand(
-            source.Email,
-            source.Password
-        );
-    }
+public record LoginUserResponse(string AccessToken);
 
-    public LoginUserResponse Map(LoginUserResult source)
-    {
-        return new LoginUserResponse(
-            source.AccessToken
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Users()
-            .MapPost("login", (
-                UserLoginRequest request,
-                IHandler<
-                    UserLoginRequest,
-                    LoginUserCommand,
-                    LoginUserResult,
-                    LoginUserResponse
-                > handler) => handler.Handle(request)
-            )
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status401Unauthorized);
-    }
-}
+public class UserLoginEndpoint() : Endpoint<UserLoginRequest, LoginUserCommand, LoginUserResult, LoginUserResponse>(
+    Endpoints.Users.Post("login").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status401Unauthorized
+    ),
+    request => new LoginUserCommand(request.Body.Email, request.Body.Password),
+    result => new LoginUserResponse(result.AccessToken)
+);

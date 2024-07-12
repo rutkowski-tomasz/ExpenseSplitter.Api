@@ -1,10 +1,12 @@
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public sealed record GetSettlementResponse(
+public record GetSettlementRequest([FromRoute] Guid SettlementId);
+
+public record GetSettlementResponse(
     Guid Id,
     string Name,
     string InviteCode,
@@ -13,50 +15,27 @@ public sealed record GetSettlementResponse(
     IEnumerable<GetSettlementResponseParticipant> Participants
 );
 
-public sealed record GetSettlementResponseParticipant(
+public record GetSettlementResponseParticipant(
     Guid Id,
     string Nickname
 );
 
-public class GetSettlementEndpoint : IEndpoint,
-    IMapper<Guid, GetSettlementQuery>,
-    IMapper<GetSettlementQueryResult, GetSettlementResponse>
-{
-    public GetSettlementQuery Map(Guid source)
-    {
-        return new GetSettlementQuery(source);
-    }
-
-    public GetSettlementResponse Map(GetSettlementQueryResult source)
-    {
-        return new GetSettlementResponse(
-            source.Id,
-            source.Name,
-            source.InviteCode,
-            source.TotalCost,
-            source.YourCost,
-            source.Participants.Select(participant => new GetSettlementResponseParticipant(
-                participant.Id,
-                participant.Nickname
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapGet("{settlementId}", (
-                Guid settlementId,
-                IHandler<
-                    Guid,
-                    GetSettlementQuery,
-                    GetSettlementQueryResult,
-                    GetSettlementResponse
-                > handler) => handler.Handle(settlementId)
-            )
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound)
-            .Produces<string>(StatusCodes.Status304NotModified);
-    }
-}
+public class GetSettlementEndpoint() : Endpoint<GetSettlementRequest, GetSettlementQuery, GetSettlementQueryResult, GetSettlementResponse>(
+    Endpoints.Settlements.Get("{settlementId}").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound,
+        StatusCodes.Status304NotModified
+    ),
+    request => new (request.SettlementId),
+    result => new (
+        result.Id,
+        result.Name,
+        result.InviteCode,
+        result.TotalCost,
+        result.YourCost,
+        result.Participants.Select(participant => new GetSettlementResponseParticipant(
+            participant.Id,
+            participant.Nickname
+        ))
+    )
+);

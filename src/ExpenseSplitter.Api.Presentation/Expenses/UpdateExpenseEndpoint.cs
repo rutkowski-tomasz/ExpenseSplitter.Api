@@ -1,6 +1,5 @@
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
@@ -23,37 +22,21 @@ public sealed record UpdateExpenseRequestAllocation(
     decimal Value
 );
 
-public class UpdateExpenseEndpoint : IEndpoint,
-    IMapper<UpdateExpenseRequest, UpdateExpenseCommand>
-{
-    public UpdateExpenseCommand Map(UpdateExpenseRequest source)
-    {
-        return new UpdateExpenseCommand(
-            source.ExpenseId,
-            source.Body.Title,
-            source.Body.PaymentDate,
-            source.Body.PayingParticipantId,
-            source.Body.Allocations.Select(x => new UpdateExpenseCommandAllocation(
-                x.Id,
-                x.ParticipantId,
-                x.Value
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapPut("{expenseId}", (
-                [AsParameters] UpdateExpenseRequest request,
-                IHandlerEmptyResponse<
-                    UpdateExpenseRequest,
-                    UpdateExpenseCommand
-                > handler) => handler.Handle(request)
-            )
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpenseCommand>(
+    Endpoints.Expenses.Put("{expenseId}").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new (
+        request.ExpenseId,
+        request.Body.Title,
+        request.Body.PaymentDate,
+        request.Body.PayingParticipantId,
+        request.Body.Allocations.Select(x => new UpdateExpenseCommandAllocation(
+            x.Id,
+            x.ParticipantId,
+            x.Value
+        ))
+    )
+);

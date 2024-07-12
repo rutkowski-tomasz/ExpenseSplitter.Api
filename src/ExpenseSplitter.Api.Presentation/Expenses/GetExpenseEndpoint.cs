@@ -1,10 +1,12 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpense;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
-public sealed record GetExpenseResponse(
+public record GetExpenseRequest([FromRoute] Guid ExpenseId);
+
+public record GetExpenseResponse(
     Guid Id,
     string Title,
     Guid PayingParticipantId,
@@ -13,52 +15,28 @@ public sealed record GetExpenseResponse(
     IEnumerable<GetExpenseResponseAllocation> Allocations
 );
 
-public sealed record GetExpenseResponseAllocation(
+public record GetExpenseResponseAllocation(
     Guid Id,
     Guid ParticipantId,
     decimal Amount
 );
 
-
-public class GetExpenseEndpoint : IEndpoint,
-    IMapper<Guid, GetExpenseQuery>,
-    IMapper<GetExpenseQueryResult, GetExpenseResponse>
-{
-    public GetExpenseQuery Map(Guid source)
-    {
-        return new GetExpenseQuery(source);
-    }
-
-    public GetExpenseResponse Map(GetExpenseQueryResult source)
-    {
-        return new GetExpenseResponse(
-            source.Id,
-            source.Title,
-            source.PayingParticipantId,
-            source.PaymentDate,
-            source.Amount,
-            source.Allocations.Select(x => new GetExpenseResponseAllocation(
-                x.Id,
-                x.ParticipantId,
-                x.Amount
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapGet("{expenseId}", (
-                Guid expenseId,
-                IHandler<
-                    Guid,
-                    GetExpenseQuery,
-                    GetExpenseQueryResult,
-                    GetExpenseResponse
-                > handler) => handler.Handle(expenseId)
-            )
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class GetExpenseEndpoint() : Endpoint<GetExpenseRequest, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>(
+    Endpoints.Expenses.Get("{expenseId}").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new (request.ExpenseId),
+    result => new (
+        result.Id,
+        result.Title,
+        result.PayingParticipantId,
+        result.PaymentDate,
+        result.Amount,
+        result.Allocations.Select(x => new GetExpenseResponseAllocation(
+            x.Id,
+            x.ParticipantId,
+            x.Amount
+        ))
+    )
+);

@@ -1,10 +1,13 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
-using ExpenseSplitter.Api.Presentation.Abstractions;
 using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
 
-public record CreateExpenseRequest(
+public record CreateExpenseRequest([FromBody] CreateExpenseRequestBody Body);
+
+public record CreateExpenseRequestBody(
     string Name,
     DateOnly PaymentDate,
     Guid SettlementId,
@@ -17,39 +20,22 @@ public sealed record CreateExpenseRequestAllocation(
     decimal Value
 );
 
-
-public class CreateExpenseEndpoint : IEndpoint,
-    IMapper<CreateExpenseRequest, CreateExpenseCommand>
-{
-    public CreateExpenseCommand Map(CreateExpenseRequest source)
-    {
-        return new CreateExpenseCommand(
-            source.Name,
-            source.PaymentDate,
-            source.SettlementId,
-            source.PayingParticipantId,
-            source.Allocations.Select(x => new CreateExpenseCommandAllocation(
-                x.ParticipantId,
-                x.Value
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Expenses()
-            .MapPost("", (
-                CreateExpenseRequest request,
-                IHandler<
-                    CreateExpenseRequest,
-                    CreateExpenseCommand,
-                    Guid,
-                    Guid
-                > handler) => handler.Handle(request)
-            )
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class CreateExpenseEndpoint() : Endpoint<CreateExpenseRequest, CreateExpenseCommand, Guid, Guid>(
+    Endpoints.Expenses.Post("").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new (
+        request.Body.Name,
+        request.Body.PaymentDate,
+        request.Body.SettlementId,
+        request.Body.PayingParticipantId,
+        request.Body.Allocations.Select(x => new CreateExpenseCommandAllocation(
+            x.ParticipantId,
+            x.Value
+        ))
+    ),
+    result => result,
+    builder => builder.RequireRateLimiting(RateLimitingExtensions.IpRateLimiting)
+);

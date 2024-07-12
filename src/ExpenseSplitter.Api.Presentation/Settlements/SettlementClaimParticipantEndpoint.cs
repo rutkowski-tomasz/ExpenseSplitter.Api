@@ -1,6 +1,5 @@
 using ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
@@ -10,26 +9,10 @@ public sealed record SettlementlementClaimParticipantRequest(
     [FromRoute] Guid ParticipantId
 );
 
-public class SettlementClaimParticipantEndpoint : IEndpoint,
-    IMapper<SettlementlementClaimParticipantRequest, ClaimParticipantCommand>
-{
-    public ClaimParticipantCommand Map(SettlementlementClaimParticipantRequest source)
-    {
-        return new(source.SettlementId, source.ParticipantId);
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapPatch("/{settlementId}/participants/{participantId}/claim", (
-                [AsParameters] SettlementlementClaimParticipantRequest request,
-                IHandlerEmptyResponse<
-                    SettlementlementClaimParticipantRequest,
-                    ClaimParticipantCommand
-                > handler) => handler.Handle(request)
-            )
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class SettlementClaimParticipantEndpoint() : Endpoint<SettlementlementClaimParticipantRequest, ClaimParticipantCommand>(
+    Endpoints.Settlements.Patch("{settlementId}/participants/{participantId}/claim").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new(request.SettlementId, request.ParticipantId)
+);

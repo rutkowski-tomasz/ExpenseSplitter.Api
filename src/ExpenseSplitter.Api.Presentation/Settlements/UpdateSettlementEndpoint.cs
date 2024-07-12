@@ -1,6 +1,5 @@
 using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
@@ -20,33 +19,17 @@ public sealed record UpdateSettlementRequestParticipant(
     string Nickname
 );
 
-public class UpdateSettlementEndpoint : IEndpoint,
-    IMapper<UpdateSettlementRequest, UpdateSettlementCommand>
-{
-    public UpdateSettlementCommand Map(UpdateSettlementRequest source)
-    {
-        return new(
-            source.SettlementId,
-            source.Body.Name,
-            source.Body.Participants.Select(x => new UpdateSettlementCommandParticipant(
-                x.Id,
-                x.Nickname
-            ))
-        );
-    }
-
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapPut("{settlementId}", (
-                [AsParameters] UpdateSettlementRequest request,
-                IHandlerEmptyResponse<
-                    UpdateSettlementRequest,
-                    UpdateSettlementCommand
-                > handler) => handler.Handle(request)
-            )
-            .Produces<string>(StatusCodes.Status403Forbidden)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class UpdateSettlementEndpoint() : Endpoint<UpdateSettlementRequest, UpdateSettlementCommand>(
+    Endpoints.Settlements.Put("{settlementId}").ProducesErrorCodes(
+        StatusCodes.Status403Forbidden,
+        StatusCodes.Status404NotFound
+    ),
+    request => new(
+        request.SettlementId,
+        request.Body.Name,
+        request.Body.Participants.Select(x => new UpdateSettlementCommandParticipant(
+            x.Id,
+            x.Nickname
+        ))
+    )
+);

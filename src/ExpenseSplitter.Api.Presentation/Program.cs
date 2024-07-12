@@ -21,9 +21,9 @@ builder.Services.AddSwaggerGen(options =>
     })
 );
 
-builder.Services.AddEndpoints(typeof(Program).Assembly);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddEndpoints(typeof(Program).Assembly);
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddUrlGroup(new Uri(builder.Configuration["Keycloak:BaseUrl"]!), HttpMethod.Get, "keycloak");

@@ -2,7 +2,6 @@
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Infrastructure;
 using System.Reflection;
-using ExpenseSplitter.Api.Presentation.Settlements;
 
 namespace ExpenseSplitter.Api.ArchitectureTests;
 

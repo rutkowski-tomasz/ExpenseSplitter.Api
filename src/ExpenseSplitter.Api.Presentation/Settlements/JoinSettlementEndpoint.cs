@@ -1,33 +1,18 @@
 using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
-using ExpenseSplitter.Api.Presentation.Abstractions;
-using ExpenseSplitter.Api.Presentation.Extensions;
+using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public sealed record JoinSettlementRequest(string InviteCode);
+public record JoinSettlementRequest([FromBody] JoinSettlementRequestBody Body);
 
-public class JoinSettlementEndpoint : IEndpoint,
-    IMapper<JoinSettlementRequest, JoinSettlementCommand>
-{
-    public JoinSettlementCommand Map(JoinSettlementRequest source)
-    {
-        return new(source.InviteCode);
-    }
+public record JoinSettlementRequestBody(string InviteCode);
 
-    public void MapEndpoint(IEndpointRouteBuilder builder)
-    {
-        builder
-            .Settlements()
-            .MapPost("join", (
-                JoinSettlementRequest request,
-                IHandler<
-                    JoinSettlementRequest,
-                    JoinSettlementCommand,
-                    Guid,
-                    Guid
-                > handler) => handler.Handle(request)
-            )
-            .Produces<string>(StatusCodes.Status400BadRequest)
-            .Produces<string>(StatusCodes.Status404NotFound);
-    }
-}
+public class CreateExpenseEndpoint() : Endpoint<JoinSettlementRequest, JoinSettlementCommand, Guid, Guid>(
+    Endpoints.Settlements.Post("join").ProducesErrorCodes(
+        StatusCodes.Status400BadRequest,
+        StatusCodes.Status404NotFound
+    ),
+    request => new (request.Body.InviteCode),
+    result => result
+);
