@@ -1,9 +1,12 @@
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Presentation.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public sealed record GetSettlementResponse(
+public record GetSettlementRequest([FromRoute] Guid SettlementId);
+
+public record GetSettlementResponse(
     Guid Id,
     string Name,
     string InviteCode,
@@ -12,18 +15,18 @@ public sealed record GetSettlementResponse(
     IEnumerable<GetSettlementResponseParticipant> Participants
 );
 
-public sealed record GetSettlementResponseParticipant(
+public record GetSettlementResponseParticipant(
     Guid Id,
     string Nickname
 );
 
-public class GetSettlementEndpoint() : Endpoint<Guid, GetSettlementQuery, GetSettlementQueryResult, GetSettlementResponse>(
+public class GetSettlementEndpoint() : Endpoint<GetSettlementRequest, GetSettlementQuery, GetSettlementQueryResult, GetSettlementResponse>(
     Endpoints.Settlements.Get("{settlementId}").ProducesErrorCodes(
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound,
         StatusCodes.Status304NotModified
     ),
-    request => new (request),
+    request => new (request.SettlementId),
     result => new (
         result.Id,
         result.Name,

@@ -87,3 +87,9 @@ Content-Type: application/json
 # @name deleteExpense
 DELETE {{baseUrl}}/api/v1/expenses/{{getExpense.response.body.id}}
 Authorization: Bearer {{login.response.body.accessToken}}
+
+###
+
+# @name reimbrusement
+GET {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}/reimbrusement
+Authorization: Bearer {{login.response.body.accessToken}}
