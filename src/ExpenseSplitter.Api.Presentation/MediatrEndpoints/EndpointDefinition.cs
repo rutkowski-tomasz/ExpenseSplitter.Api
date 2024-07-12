@@ -4,7 +4,7 @@ namespace ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 public record EndpointDefinition
 {
-    public Func<IEndpointRouteBuilder, RouteGroupBuilder> GroupBuilder { get; set; }
+    public Func<IEndpointRouteBuilder, IEndpointRouteBuilder> GroupBuilder { get; set; }
     public Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> Map { get; set; }
     public string Route { get; set; }
     public IEnumerable<int> ErrorCodes { get; set; } = [];
@@ -24,7 +24,7 @@ public record EndpointDefinition
     {
     }
 
-    public static EndpointDefinition CreateGroup(Func<IEndpointRouteBuilder, RouteGroupBuilder> groupBuilder)
+    public static EndpointDefinition CreateGroup(Func<IEndpointRouteBuilder, IEndpointRouteBuilder> groupBuilder)
     {
         return new EndpointDefinition { GroupBuilder = groupBuilder };
     }
