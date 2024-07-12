@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
-public partial record Endpoints
+public record EndpointDefinition
 {
     public Func<IEndpointRouteBuilder, RouteGroupBuilder> GroupBuilder { get; set; }
     public Func<RouteGroupBuilder, string, Delegate, RouteHandlerBuilder> Map { get; set; }
@@ -25,41 +25,41 @@ public partial record Endpoints
         (RouteGroupBuilder routeGroupBuilder, string route, Delegate handler)
             => routeGroupBuilder.MapDelete(route, handler);
 
-    private Endpoints()
+    private EndpointDefinition()
     {
     }
 
-    public static Endpoints CreateGroup(Func<IEndpointRouteBuilder, RouteGroupBuilder> groupBuilder)
+    public static EndpointDefinition CreateGroup(Func<IEndpointRouteBuilder, RouteGroupBuilder> groupBuilder)
     {
-        return new Endpoints { GroupBuilder = groupBuilder };
+        return new EndpointDefinition { GroupBuilder = groupBuilder };
     }
 
-    public static Endpoints Post([StringSyntax("Route")] string route)
+    public static EndpointDefinition Post([StringSyntax("Route")] string route)
     {
-        return new Endpoints { Route = route, Map = MapPost };
+        return new EndpointDefinition { Route = route, Map = MapPost };
     }
 
-    public static Endpoints Get([StringSyntax("Route")] string route)
+    public static EndpointDefinition Get([StringSyntax("Route")] string route)
     {
-        return new Endpoints { Route = route, Map = MapGet };
+        return new EndpointDefinition { Route = route, Map = MapGet };
     }
 
-    public static Endpoints Put([StringSyntax("Route")] string route)
+    public static EndpointDefinition Put([StringSyntax("Route")] string route)
     {
-        return new Endpoints { Route = route, Map = MapPut };
+        return new EndpointDefinition { Route = route, Map = MapPut };
     }
 
-    public static Endpoints Patch([StringSyntax("Route")] string route)
+    public static EndpointDefinition Patch([StringSyntax("Route")] string route)
     {
-        return new Endpoints { Route = route, Map = MapPatch };
+        return new EndpointDefinition { Route = route, Map = MapPatch };
     }
 
-    public static Endpoints Delete([StringSyntax("Route")] string route)
+    public static EndpointDefinition Delete([StringSyntax("Route")] string route)
     {
-        return new Endpoints { Route = route, Map = MapDelete };
+        return new EndpointDefinition { Route = route, Map = MapDelete };
     }
 
-    public Endpoints ProducesErrorCodes(params int[] errorCodes)
+    public EndpointDefinition ProducesErrorCodes(params int[] errorCodes)
     {
         ErrorCodes = errorCodes;
         return this;
