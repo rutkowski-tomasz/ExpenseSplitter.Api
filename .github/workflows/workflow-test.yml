@@ -28,7 +28,7 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         continue-on-error: true
 
       - name: Test with the dotnet CLI
