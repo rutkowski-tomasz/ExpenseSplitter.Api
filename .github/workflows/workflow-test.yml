@@ -20,10 +20,11 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Restore coverage history
         uses: dawidd6/action-download-artifact@v6
+        if: ${{ inputs.publish_coverage_history }}
         with:
           name: CoverageHistory
           path: CoverageHistory
@@ -49,14 +50,11 @@ jobs:
           path: CoverageReports
 
       - name: Upload coverage history
+        if: ${{ inputs.publish_coverage_history }}
         uses: actions/upload-artifact@v4
         with:
           name: CoverageHistory
           path: CoverageHistory
-
-      - run: ls CoverageReports
-
-      - run: cat CoverageReports/SummaryGithub.md
 
       - name: Add comment to PR
         if: github.event_name == 'pull_request'
