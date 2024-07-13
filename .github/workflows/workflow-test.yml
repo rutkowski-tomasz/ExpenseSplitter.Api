@@ -24,7 +24,6 @@ jobs:
 
       - name: Restore coverage history
         uses: dawidd6/action-download-artifact@v6
-        if: ${{ inputs.publish_coverage_history }}
         with:
           name: CoverageHistory
           path: CoverageHistory
@@ -51,7 +50,6 @@ jobs:
 
       - name: Upload coverage history
         uses: actions/upload-artifact@v4
-        if: ${{ inputs.publish_coverage_history }}
         with:
           name: CoverageHistory
           path: CoverageHistory
