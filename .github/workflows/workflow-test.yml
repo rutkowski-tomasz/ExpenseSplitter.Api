@@ -39,7 +39,7 @@ jobs:
           reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
           targetdir: 'CoverageReports'
           historydir: 'CoverageHistory'
-          reporttypes: 'HtmlInline;Cobertura'
+          reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
           filefilters: '-*/Migrations/*'
 
       - name: Upload coverage report
@@ -53,3 +53,17 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
+
+      - run: ls CoverageReports
+
+      - run: cat CoverageReports/SummaryGithub.md
+
+      - name: Add comment to PR
+        if: github.event_name == 'pull_request'
+        run: gh pr comment $PR_NUMBER --body-file CoverageReports/SummaryGithub.md
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+
+      - name: Publish coverage in build summary
+        run: cat CoverageReports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
