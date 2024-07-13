@@ -1,6 +1,10 @@
 name: Continuous integration
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 permissions:
   contents: write
@@ -21,12 +25,13 @@ jobs:
     secrets: inherit
 
   version:
+    needs: [scan, test]
     name: Version
     uses: ./.github/workflows/workflow-version.yml
 
   build_scan:
     name: Docker image
-    needs: [scan, test, version]
+    needs: [version]
     uses: ./.github/workflows/workflow-docker-build-scan-push.yml
     with:
       image_name: rutkowski/expensesplitter-api
