@@ -40,3 +40,4 @@ jobs:
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
       release_tag: ${{ needs.version.outputs.release_tag }}
     secrets: inherit
+
