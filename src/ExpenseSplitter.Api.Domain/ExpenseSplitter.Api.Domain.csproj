@@ -1,22 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AnalysisMode>All</AnalysisMode>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Settlements\" />
-    <None Remove="Users\" />
-    <None Remove="Settlements\Events\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Settlements\" />
-    <Folder Include="Users\" />
-    <Folder Include="Settlements\Events\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MediatR" Version="12.3.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MediatR" Version="12.3.0" />
+    </ItemGroup>
 </Project>
