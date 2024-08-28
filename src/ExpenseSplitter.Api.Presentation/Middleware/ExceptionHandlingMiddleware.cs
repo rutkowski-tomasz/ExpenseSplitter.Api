@@ -77,7 +77,7 @@ public class ExceptionHandlingMiddleware
         };
     }
 
-    internal record ExceptionDetails(
+    internal sealed record ExceptionDetails(
         int Status,
         string Type,
         string Title,

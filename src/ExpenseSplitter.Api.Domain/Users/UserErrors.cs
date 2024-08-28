@@ -18,4 +18,9 @@ public static class UserErrors
         ErrorType.NotFound,
         "The user with the specified identifier was not found"
     );
+
+    public static readonly Error UserExists = new(
+        ErrorType.Conflict,
+        "The user with the specified email already exists"
+    );
 }

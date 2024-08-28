@@ -52,6 +52,12 @@ To let you quickly understand the domain and relationships of the project entiti
 
 # 👨🏻‍💻 Development
 
+## Start services locally
+
+```sh
+docker-compose up -d expensesplitter-db expensesplitter-idp
+```
+
 ## Create migration
 
 ```sh
