@@ -98,7 +98,8 @@ public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCo
             .Select(x => Participant.Create(
                 settlementId,
                 x.Nickname
-            ));
+            ))
+            .ToList();
         
         var participantWithFailure = newParticipants.FirstOrDefault(x => x.IsFailure);
         if (participantWithFailure is not null)

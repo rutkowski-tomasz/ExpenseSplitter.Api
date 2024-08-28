@@ -33,7 +33,7 @@ internal sealed class CalculateReimbrusementQueryHandler(
         );
     }
 
-    private IEnumerable<CalculateReimbrusementQueryResultBalance> CalculateBalances(
+    private List<CalculateReimbrusementQueryResultBalance> CalculateBalances(
         IEnumerable<Expense> expenses,
         IEnumerable<Participant> participants
     )
@@ -49,11 +49,11 @@ internal sealed class CalculateReimbrusementQueryHandler(
             }
         }
 
-        return balances.Select(x => new CalculateReimbrusementQueryResultBalance(x.Key.Value, x.Value));
+        return balances.Select(x => new CalculateReimbrusementQueryResultBalance(x.Key.Value, x.Value)).ToList();
     }
 
-    private IEnumerable<CalculateReimbrusementQueryResultSuggestedReimbrusement> CalculateSuggestedReimbrusements(
-        IEnumerable<CalculateReimbrusementQueryResultBalance> balances
+    private List<CalculateReimbrusementQueryResultSuggestedReimbrusement> CalculateSuggestedReimbrusements(
+        List<CalculateReimbrusementQueryResultBalance> balances
     )
     {
         var suggestedReimbursements = new List<CalculateReimbrusementQueryResultSuggestedReimbrusement>();

@@ -18,7 +18,7 @@ public class LoggingDelegatingHandler : DelegatingHandler
     {
         try
         {
-            var requestContent = await request.Content!.ReadAsStringAsync();
+            var requestContent = await request.Content!.ReadAsStringAsync(cancellationToken);
             logger.LogInformation(
                 "Sending HTTP request to {Method} {Uri} with {Content}",
                 request.Method.ToString(),
@@ -29,7 +29,7 @@ public class LoggingDelegatingHandler : DelegatingHandler
             var stopWatch = Stopwatch.StartNew();
             var result = await base.SendAsync(request, cancellationToken);
 
-            var resultContent = await result.Content.ReadAsStringAsync();
+            var resultContent = await result.Content.ReadAsStringAsync(cancellationToken);
             logger.LogInformation(
                 "Received HTTP response {StatusCode} in {Duration}ms with {Content}",
                 result.StatusCode,

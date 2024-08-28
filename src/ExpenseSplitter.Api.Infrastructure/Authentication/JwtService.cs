@@ -46,7 +46,7 @@ internal sealed class JwtService : IJwtService
                 new("password", password)
             };
 
-            var authorizationRequestContent = new FormUrlEncodedContent(authRequestParameters);
+            using var authorizationRequestContent = new FormUrlEncodedContent(authRequestParameters);
 
             var response = await httpClient.PostAsync("", authorizationRequestContent, cancellationToken);
 

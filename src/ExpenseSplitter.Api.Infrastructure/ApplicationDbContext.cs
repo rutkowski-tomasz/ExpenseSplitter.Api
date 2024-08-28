@@ -5,6 +5,7 @@ using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 

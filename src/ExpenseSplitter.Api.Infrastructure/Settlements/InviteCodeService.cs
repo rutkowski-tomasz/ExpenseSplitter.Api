@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 
 namespace ExpenseSplitter.Api.Infrastructure.Settlements;
@@ -9,13 +10,14 @@ public class InviteCodeService : IInviteCodeService
     
     public string GenerateInviteCode()
     {
-        var random = new Random();
+        
 
         var inviteCode = string.Join(
             "",
             Enumerable
                 .Range(1, InviteCodeLength)
-                .Select(_ => InviteCodeChars[random.Next(InviteCodeChars.Length)])
+                .Select(_ => RandomNumberGenerator.GetInt32(InviteCodeChars.Length))
+                .Select(x => InviteCodeChars[x])
         );
 
         return inviteCode;
