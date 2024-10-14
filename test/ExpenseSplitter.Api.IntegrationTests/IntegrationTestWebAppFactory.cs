@@ -12,7 +12,7 @@ using Testcontainers.PostgreSql;
 
 namespace ExpenseSplitter.Api.IntegrationTests;
 
-public abstract class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private const string TestUserId = "00000000-0000-0000-0000-000000000000";
     private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder()

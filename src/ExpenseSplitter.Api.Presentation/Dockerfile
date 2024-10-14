@@ -6,6 +6,9 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["ExpenseSplitter.Api.Presentation/ExpenseSplitter.Api.Presentation.csproj", "ExpenseSplitter.Api.Presentation/"]
+COPY ["ExpenseSplitter.Api.Application/ExpenseSplitter.Api.Application.csproj", "ExpenseSplitter.Api.Application/"]
+COPY ["ExpenseSplitter.Api.Domain/ExpenseSplitter.Api.Domain.csproj", "ExpenseSplitter.Api.Domain/"]
+COPY ["ExpenseSplitter.Api.Infrastructure/ExpenseSplitter.Api.Infrastructure.csproj", "ExpenseSplitter.Api.Infrastructure/"]
 RUN dotnet restore "ExpenseSplitter.Api.Presentation/ExpenseSplitter.Api.Presentation.csproj"
 COPY . .
 WORKDIR "/src/ExpenseSplitter.Api.Presentation"
