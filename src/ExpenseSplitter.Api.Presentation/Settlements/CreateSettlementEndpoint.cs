@@ -1,4 +1,5 @@
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
+using ExpenseSplitter.Api.Presentation.Extensions;
 using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ public class CreateSettlementEndpoint() : Endpoint<CreateSettlementRequest, Crea
         request.Body.Name,
         request.Body.ParticipantNames
     ),
-    result => result
+    result => result,
+    builder => builder.RequireRateLimiting(RateLimitingExtensions.UserRateLimiting)
 );
 

@@ -30,15 +30,15 @@ internal sealed class AuthenticationService(
     {
         var userRepresentationModel = UserRepresentationModel.Create(email);
 
-        userRepresentationModel.Credentials = new CredentialRepresentationModel[]
-        {
-            new()
+        userRepresentationModel.Credentials =
+        [
+            new CredentialRepresentationModel
             {
                 Value = password,
                 Temporary = false,
                 Type = PasswordCredentialType
             }
-        };
+        ];
 
         var response = await client.PostAsJsonAsync(
             keycloakOptions.AdminUsersPath,

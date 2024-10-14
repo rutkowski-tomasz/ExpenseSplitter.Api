@@ -9,5 +9,5 @@ public sealed class AuthenticationOptions
 
     public bool RequireHttpsMetadata { get; init; }
 
-    public string ValidIssuerPath { get; set; } = string.Empty;
+    public string ValidIssuerPath { get; init; } = string.Empty;
 }
