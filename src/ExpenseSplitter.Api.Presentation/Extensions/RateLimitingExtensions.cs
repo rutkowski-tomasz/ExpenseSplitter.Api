@@ -8,7 +8,7 @@ public static class RateLimitingExtensions
     public const string UserRateLimiting = "fixed-by-user";
     public const string IpRateLimiting = "fixed-by-ip";
 
-    public static IServiceCollection AddRateLimiting(this IServiceCollection services)
+    public static void AddRateLimiting(this IServiceCollection services)
     {
         services.AddRateLimiter(options => {
             options.AddPolicy(UserRateLimiting, httpContext => RateLimitPartition.GetFixedWindowLimiter(
@@ -42,7 +42,5 @@ public static class RateLimitingExtensions
                 return new ValueTask();
             };
         });
-
-        return services;
     }
 }

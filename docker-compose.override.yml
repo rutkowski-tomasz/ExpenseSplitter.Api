@@ -5,9 +5,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionStrings__Database=Host=expensesplitter-db;Port=5432;Database=expensesplitter;Username=admin;Password=admin;
+      - Authentication__BaseUrl=http://expensesplitter-idp:18080
+      - Keycloak__BaseUrl=http://expensesplitter-idp:18080
     ports:
       - "80"
       - 5001:443
     volumes:
-      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
-      - ~/.aspnet/https:/root/.aspnet/https:ro
+#      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+#      - ~/.aspnet/https:/root/.aspnet/https:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro  

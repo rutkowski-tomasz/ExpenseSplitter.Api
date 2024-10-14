@@ -5,17 +5,10 @@ using MediatR;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Behaviors;
 
-public class ValidationBehavior<TRequest, TResponse>
+public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
 {
-    private readonly IEnumerable<IValidator<TRequest>> validators;
-
-    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
-    {
-        this.validators = validators;
-    }
-
     public Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

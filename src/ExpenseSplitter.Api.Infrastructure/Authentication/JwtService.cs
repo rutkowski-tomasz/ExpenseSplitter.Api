@@ -41,8 +41,8 @@ internal sealed class JwtService(HttpClient client, IOptions<KeycloakOptions> ke
             };
 
             using var authorizationRequestContent = new FormUrlEncodedContent(authRequestParameters);
-
-            var response = await client.PostAsync("", authorizationRequestContent, cancellationToken);
+                
+            var response = await client.PostAsync(keycloakOptions.TokenPath, authorizationRequestContent, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {

@@ -2,9 +2,11 @@
 
 public sealed class KeycloakOptions
 {
-    public string AdminUrl { get; init; } = string.Empty;
+    public string BaseUrl { get; init; } = string.Empty;
 
-    public string TokenUrl { get; init; } = string.Empty;
+    public string AdminUsersPath { get; init; } = string.Empty;
+
+    public string TokenPath { get; init; } = string.Empty;
 
     public string AdminClientId { get; init; } = string.Empty;
 

@@ -3,10 +3,15 @@ using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Infrastructure.Authentication.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 
-internal sealed class AuthenticationService : IAuthenticationService
+internal sealed class AuthenticationService(
+    HttpClient client,
+    ILogger<AuthenticationService> logger,
+    IOptions<KeycloakOptions> keycloakOptions
+) : IAuthenticationService
 {
     private static readonly Error RegistrationError = new(
         ErrorType.BadRequest,
@@ -15,16 +20,7 @@ internal sealed class AuthenticationService : IAuthenticationService
 
     private const string PasswordCredentialType = "password";
 
-    private readonly HttpClient httpClient;
-    private readonly ILogger<AuthenticationService> logger;
-
-
-    public AuthenticationService(HttpClient httpClient, ILogger<AuthenticationService> logger)
-    {
-        this.httpClient = httpClient;
-        this.logger = logger;
-
-    }
+    private readonly KeycloakOptions keycloakOptions = keycloakOptions.Value;
 
     public async Task<Result<string>> RegisterAsync(
         string email,
@@ -44,10 +40,11 @@ internal sealed class AuthenticationService : IAuthenticationService
             }
         };
 
-        var response = await httpClient.PostAsJsonAsync(
-            "users",
+        var response = await client.PostAsJsonAsync(
+            keycloakOptions.AdminUsersPath,
             userRepresentationModel,
-            cancellationToken);
+            cancellationToken
+        );
 
         if (response.IsSuccessStatusCode)
         {

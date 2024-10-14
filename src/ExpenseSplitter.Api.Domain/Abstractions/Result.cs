@@ -4,7 +4,7 @@ namespace ExpenseSplitter.Api.Domain.Abstractions;
 
 public class Result
 {
-    protected internal Result(bool isSuccess, Error error)
+    protected Result(bool isSuccess, Error error)
     {
         IsSuccess = isSuccess;
         Error = error;

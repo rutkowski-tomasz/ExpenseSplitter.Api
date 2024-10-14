@@ -14,7 +14,7 @@ public class ApplicationDbContext(
     IDateTimeProvider timeProvider
 ) : DbContext(options), IUnitOfWork
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; init; }
 
     [ExcludeFromCodeCoverage]
     protected override void OnModelCreating(ModelBuilder modelBuilder)

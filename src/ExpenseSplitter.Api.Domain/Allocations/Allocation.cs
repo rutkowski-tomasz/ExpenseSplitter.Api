@@ -25,7 +25,7 @@ public sealed class Allocation : Entity<AllocationId>
 
     public Amount Amount { get; private set; }
 
-    public Expense? Expense { get; set; } = null!;
+    public Expense? Expense { get; init; }
 
     public static Allocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
     {

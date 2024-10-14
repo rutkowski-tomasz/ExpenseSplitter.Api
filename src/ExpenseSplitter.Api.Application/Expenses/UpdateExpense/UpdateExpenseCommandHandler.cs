@@ -11,48 +11,31 @@ using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 
-public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
+public class UpdateExpenseCommandHandler(
+    IExpenseRepository repository,
+    ISettlementUserRepository userRepository,
+    IAllocationRepository allocationRepository,
+    ISettlementRepository settlementRepository,
+    IDateTimeProvider timeProvider,
+    IUnitOfWork unitOfWork
+) : ICommandHandler<UpdateExpenseCommand>
 {
-    private readonly IExpenseRepository expenseRepository;
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IAllocationRepository allocationRepository;
-    private readonly ISettlementRepository settlementRepository;
-    private readonly IDateTimeProvider dateTimeProvider;
-    private readonly IUnitOfWork unitOfWork;
-
-    public UpdateExpenseCommandHandler(
-        IExpenseRepository expenseRepository,
-        ISettlementUserRepository settlementUserRepository,
-        IAllocationRepository allocationRepository,
-        ISettlementRepository settlementRepository,
-        IDateTimeProvider dateTimeProvider,
-        IUnitOfWork unitOfWork
-    )
-    {
-        this.expenseRepository = expenseRepository;
-        this.settlementUserRepository = settlementUserRepository;
-        this.allocationRepository = allocationRepository;
-        this.settlementRepository = settlementRepository;
-        this.dateTimeProvider = dateTimeProvider;
-        this.unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> Handle(UpdateExpenseCommand request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.Id);
-        var expense = await expenseRepository.GetById(expenseId, cancellationToken);
+        var expense = await repository.GetById(expenseId, cancellationToken);
         if (expense is null)
         {
             return Result.Failure(ExpenseErrors.NotFound);
         }
 
-        if (!await settlementUserRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
+        if (!await userRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
         {
             return Result.Failure(SettlementErrors.Forbidden);
         }
 
         var settlement = await settlementRepository.GetById(expense.SettlementId, cancellationToken);
-        settlement!.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
+        settlement!.SetUpdatedOnUtc(timeProvider.UtcNow);
 
         var updateResult = UpdateExpense(expense, request);
         if (updateResult.IsFailure)

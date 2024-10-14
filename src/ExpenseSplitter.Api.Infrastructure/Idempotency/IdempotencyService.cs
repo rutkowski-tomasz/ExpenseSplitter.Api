@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ExpenseSplitter.Api.Infrastructure.Idempotency;
 
 internal sealed class IdempotencyService(
-    DbContext context,
+    ApplicationDbContext context,
     IHttpContextAccessor accessor
 ) : IIdempotencyService
 {

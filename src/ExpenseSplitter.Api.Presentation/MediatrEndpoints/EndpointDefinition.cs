@@ -4,10 +4,10 @@ namespace ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 public record EndpointDefinition
 {
-    public Func<IEndpointRouteBuilder, IEndpointRouteBuilder> GroupBuilder { get; set; }
-    public Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> Map { get; set; }
-    public string Route { get; set; }
-    public IEnumerable<int> ErrorCodes { get; set; } = [];
+    public Func<IEndpointRouteBuilder, IEndpointRouteBuilder> GroupBuilder { get; init; }
+    public Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> Map { get; init; }
+    public string Route { get; init; }
+    public IEnumerable<int> ErrorCodes { get; private set; } = [];
 
     public static readonly Func<IEndpointRouteBuilder, string, Delegate, RouteHandlerBuilder> MapGet =
         (builder, route, handler) => builder.MapGet(route, handler);

@@ -65,8 +65,7 @@ public static class DependencyInjection
         services.AddHttpClient<IAuthenticationService, AuthenticationService>((serviceProvider, httpClient) =>
             {
                 var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
-
-                httpClient.BaseAddress = new Uri(keycloakOptions.AdminUrl);
+                httpClient.BaseAddress = new Uri(keycloakOptions.BaseUrl);
             })
             .AddHttpMessageHandler<AdminAuthorizationDelegatingHandler>()
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
@@ -75,8 +74,7 @@ public static class DependencyInjection
         services.AddHttpClient<IJwtService, JwtService>((serviceProvider, httpClient) =>
             {
                 var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
-
-                httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
+                httpClient.BaseAddress = new Uri(keycloakOptions.BaseUrl);
             })
             .AddHttpMessageHandler<LoggingDelegatingHandler>()
             .AddStandardResilienceHandler();
