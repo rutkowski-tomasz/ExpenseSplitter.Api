@@ -14,7 +14,7 @@ public class RegisterUserCommandHandlerTests
 
     public RegisterUserCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         authenticationServiceMock = new Mock<IAuthenticationService>();
         var userRepositoryMock = new Mock<IUserRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();

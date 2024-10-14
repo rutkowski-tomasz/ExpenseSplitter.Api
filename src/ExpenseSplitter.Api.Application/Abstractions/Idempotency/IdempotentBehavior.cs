@@ -4,46 +4,29 @@ using MediatR;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
-internal sealed class IdempotentBehavior<TRequest, TResponse>
+internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyService service)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
     where TResponse : Result
 {
-    private static readonly Error IdempotencyKeyIsNotGuid = new(
-        ErrorType.PreConditionFailed,
-        "The idempotency key from headers is not a valid guid"
-    );
-    
-    private static readonly Error IdempotentKeyAlreadyProcessed = new(
-        ErrorType.Conflict,
-        "The idempotency key from headers was already processed"
-    );
-
-    private readonly IIdempotencyService idempotencyService;
-
-    public IdempotentBehavior(IIdempotencyService idempotencyService)
-    {
-        this.idempotencyService = idempotencyService;
-    }
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!idempotencyService.IsIdempotencyKeyInHeaders())
+        if (!service.IsIdempotencyKeyInHeaders())
         {
             return await next();
         }
 
-        if (!idempotencyService.TryParseIdempotencyKey(out var parsedIdempotencyKey))
+        if (!service.TryParseIdempotencyKey(out var parsedIdempotencyKey))
         {
-            return CreateFailureResult(IdempotencyKeyIsNotGuid);
+            return CreateFailureResult(IdempotencyErrors.IdempotencyKeyIsNotGuid);
         }
 
-        if (await idempotencyService.IsIdempotencyKeyProcessed(parsedIdempotencyKey, cancellationToken))
+        if (await service.IsIdempotencyKeyProcessed(parsedIdempotencyKey, cancellationToken))
         {
-            return CreateFailureResult(IdempotentKeyAlreadyProcessed);
+            return CreateFailureResult(IdempotencyErrors.IdempotentKeyAlreadyProcessed);
         }
 
-        await idempotencyService.SaveIdempotencyKey(
+        await service.SaveIdempotencyKey(
             parsedIdempotencyKey, 
             typeof(TRequest).Name,
             cancellationToken

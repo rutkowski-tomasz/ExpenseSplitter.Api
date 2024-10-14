@@ -1,15 +1,10 @@
 ﻿namespace ExpenseSplitter.Api.Domain.Abstractions;
 
-public abstract class Entity<TEntityId> : IEntity
+public abstract class Entity<TEntityId>(TEntityId id) : IEntity
 {
-    private readonly List<IDomainEvent> domainEvents = new();
+    private readonly List<IDomainEvent> domainEvents = [];
 
-    protected Entity(TEntityId id)
-    {
-        Id = id;
-    }
-
-    public TEntityId Id { get; init; }
+    public TEntityId Id { get; init; } = id;
     public DateTime LastModified { get; set; }
 
     public IReadOnlyList<IDomainEvent> GetDomainEvents()

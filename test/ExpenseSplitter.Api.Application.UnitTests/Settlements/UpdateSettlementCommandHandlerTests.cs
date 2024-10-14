@@ -1,4 +1,4 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -14,18 +14,17 @@ public class UpdateSettlementCommandHandlerTests
     private readonly Mock<ISettlementRepository> settlementRepository;
     private readonly Mock<IParticipantRepository> participantRepository;
     private readonly Mock<IDateTimeProvider> dateTimeProvider;
-    private readonly Mock<IUnitOfWork> unitOfWork;
     private readonly UpdateSettlementCommandHandler handler;
     private readonly Settlement settlement;
 
     public UpdateSettlementCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepository = new Mock<ISettlementUserRepository>();
         settlementRepository = new Mock<ISettlementRepository>();
         participantRepository = new Mock<IParticipantRepository>();
         dateTimeProvider = new Mock<IDateTimeProvider>();
-        unitOfWork = new Mock<IUnitOfWork>();
+        Mock<IUnitOfWork> unitOfWork = new();
 
         settlementUserRepository
             .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
@@ -38,7 +37,7 @@ public class UpdateSettlementCommandHandlerTests
 
         participantRepository
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.CreateMany<Participant>());
+            .ReturnsAsync(fixture.CreateMany<Participant>().ToList());
         
         handler = new UpdateSettlementCommandHandler(
             settlementUserRepository.Object,
@@ -123,7 +122,7 @@ public class UpdateSettlementCommandHandlerTests
 
         participantRepository
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Participant> { participant1, participant2 });
+            .ReturnsAsync([participant1, participant2]);
 
         var request = fixture
             .Build<UpdateSettlementCommand>()
@@ -148,7 +147,7 @@ public class UpdateSettlementCommandHandlerTests
 
         participantRepository
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Participant> { participant1 });
+            .ReturnsAsync([participant1]);
 
         var request = fixture
             .Build<UpdateSettlementCommand>()
@@ -157,7 +156,7 @@ public class UpdateSettlementCommandHandlerTests
                 new List<UpdateSettlementCommandParticipant> 
                 {
                     new (null, "Krzysztof"),
-                    new (participant1.Id.Value, participant1.Nickname),
+                    new (participant1.Id.Value, participant1.Nickname)
                 }
             )
             .Create();
@@ -174,7 +173,7 @@ public class UpdateSettlementCommandHandlerTests
 
         participantRepository
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Participant> { participant1 });
+            .ReturnsAsync([participant1]);
 
         var request = fixture
             .Build<UpdateSettlementCommand>()

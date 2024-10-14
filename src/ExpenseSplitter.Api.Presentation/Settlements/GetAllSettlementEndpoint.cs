@@ -16,7 +16,7 @@ public record GetAllSettlementsResponseSettlement(
 
 public class GetAllSettlementsEndpoint() : Endpoint<GetAllSettlementsRequest, GetAllSettlementsQuery, GetAllSettlementsQueryResult, GetAllSettlementsResponse>(
     Endpoints.Settlements.Get(""),
-    request => new (request.Page, request.PageSize),
+    request => new GetAllSettlementsQuery(request.Page, request.PageSize),
     result => new GetAllSettlementsResponse(
         result.Settlements.Select(settlement => new GetAllSettlementsResponseSettlement(
             settlement.Id,

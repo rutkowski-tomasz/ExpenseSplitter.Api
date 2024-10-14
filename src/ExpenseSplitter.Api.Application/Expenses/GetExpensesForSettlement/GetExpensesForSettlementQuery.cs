@@ -4,6 +4,4 @@ namespace ExpenseSplitter.Api.Application.Expenses.GetExpensesForSettlement;
 
 public sealed record GetExpensesForSettlementQuery(
     Guid SettlementId
-) : IQuery<GetExpensesForSettlementQueryResult>
-{
-}
+) : IQuery<GetExpensesForSettlementQueryResult>;

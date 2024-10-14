@@ -4,18 +4,10 @@ using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Behaviors;
 
-public class LoggingBehavior<TRequest, TResponse>
-    : IPipelineBehavior<TRequest, TResponse>
+public class LoggingBehavior<TRequest, TResponse>(ILogger<TRequest> logger) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest
     where TResponse : Result
 {
-    private readonly ILogger<TRequest> logger;
-
-    public LoggingBehavior(ILogger<TRequest> logger)
-    {
-        this.logger = logger;
-    }
-
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

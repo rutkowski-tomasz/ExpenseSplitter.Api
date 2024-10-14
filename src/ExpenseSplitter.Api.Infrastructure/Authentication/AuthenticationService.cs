@@ -49,18 +49,19 @@ internal sealed class AuthenticationService : IAuthenticationService
             userRepresentationModel,
             cancellationToken);
 
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            logger.LogWarning(
-                "Keycloak returned non-success response {StatusCode} {Content}",
-                response.StatusCode,
-                await response.Content.ReadAsStringAsync(cancellationToken)
-            );
-
-            return Result.Failure<string>(RegistrationError);
+            return ExtractIdentityIdFromLocationHeader(response);
         }
 
-        return ExtractIdentityIdFromLocationHeader(response);
+        logger.LogWarning(
+            "Keycloak returned non-success response {StatusCode} {Content}",
+            response.StatusCode,
+            await response.Content.ReadAsStringAsync(cancellationToken)
+        );
+
+        return Result.Failure<string>(RegistrationError);
+
     }
 
     private static string ExtractIdentityIdFromLocationHeader(

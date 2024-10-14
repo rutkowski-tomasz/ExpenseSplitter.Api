@@ -2,5 +2,5 @@
 
 public record Error(ErrorType Type, string Description)
 {
-    public static Error None = new(ErrorType.None, string.Empty);
+    public static readonly Error None = new(ErrorType.None, string.Empty);
 }

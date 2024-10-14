@@ -20,7 +20,7 @@ public class CachingBehaviorTests
     {
         public string Key => "test";
         public TimeSpan? Expiration => null;
-    };
+    }
 
     [Fact]
     public async Task Handle_ShouldUseCachedResult_WhenPresent()
@@ -28,7 +28,7 @@ public class CachingBehaviorTests
         var cachedResult = Result.Success(2137);
         cacheService
             .Setup(x => x.GetOrCreateAsync(
-                It.Is<string>(x => x == "test"),
+                It.Is<string>(y => y == "test"),
                 It.IsAny<Func<CancellationToken, Task<Result<int>>>>(),
                 It.IsAny<TimeSpan?>(),
                 It.IsAny<CancellationToken>()

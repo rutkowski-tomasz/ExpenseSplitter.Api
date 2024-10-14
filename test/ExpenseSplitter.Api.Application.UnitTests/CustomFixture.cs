@@ -7,7 +7,7 @@ using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Application.UnitTests;
 
-public class CustomFixutre
+public abstract class CustomFixture
 {
     public static Fixture Create()
     {

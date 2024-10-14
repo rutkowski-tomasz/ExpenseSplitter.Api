@@ -16,7 +16,7 @@ public class DeleteSettlementCommandHandlerTests
 
     public DeleteSettlementCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         userContext = new Mock<IUserContext>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();

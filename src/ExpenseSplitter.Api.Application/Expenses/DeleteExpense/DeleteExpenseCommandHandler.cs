@@ -1,4 +1,4 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Expenses;

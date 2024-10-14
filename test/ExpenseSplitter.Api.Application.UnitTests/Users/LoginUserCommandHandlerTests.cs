@@ -13,7 +13,7 @@ public class LoginUserCommandHandlerTests
 
     public LoginUserCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         jwtServiceMock = new Mock<IJwtService>();
 
         handler = new LoginUserCommandHandler(jwtServiceMock.Object);

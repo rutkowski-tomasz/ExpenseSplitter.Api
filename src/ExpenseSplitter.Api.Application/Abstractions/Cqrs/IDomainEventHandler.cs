@@ -3,7 +3,5 @@ using MediatR;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 
-public interface IDomainEventHandler<TDomainEvent> : INotificationHandler<TDomainEvent>
-     where TDomainEvent : IDomainEvent
-{
-}
+public interface IDomainEventHandler<in TDomainEvent> : INotificationHandler<TDomainEvent>
+     where TDomainEvent : IDomainEvent;

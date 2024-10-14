@@ -15,7 +15,7 @@ public class CreateSettlementEndpoint() : Endpoint<CreateSettlementRequest, Crea
     Endpoints.Settlements.Post("").ProducesErrorCodes(
         StatusCodes.Status400BadRequest
     ),
-    request => new (
+    request => new CreateSettlementCommand(
         request.Body.Name,
         request.Body.ParticipantNames
     ),

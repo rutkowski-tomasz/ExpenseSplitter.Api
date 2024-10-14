@@ -4,36 +4,32 @@ using MediatR;
 namespace ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 
 public abstract class EndpointBase(
-    EndpointDefinition EndpointDefinition,
-    Action<RouteHandlerBuilder>? RouteHandlerCustomization = null
+    EndpointDefinition endpointDefinition,
+    Action<RouteHandlerBuilder>? routeHandlerCustomization = null
 )
 {
-    public abstract Delegate Handle();
+    protected abstract Delegate Handle();
 
     public void MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder = EndpointDefinition.GroupBuilder(builder);
-        var routeHandlerBuilder = EndpointDefinition.Map(builder, EndpointDefinition.Route, Handle());
+        builder = endpointDefinition.GroupBuilder(builder);
+        var routeHandlerBuilder = endpointDefinition.Map(builder, endpointDefinition.Route, Handle());
 
-        if (RouteHandlerCustomization is not null)
-        {
-            RouteHandlerCustomization(routeHandlerBuilder);
-        }
-
-        foreach (var statusCode in EndpointDefinition.ErrorCodes ?? [])
+        routeHandlerCustomization?.Invoke(routeHandlerBuilder);
+        foreach (var statusCode in endpointDefinition.ErrorCodes)
         {
             routeHandlerBuilder.Produces<string>(statusCode);
         }
     }
 
-    public async Task<IResult> HandleCommand<TCommand, TCommandResult, TResponse>(
+    protected static async Task<IResult> HandleCommand<TCommand, TCommandResult, TResponse>(
         ISender sender,
         TCommand command,
         Func<TCommandResult, TResponse> mapResponse
     ) where TCommand : IRequest<Result<TCommandResult>>
         => ToHttpResult(await sender.Send(command), mapResponse);
-    
-    public async Task<IResult> HandleCommand<TCommand>(ISender sender, TCommand command)
+
+    protected static async Task<IResult> HandleCommand<TCommand>(ISender sender, TCommand command)
         where TCommand : IRequest<Result>
         => ToHttpResult(await sender.Send(command));
 

@@ -57,7 +57,7 @@ internal sealed class GetSettlementQueryHandler(
         return settlementDto;
     }
 
-    private (decimal, decimal?) CalculateTotalAndUserCost(IEnumerable<Expense> expenses, ParticipantId? claimedParticipantId)
+    private static (decimal, decimal?) CalculateTotalAndUserCost(IEnumerable<Expense> expenses, ParticipantId? claimedParticipantId)
     {
         var total = 0m;
         var userCost = 0m;

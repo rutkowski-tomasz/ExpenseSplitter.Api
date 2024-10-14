@@ -10,8 +10,6 @@ public class InviteCodeService : IInviteCodeService
     
     public string GenerateInviteCode()
     {
-        
-
         var inviteCode = string.Join(
             "",
             Enumerable

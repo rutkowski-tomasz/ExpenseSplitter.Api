@@ -10,14 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JSON Web Token based security",
+        Description = "JSON Web Token based security"
     })
 );
 
@@ -67,4 +67,4 @@ app.MapHealthChecks("health", new HealthCheckOptions
 
 app.Run();
 
-public partial class Program { }
+public partial class Program;

@@ -28,7 +28,7 @@ public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpe
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new (
+    request => new UpdateExpenseCommand(
         request.ExpenseId,
         request.Body.Title,
         request.Body.PaymentDate,

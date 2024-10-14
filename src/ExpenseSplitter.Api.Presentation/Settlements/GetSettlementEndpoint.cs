@@ -26,8 +26,8 @@ public class GetSettlementEndpoint() : Endpoint<GetSettlementRequest, GetSettlem
         StatusCodes.Status404NotFound,
         StatusCodes.Status304NotModified
     ),
-    request => new (request.SettlementId),
-    result => new (
+    request => new GetSettlementQuery(request.SettlementId),
+    result => new GetSettlementResponse(
         result.Id,
         result.Name,
         result.InviteCode,

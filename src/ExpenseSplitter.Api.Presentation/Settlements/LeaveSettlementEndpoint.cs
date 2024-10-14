@@ -10,5 +10,5 @@ public class LeaveSettlementEndpoint() : Endpoint<LeaveSettlementRequest, LeaveS
     Endpoints.Settlements.Post("{settlementId}/leave").ProducesErrorCodes(
         StatusCodes.Status403Forbidden
     ),
-    MapRequest: request => new (request.SettlementId)
+    mapRequest: request => new LeaveSettlementCommand(request.SettlementId)
 );

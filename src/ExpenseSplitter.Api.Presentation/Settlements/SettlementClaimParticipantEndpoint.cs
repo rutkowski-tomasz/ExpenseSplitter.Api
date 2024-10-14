@@ -14,5 +14,5 @@ public class SettlementClaimParticipantEndpoint() : Endpoint<SettlementlementCla
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new(request.SettlementId, request.ParticipantId)
+    request => new ClaimParticipantCommand(request.SettlementId, request.ParticipantId)
 );

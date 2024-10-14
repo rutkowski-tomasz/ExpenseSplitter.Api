@@ -1,4 +1,4 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -59,13 +59,12 @@ public class ApplicationDbContextTests
 
     private record TestDomainEvent : IDomainEvent;
     
-    private class TestApplicationDbContext : ApplicationDbContext
+    private class TestApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        IPublisher publisher,
+        IDateTimeProvider dateTimeProvider
+    ) : ApplicationDbContext(options, publisher, dateTimeProvider)
     {
-        public TestApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher, IDateTimeProvider dateTimeProvider)
-            : base(options, publisher, dateTimeProvider)
-        {
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -15,7 +15,7 @@ public class ClaimParticipantCommandHandlerTests
 
     public ClaimParticipantCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         participantRepositoryMock = new Mock<IParticipantRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();

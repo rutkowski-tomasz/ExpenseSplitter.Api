@@ -13,6 +13,6 @@ public class CreateExpenseEndpoint() : Endpoint<JoinSettlementRequest, JoinSettl
         StatusCodes.Status400BadRequest,
         StatusCodes.Status404NotFound
     ),
-    request => new (request.Body.InviteCode),
+    request => new JoinSettlementCommand(request.Body.InviteCode),
     result => result
 );

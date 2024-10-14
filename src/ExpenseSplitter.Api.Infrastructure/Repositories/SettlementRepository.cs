@@ -3,17 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 
-internal sealed class SettlementRepository : Repository<Settlement, SettlementId>, ISettlementRepository
+internal sealed class SettlementRepository(ApplicationDbContext dbContext)
+    : Repository<Settlement, SettlementId>(dbContext), ISettlementRepository
 {
-    public SettlementRepository(ApplicationDbContext dbContext) : base(dbContext)
-    {
-    }
-
-    public async Task<IEnumerable<Settlement>> GetPaged(int page, int pageSize, CancellationToken cancellationToken)
+    public Task<List<Settlement>> GetPaged(int page, int pageSize, CancellationToken cancellationToken)
     {
         var skip = (page - 1) * pageSize;
 
-        return await DbContext
+        return DbContext
             .Set<Settlement>()
             .OrderByDescending(x => x.UpdatedOnUtc)
             .Skip(skip)
@@ -21,9 +18,9 @@ internal sealed class SettlementRepository : Repository<Settlement, SettlementId
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Settlement?> GetByInviteCode(string inviteCode, CancellationToken cancellationToken)
+    public Task<Settlement?> GetByInviteCode(string inviteCode, CancellationToken cancellationToken)
     {
-        return await DbContext
+        return DbContext
             .Set<Settlement>()
             .SingleOrDefaultAsync(x => x.InviteCode == inviteCode, cancellationToken);
     }

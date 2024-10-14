@@ -25,7 +25,7 @@ public class EntityTests
         var domainEvents = entity.GetDomainEvents();
         
         domainEvents.Should().HaveCount(1);
-        domainEvents.First().Should().BeOfType<TestDomainEvent>();
+        domainEvents[0].Should().BeOfType<TestDomainEvent>();
     }
 
     [Fact]
@@ -42,12 +42,8 @@ public class EntityTests
     }
     
     
-    private class TestEntity : Entity<Guid>
+    private class TestEntity(Guid id) : Entity<Guid>(id)
     {
-        public TestEntity(Guid id) : base(id)
-        {
-        }
-
         public void RaiseTestDomainEvent()
         {
             RaiseDomainEvent(new TestDomainEvent());

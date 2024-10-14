@@ -1,5 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
-using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -16,7 +16,7 @@ public class CreateSettlementCommandHandlerTests
 
     public CreateSettlementCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         Mock<IParticipantRepository> participantRepositoryMock = new();
         Mock<ISettlementUserRepository> settlementUserRepositoryMock = new();

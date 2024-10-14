@@ -1,4 +1,4 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Application.Exceptions;
 using ExpenseSplitter.Api.Domain.Abstractions;
@@ -8,44 +8,29 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 
 namespace ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 
-public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCommand>
+public class UpdateSettlementCommandHandler(
+    ISettlementUserRepository userRepository,
+    ISettlementRepository repository,
+    IParticipantRepository participantRepository,
+    IDateTimeProvider timeProvider,
+    IUnitOfWork unitOfWork
+) : ICommandHandler<UpdateSettlementCommand>
 {
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly ISettlementRepository settlementRepository;
-    private readonly IParticipantRepository participantRepository;
-    private readonly IDateTimeProvider dateTimeProvider;
-    private readonly IUnitOfWork unitOfWork;
-
-    public UpdateSettlementCommandHandler(
-        ISettlementUserRepository settlementUserRepository,
-        ISettlementRepository settlementRepository,
-        IParticipantRepository participantRepository,
-        IDateTimeProvider dateTimeProvider,
-        IUnitOfWork unitOfWork
-    )
-    {
-        this.settlementUserRepository = settlementUserRepository;
-        this.settlementRepository = settlementRepository;
-        this.participantRepository = participantRepository;
-        this.dateTimeProvider = dateTimeProvider;
-        this.unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> Handle(UpdateSettlementCommand request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.Id);
-        if (!await settlementUserRepository.CanUserAccessSettlement(settlementId, cancellationToken))
+        if (!await userRepository.CanUserAccessSettlement(settlementId, cancellationToken))
         {
             return SettlementErrors.Forbidden;
         }
 
-        var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
+        var settlement = await repository.GetById(settlementId, cancellationToken);
         if (settlement is null)
         {
             return SettlementErrors.NotFound;
         }
 
-        settlement.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
+        settlement.SetUpdatedOnUtc(timeProvider.UtcNow);
         var setNameResult = settlement.SetName(request.Name);
         if (setNameResult.IsFailure)
         {
@@ -115,7 +100,7 @@ public class UpdateSettlementCommandHandler : ICommandHandler<UpdateSettlementCo
         return Result.Success();
     }
 
-    private Result UpdateExistingParticipants(IEnumerable<Participant> participants, UpdateSettlementCommand updateCommand)
+    private static Result UpdateExistingParticipants(IEnumerable<Participant> participants, UpdateSettlementCommand updateCommand)
     {
         var updates = updateCommand
             .Participants

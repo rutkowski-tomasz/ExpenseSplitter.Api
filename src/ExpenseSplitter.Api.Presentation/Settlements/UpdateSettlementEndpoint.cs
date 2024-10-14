@@ -24,7 +24,7 @@ public class UpdateSettlementEndpoint() : Endpoint<UpdateSettlementRequest, Upda
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new(
+    request => new UpdateSettlementCommand(
         request.SettlementId,
         request.Body.Name,
         request.Body.Participants.Select(x => new UpdateSettlementCommandParticipant(

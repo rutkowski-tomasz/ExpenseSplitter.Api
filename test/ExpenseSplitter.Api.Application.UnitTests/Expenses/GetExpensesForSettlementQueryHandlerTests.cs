@@ -12,7 +12,7 @@ public class GetExpensesForSettlementQueryHandlerTests
 
     public GetExpensesForSettlementQueryHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
         
         getExpensesForSettlementQueryHandler = new GetExpensesForSettlementQueryHandler(
@@ -24,7 +24,7 @@ public class GetExpensesForSettlementQueryHandlerTests
     public async Task Handle_ShouldReturnMappedExpenses()
     {
         var request = fixture.Create<GetExpensesForSettlementQuery>();
-        var expenses = fixture.CreateMany<Expense>(2);
+        var expenses = fixture.CreateMany<Expense>(2).ToList();
         expenseRepositoryMock
             .Setup(x => x.GetPagedBySettlementId(
                 It.Is<SettlementId>(y => y.Value == request.SettlementId), 

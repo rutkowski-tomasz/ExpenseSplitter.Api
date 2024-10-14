@@ -29,7 +29,7 @@ public class ValidationBehaviorTests
         var validatorMock = new Mock<IValidator<IBaseCommand>>();
         var validationFailures = new List<ValidationFailure>
         {
-            new ValidationFailure("Property1", "Error message 1")
+            new("Property1", "Error message 1")
         };
 
         validatorMock.Setup(x => x.Validate(It.IsAny<IValidationContext>()))
@@ -40,7 +40,7 @@ public class ValidationBehaviorTests
         var requestMock = new Mock<IBaseCommand>();
         var nextDelegateMock = new Mock<RequestHandlerDelegate<int>>();
 
-        var action = async () => await behavior.Handle(requestMock.Object, nextDelegateMock.Object, default);
+        var action = () => behavior.Handle(requestMock.Object, nextDelegateMock.Object, default);
 
         await action.Should()
             .ThrowAsync<Exceptions.ValidationException>()

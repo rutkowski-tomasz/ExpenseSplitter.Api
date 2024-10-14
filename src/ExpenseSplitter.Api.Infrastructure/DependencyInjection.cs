@@ -1,5 +1,4 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
-using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Caching;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
@@ -22,7 +21,9 @@ using Microsoft.Extensions.Options;
 using ExpenseSplitter.Api.Infrastructure.Idempotency;
 using ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 using Asp.Versioning;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Etag;
+using ExpenseSplitter.Api.Infrastructure.Clock;
 using ExpenseSplitter.Api.Infrastructure.Etag;
 
 namespace ExpenseSplitter.Api.Infrastructure;

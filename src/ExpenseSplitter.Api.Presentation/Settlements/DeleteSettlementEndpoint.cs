@@ -12,5 +12,5 @@ public class DeleteSettlementEndpoint() : Endpoint<DeleteSettlementRequest, Dele
         StatusCodes.Status412PreconditionFailed,
         StatusCodes.Status404NotFound
     ),
-    request => new (request.SettlementId)
+    request => new DeleteSettlementCommand(request.SettlementId)
 );

@@ -13,7 +13,7 @@ public class LeaveSettlementCommandHandlerTests
 
     public LeaveSettlementCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 

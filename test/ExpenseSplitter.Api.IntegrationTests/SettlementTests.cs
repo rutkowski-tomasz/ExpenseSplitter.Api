@@ -3,13 +3,8 @@ using ExpenseSplitter.Api.Domain.Settlements;
 
 namespace ExpenseSplitter.Api.IntegrationTests;
 
-public class SettlementTests : BaseIntegrationTest
+public class SettlementTests(IntegrationTestWebAppFactory appFactory) : BaseIntegrationTest(appFactory)
 {
-    public SettlementTests(IntegrationTestWebAppFactory appFactory)
-        : base(appFactory)
-    {
-    }
-
     [Fact]
     public async Task Create_ShouldAddNewSettlementToDatabase()
     {

@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using FluentValidation;
 using MediatR;
 using NetArchTest.Rules;

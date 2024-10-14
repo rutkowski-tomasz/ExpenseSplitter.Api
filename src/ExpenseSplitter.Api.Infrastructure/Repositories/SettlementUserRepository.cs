@@ -5,29 +5,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 
-internal sealed class SettlementUserRepository : Repository<SettlementUser, SettlementUserId>, ISettlementUserRepository
+internal sealed class SettlementUserRepository(
+    ApplicationDbContext dbContext,
+    IUserContext context
+) : Repository<SettlementUser, SettlementUserId>(dbContext), ISettlementUserRepository
 {
-    private readonly IUserContext userContext;
-
-    public SettlementUserRepository(
-        ApplicationDbContext dbContext,
-        IUserContext userContext
-    ) : base(dbContext)
+    public Task<bool> CanUserAccessSettlement(SettlementId settlementId, CancellationToken cancellationToken)
     {
-        this.userContext = userContext;
+        return DbContext
+            .Set<SettlementUser>()
+            .AnyAsync(x => x.SettlementId == settlementId && x.UserId == context.UserId, cancellationToken);
     }
 
-    public async Task<bool> CanUserAccessSettlement(SettlementId settlementId, CancellationToken cancellationToken)
+    public Task<SettlementUser?> GetBySettlementId(SettlementId settlementId, CancellationToken cancellationToken)
     {
-        return await DbContext
+        return DbContext
             .Set<SettlementUser>()
-            .AnyAsync(x => x.SettlementId == settlementId && x.UserId == userContext.UserId, cancellationToken);
-    }
-
-    public async Task<SettlementUser?> GetBySettlementId(SettlementId settlementId, CancellationToken cancellationToken)
-    {
-        return await DbContext
-            .Set<SettlementUser>()
-            .FirstOrDefaultAsync(x => x.SettlementId == settlementId && x.UserId == userContext.UserId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.SettlementId == settlementId && x.UserId == context.UserId, cancellationToken);
     }
 }

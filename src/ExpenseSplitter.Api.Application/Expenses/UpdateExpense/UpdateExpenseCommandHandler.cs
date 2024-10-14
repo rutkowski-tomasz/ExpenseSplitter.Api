@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Application.Exceptions;
 using ExpenseSplitter.Api.Domain.Abstractions;
@@ -90,7 +89,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         return Result.Success();
     }
 
-    private Result UpdateExpense(Expense expense, UpdateExpenseCommand request)
+    private static Result UpdateExpense(Expense expense, UpdateExpenseCommand request)
     {
         var setTitleResult = expense.SetTitle(request.Title);
         if (setTitleResult.IsFailure)
@@ -147,7 +146,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         return Result.Success();
     }
 
-    private Result UpdateExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
+    private static Result UpdateExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
     {
         var updates = updateCommand
             .Allocations

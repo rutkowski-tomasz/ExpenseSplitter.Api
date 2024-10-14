@@ -29,9 +29,7 @@ public class IdempotentBehaviorTests
         );
     }
 
-    private class TestCommand : IBaseCommand
-    {
-    }
+    private class TestCommand : IBaseCommand;
 
     [Fact]
     public async Task Handle_ShouldReturnNextValue_WhenIdempotencyKeyIsNotHeaders()

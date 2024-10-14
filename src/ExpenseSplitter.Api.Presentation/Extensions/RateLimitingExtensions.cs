@@ -29,7 +29,7 @@ public static class RateLimitingExtensions
                 }
             ));
 
-            options.OnRejected = (context, _) => {
+            options.OnRejected = (context, cancellationToken) => {
                 if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
                 {
                     context.HttpContext.Response.Headers.RetryAfter =
@@ -37,7 +37,7 @@ public static class RateLimitingExtensions
                 }
 
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken: _);
+                context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken);
 
                 return new ValueTask();
             };

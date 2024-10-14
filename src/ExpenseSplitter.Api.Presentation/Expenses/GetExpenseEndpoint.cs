@@ -26,8 +26,8 @@ public class GetExpenseEndpoint() : Endpoint<GetExpenseRequest, GetExpenseQuery,
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new (request.ExpenseId),
-    result => new (
+    request => new GetExpenseQuery(request.ExpenseId),
+    result => new GetExpenseResponse(
         result.Id,
         result.Title,
         result.PayingParticipantId,

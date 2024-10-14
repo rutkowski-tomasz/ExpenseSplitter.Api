@@ -3,15 +3,8 @@ using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 
-public class LoggingDelegatingHandler : DelegatingHandler
+public class LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger) : DelegatingHandler
 {
-    private readonly ILogger<LoggingDelegatingHandler> logger;
-
-    public LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger)
-    {
-        this.logger = logger;
-    }
-
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)

@@ -44,10 +44,9 @@ public sealed class AdminAuthorizationDelegatingHandler : DelegatingHandler
 
         using var authorizationRequest = new HttpRequestMessage(
             HttpMethod.Post,
-            new Uri(keycloakOptions.TokenUrl))
-        {
-            Content = authorizationRequestContent
-        };
+            new Uri(keycloakOptions.TokenUrl)
+        );
+        authorizationRequest.Content = authorizationRequestContent;
 
         var authorizationResponse = await base.SendAsync(authorizationRequest, cancellationToken);
 

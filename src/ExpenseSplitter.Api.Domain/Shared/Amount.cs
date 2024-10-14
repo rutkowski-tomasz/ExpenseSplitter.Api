@@ -12,12 +12,9 @@ public record Amount
 
     public static Result<Amount> Create(decimal value)
     {
-        if (value < 0)
-        {
-            return Result.Failure<Amount>(AmountErrors.NegativeValue);
-        }
-
-        return new Amount(value);
+        return value < 0
+            ? Result.Failure<Amount>(AmountErrors.NegativeValue)
+            : new Amount(value);
     }
 
     public static Amount Zero() => new(0);

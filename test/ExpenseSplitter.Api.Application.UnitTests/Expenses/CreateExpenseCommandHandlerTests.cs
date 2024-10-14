@@ -1,4 +1,4 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -19,7 +19,7 @@ public class CreateExpenseCommandHandlerTests
 
     public CreateExpenseCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var expenseRepositoryMock = new Mock<IExpenseRepository>();
         var allocationRepositoryMock = new Mock<IAllocationRepository>();

@@ -40,7 +40,7 @@ public class IdempotencyServiceTests
     {
         SetupIdempotencyKey(key);
 
-        var isParsed = idempotencyService.TryParseIdempotencyKey(out var _);
+        var isParsed = idempotencyService.TryParseIdempotencyKey(out _);
 
         isParsed.Should().Be(expectedIsParsed);
     }

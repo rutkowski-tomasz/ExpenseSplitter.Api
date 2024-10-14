@@ -1,4 +1,4 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -89,7 +89,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         return expenseResult.Value.Id.Value;
     }
     
-    private async Task<bool> AreParticipantIdsValid(CreateExpenseCommand request, CancellationToken cancellationToken)
+    private Task<bool> AreParticipantIdsValid(CreateExpenseCommand request, CancellationToken cancellationToken)
     {
         var participantIds = request
             .Allocations
@@ -98,7 +98,7 @@ public class CreateExpenseCommandHandler : ICommandHandler<CreateExpenseCommand,
         
         participantIds.Add(new ParticipantId(request.PayingParticipantId));
 
-        return await participantRepository.AreAllParticipantsInSettlement(
+        return participantRepository.AreAllParticipantsInSettlement(
             new SettlementId(request.SettlementId),
             participantIds,
             cancellationToken
