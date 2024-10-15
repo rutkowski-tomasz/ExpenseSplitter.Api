@@ -1,7 +1,6 @@
 ﻿ARG PROJECT_NAME=ExpenseSplitter.Api.Presentation
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-ARG PROJECT_NAME
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -17,9 +16,11 @@ COPY . .
 RUN dotnet build "src/${PROJECT_NAME}/${PROJECT_NAME}.csproj" -c Release -o /app/build
 
 FROM build AS publish
+ARG PROJECT_NAME
 RUN dotnet publish "src/${PROJECT_NAME}/${PROJECT_NAME}.csproj" -c Release -o /app/publish
 
 FROM base AS final
+ARG PROJECT_NAME
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "${PROJECT_NAME}.dll"]
