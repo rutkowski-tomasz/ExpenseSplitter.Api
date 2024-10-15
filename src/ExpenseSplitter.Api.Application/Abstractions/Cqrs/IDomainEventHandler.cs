@@ -4,4 +4,4 @@ using MediatR;
 namespace ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 
 public interface IDomainEventHandler<in TDomainEvent> : INotificationHandler<TDomainEvent>
-     where TDomainEvent : DomainEvent;
+     where TDomainEvent : IDomainEvent;

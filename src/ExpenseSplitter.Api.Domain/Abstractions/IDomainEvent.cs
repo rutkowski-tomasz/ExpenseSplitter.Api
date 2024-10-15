@@ -2,4 +2,4 @@
 
 namespace ExpenseSplitter.Api.Domain.Abstractions;
 
-public abstract record DomainEvent : INotification;
+public interface IDomainEvent : INotification;

@@ -50,7 +50,7 @@ public class SettlementTests
         var settlement = Settlement.Create(name, inviteCode, creatorUserId, createdOnUtc);
         
         settlement.IsSuccess.Should().BeTrue();
-        var events = settlement.Value.GetPersistDomainEvents();
+        var events = settlement.Value.GetOnSaveDomainEvents();
 
         events.Should().HaveCount(1);
         

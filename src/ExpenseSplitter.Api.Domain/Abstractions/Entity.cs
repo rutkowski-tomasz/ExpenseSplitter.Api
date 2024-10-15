@@ -2,22 +2,22 @@
 
 public abstract class Entity<TEntityId>(TEntityId id) : IEntity
 {
-    private readonly List<DomainEvent> domainEvents = [];
+    private readonly List<IDomainEvent> domainEvents = [];
 
     public TEntityId Id { get; init; } = id;
     public DateTime LastModified { get; set; }
 
-    public IReadOnlyList<DomainEvent> GetPersistDomainEvents()
+    public IReadOnlyList<IDomainEvent> GetOnSaveDomainEvents()
     {
         return domainEvents.ToList();
     }
 
-    public void ClearPersistDomainEvents()
+    public void ClearOnSaveDomainEvents()
     {
         domainEvents.Clear();
     }
 
-    protected void AddPersistDomainEvent(DomainEvent domainEvent)
+    protected void AddOnSaveDomainEvent(IDomainEvent domainEvent)
     {
         domainEvents.Add(domainEvent);
     }

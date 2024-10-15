@@ -62,8 +62,8 @@ public class ApplicationDbContext(
             .Select(entry => entry.Entity)
             .SelectMany(entity =>
             {
-                var domainEvents = entity.GetPersistDomainEvents();
-                entity.ClearPersistDomainEvents();
+                var domainEvents = entity.GetOnSaveDomainEvents();
+                entity.ClearOnSaveDomainEvents();
                 return domainEvents;
             })
             .ToList();

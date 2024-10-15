@@ -10,7 +10,7 @@ public class EntityTests
         var guid = new Fixture().Create<Guid>();
         var entity = new TestEntity(guid);
 
-        var domainEvents = entity.GetPersistDomainEvents();
+        var domainEvents = entity.GetOnSaveDomainEvents();
 
         domainEvents.Should().BeEmpty();
     }
@@ -22,7 +22,7 @@ public class EntityTests
         var entity = new TestEntity(guid);
 
         entity.RaiseTestDomainEvent();
-        var domainEvents = entity.GetPersistDomainEvents();
+        var domainEvents = entity.GetOnSaveDomainEvents();
         
         domainEvents.Should().HaveCount(1);
         domainEvents[0].Should().BeOfType<TestDomainEvent>();
@@ -35,8 +35,8 @@ public class EntityTests
         var entity = new TestEntity(guid);
 
         entity.RaiseTestDomainEvent();
-        entity.ClearPersistDomainEvents();
-        var domainEvents = entity.GetPersistDomainEvents();
+        entity.ClearOnSaveDomainEvents();
+        var domainEvents = entity.GetOnSaveDomainEvents();
         
         domainEvents.Should().BeEmpty();
     }
@@ -46,9 +46,9 @@ public class EntityTests
     {
         public void RaiseTestDomainEvent()
         {
-            AddPersistDomainEvent(new TestDomainEvent());
+            AddOnSaveDomainEvent(new TestDomainEvent());
         }
     }
 
-    private record TestDomainEvent : DomainEvent;
+    private record TestDomainEvent : IDomainEvent;
 }
