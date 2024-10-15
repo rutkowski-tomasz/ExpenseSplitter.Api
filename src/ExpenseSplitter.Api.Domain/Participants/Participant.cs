@@ -1,6 +1,5 @@
 ﻿using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Settlements;
-using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Domain.Participants;
 

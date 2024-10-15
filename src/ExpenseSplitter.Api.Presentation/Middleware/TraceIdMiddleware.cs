@@ -2,16 +2,9 @@
 
 namespace ExpenseSplitter.Api.Presentation.Middleware;
 
-public class TraceIdMiddleware
+public class TraceIdMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate next;
-
     private const string TraceIdHeader = "traceId";
-
-    public TraceIdMiddleware(RequestDelegate next)
-    {
-        this.next = next;
-    }
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -25,7 +18,7 @@ public class TraceIdMiddleware
         }
     }
 
-    private string GetTraceId(HttpContext context)
+    private static string GetTraceId(HttpContext context)
     {
         context.Request.Headers.TryGetValue(TraceIdHeader, out var traceId);
         return traceId.FirstOrDefault() ?? context.TraceIdentifier;

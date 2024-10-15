@@ -1,5 +1,5 @@
-﻿using ExpenseSplitter.Api.Application.Abstraction.Clock;
-using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Participants;
@@ -16,7 +16,7 @@ public class CreateSettlementCommandHandlerTests
 
     public CreateSettlementCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         Mock<IParticipantRepository> participantRepositoryMock = new();
         Mock<ISettlementUserRepository> settlementUserRepositoryMock = new();
@@ -74,7 +74,7 @@ public class CreateSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.EmptyName.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.EmptyName.Type);
 
         settlementRepositoryMock.Verify(x => x.Add(It.Is<Settlement>(y => y.Name == command.Name)), Times.Never);
     }

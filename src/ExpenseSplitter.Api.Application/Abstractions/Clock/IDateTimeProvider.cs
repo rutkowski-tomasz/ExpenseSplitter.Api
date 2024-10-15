@@ -1,4 +1,4 @@
-namespace ExpenseSplitter.Api.Application.Abstraction.Clock;
+namespace ExpenseSplitter.Api.Application.Abstractions.Clock;
 
 public interface IDateTimeProvider
 {

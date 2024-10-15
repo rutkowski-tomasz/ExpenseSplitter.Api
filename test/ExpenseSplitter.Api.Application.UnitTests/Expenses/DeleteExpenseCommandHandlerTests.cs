@@ -1,12 +1,9 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
-using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Expenses.DeleteExpense;
-using ExpenseSplitter.Api.Application.Settlements.DeleteSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
-using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
@@ -15,19 +12,16 @@ public class DeleteExpenseCommandHandlerTests
     private readonly Fixture fixture;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
-    private readonly Mock<IDateTimeProvider> dateTimeProviderMock;
-    private readonly Mock<IUnitOfWork> unitOfWorkMock;
     private readonly DeleteExpenseCommandHandler handler;
 
     public DeleteExpenseCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
-        dateTimeProviderMock = new Mock<IDateTimeProvider>();
-        unitOfWorkMock = new Mock<IUnitOfWork>();
+        Mock<ISettlementRepository> settlementRepositoryMock = new();
+        Mock<IDateTimeProvider> dateTimeProviderMock = new();
+        Mock<IUnitOfWork> unitOfWorkMock = new();
 
         expenseRepositoryMock
             .Setup(x => x.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
@@ -76,7 +70,7 @@ public class DeleteExpenseCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(ExpenseErrors.NotFound.Type);
+        response.AppError.Type.Should().Be(ExpenseErrors.NotFound.Type);
     }
 
     [Fact]
@@ -91,7 +85,7 @@ public class DeleteExpenseCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 
     [Fact]

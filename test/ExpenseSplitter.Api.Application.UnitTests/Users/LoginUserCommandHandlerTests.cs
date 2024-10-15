@@ -13,7 +13,7 @@ public class LoginUserCommandHandlerTests
 
     public LoginUserCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         jwtServiceMock = new Mock<IJwtService>();
 
         handler = new LoginUserCommandHandler(jwtServiceMock.Object);
@@ -46,6 +46,6 @@ public class LoginUserCommandHandlerTests
         var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(UserErrors.InvalidCredentials);
+        result.AppError.Should().Be(UserErrors.InvalidCredentials);
     }
 }

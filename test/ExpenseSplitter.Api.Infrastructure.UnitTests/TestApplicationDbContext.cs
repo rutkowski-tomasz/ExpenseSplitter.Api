@@ -1,21 +1,15 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.UnitTests;
 
-internal class TestApplicationDbContext : ApplicationDbContext
+internal class TestApplicationDbContext(
+    DbContextOptions<ApplicationDbContext> options,
+    IPublisher publisher,
+    IDateTimeProvider dateTimeProvider
+) : ApplicationDbContext(options, publisher, dateTimeProvider)
 {
-    public TestApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher, IDateTimeProvider dateTimeProvider)
-        : base(options, publisher, dateTimeProvider)
-    {
-    }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-    }
-
     public static ApplicationDbContext Create()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

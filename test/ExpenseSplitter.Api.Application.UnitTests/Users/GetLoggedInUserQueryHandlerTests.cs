@@ -13,7 +13,7 @@ public class GetLoggedInUserQueryHandlerTests
 
     public GetLoggedInUserQueryHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         userRepositoryMock = new Mock<IUserRepository>();
         userContextMock = new Mock<IUserContext>();
 

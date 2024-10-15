@@ -9,12 +9,11 @@ public class ProjectDependenciesTests
     {
         var result = Types.InAssembly(Assemblies.Domain)
             .Should()
-            .NotHaveDependencyOnAny(new string[]
-            {
+            .NotHaveDependencyOnAny(
                 Assemblies.Application.GetName().Name!,
                 Assemblies.Infrastructure.GetName().Name!,
-                Assemblies.Presentation.GetName().Name!,
-            })
+                Assemblies.Presentation.GetName().Name!
+            )
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();
@@ -25,11 +24,10 @@ public class ProjectDependenciesTests
     {
         var result = Types.InAssembly(Assemblies.Application)
             .Should()
-            .NotHaveDependencyOnAny(new string[]
-            {
+            .NotHaveDependencyOnAny(
                 Assemblies.Infrastructure.GetName().Name!,
-                Assemblies.Presentation.GetName().Name!,
-            })
+                Assemblies.Presentation.GetName().Name!
+            )
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();

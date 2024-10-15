@@ -8,7 +8,7 @@ public static class RateLimitingExtensions
     public const string UserRateLimiting = "fixed-by-user";
     public const string IpRateLimiting = "fixed-by-ip";
 
-    public static IServiceCollection AddRateLimiting(this IServiceCollection services)
+    public static void AddRateLimiting(this IServiceCollection services)
     {
         services.AddRateLimiter(options => {
             options.AddPolicy(UserRateLimiting, httpContext => RateLimitPartition.GetFixedWindowLimiter(
@@ -29,7 +29,7 @@ public static class RateLimitingExtensions
                 }
             ));
 
-            options.OnRejected = (context, _) => {
+            options.OnRejected = (context, cancellationToken) => {
                 if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
                 {
                     context.HttpContext.Response.Headers.RetryAfter =
@@ -37,12 +37,10 @@ public static class RateLimitingExtensions
                 }
 
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken: _);
+                context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken);
 
                 return new ValueTask();
             };
         });
-
-        return services;
     }
 }

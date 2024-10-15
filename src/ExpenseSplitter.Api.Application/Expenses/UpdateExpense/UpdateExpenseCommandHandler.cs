@@ -1,59 +1,41 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+﻿using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Application.Exceptions;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
+using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
-using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 
-public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
+public class UpdateExpenseCommandHandler(
+    IExpenseRepository repository,
+    ISettlementUserRepository userRepository,
+    IAllocationRepository allocationRepository,
+    ISettlementRepository settlementRepository,
+    IDateTimeProvider timeProvider,
+    IUnitOfWork unitOfWork
+) : ICommandHandler<UpdateExpenseCommand>
 {
-    private readonly IExpenseRepository expenseRepository;
-    private readonly ISettlementUserRepository settlementUserRepository;
-    private readonly IAllocationRepository allocationRepository;
-    private readonly ISettlementRepository settlementRepository;
-    private readonly IDateTimeProvider dateTimeProvider;
-    private readonly IUnitOfWork unitOfWork;
-
-    public UpdateExpenseCommandHandler(
-        IExpenseRepository expenseRepository,
-        ISettlementUserRepository settlementUserRepository,
-        IAllocationRepository allocationRepository,
-        ISettlementRepository settlementRepository,
-        IDateTimeProvider dateTimeProvider,
-        IUnitOfWork unitOfWork
-    )
-    {
-        this.expenseRepository = expenseRepository;
-        this.settlementUserRepository = settlementUserRepository;
-        this.allocationRepository = allocationRepository;
-        this.settlementRepository = settlementRepository;
-        this.dateTimeProvider = dateTimeProvider;
-        this.unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> Handle(UpdateExpenseCommand request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.Id);
-        var expense = await expenseRepository.GetById(expenseId, cancellationToken);
+        var expense = await repository.GetById(expenseId, cancellationToken);
         if (expense is null)
         {
             return Result.Failure(ExpenseErrors.NotFound);
         }
 
-        if (!await settlementUserRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
+        if (!await userRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
         {
             return Result.Failure(SettlementErrors.Forbidden);
         }
 
         var settlement = await settlementRepository.GetById(expense.SettlementId, cancellationToken);
-        settlement!.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
+        settlement!.SetUpdatedOnUtc(timeProvider.UtcNow);
 
         var updateResult = UpdateExpense(expense, request);
         if (updateResult.IsFailure)
@@ -84,13 +66,13 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         }
         catch (ConcurrencyException)
         {
-            return Result.Failure(ConcurrencyException.ConcurrencyError);
+            return Result.Failure(ConcurrencyException.ConcurrencyAppError);
         }
 
         return Result.Success();
     }
 
-    private Result UpdateExpense(Expense expense, UpdateExpenseCommand request)
+    private static Result UpdateExpense(Expense expense, UpdateExpenseCommand request)
     {
         var setTitleResult = expense.SetTitle(request.Title);
         if (setTitleResult.IsFailure)
@@ -147,7 +129,7 @@ public class UpdateExpenseCommandHandler : ICommandHandler<UpdateExpenseCommand>
         return Result.Success();
     }
 
-    private Result UpdateExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
+    private static Result UpdateExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
     {
         var updates = updateCommand
             .Allocations

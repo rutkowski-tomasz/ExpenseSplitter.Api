@@ -1,13 +1,12 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Exceptions;
 using ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
+using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
-using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
-using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
@@ -17,17 +16,16 @@ public class UpdateExpenseCommandHandlerTests
     private readonly UpdateExpenseCommandHandler handler;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
     private readonly Mock<IAllocationRepository> allocationRepositoryMock;
     private readonly Mock<IUnitOfWork> unitOfWorkMock;
 
     public UpdateExpenseCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
         allocationRepositoryMock = new Mock<IAllocationRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
+        Mock<ISettlementRepository> settlementRepositoryMock = new();
         var dateTimeProviderMock = new Mock<IDateTimeProvider>();
         unitOfWorkMock = new Mock<IUnitOfWork>();
 
@@ -82,7 +80,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ExpenseErrors.NotFound);
+        result.AppError.Should().Be(ExpenseErrors.NotFound);
     }
 
     [Fact]
@@ -99,7 +97,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(SettlementErrors.Forbidden);
+        result.AppError.Should().Be(SettlementErrors.Forbidden);
     }
 
     [Fact]
@@ -113,7 +111,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
+        result.AppError.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
     }
 
     [Fact]
@@ -130,7 +128,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
+        result.AppError.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
 
     [Fact]
@@ -144,7 +142,7 @@ public class UpdateExpenseCommandHandlerTests
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
                 new (allocation1.Id.Value, allocation1.ParticipantId.Value, 1M),
-                new (allocation2.Id.Value, allocation2.ParticipantId.Value, 3M),
+                new (allocation2.Id.Value, allocation2.ParticipantId.Value, 3M)
             })
             .Create();
 
@@ -170,7 +168,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
+        result.AppError.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
     }
 
     [Fact]
@@ -188,7 +186,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
+        result.AppError.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
     
     [Fact]
@@ -202,7 +200,7 @@ public class UpdateExpenseCommandHandlerTests
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
                 new (allocation1.Id.Value, allocation1.ParticipantId.Value, -1M),
-                new (allocation2.Id.Value, allocation2.ParticipantId.Value, 3M),
+                new (allocation2.Id.Value, allocation2.ParticipantId.Value, 3M)
             })
             .Create();
 
@@ -213,7 +211,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
+        result.AppError.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
     
     [Fact]
@@ -226,7 +224,7 @@ public class UpdateExpenseCommandHandlerTests
             .Build<UpdateExpenseCommand>()
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
-                new (allocation2.Id.Value, allocation2.ParticipantId.Value, allocation2.Amount.Value),
+                new (allocation2.Id.Value, allocation2.ParticipantId.Value, allocation2.Amount.Value)
             })
             .Create();
 
@@ -251,6 +249,6 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ConcurrencyException.ConcurrencyError.Type);
+        result.AppError.Type.Should().Be(ConcurrencyException.ConcurrencyAppError.Type);
     }
 }

@@ -4,7 +4,7 @@ namespace ExpenseSplitter.Api.Application.Exceptions;
 
 public sealed class ConcurrencyException : Exception
 {
-    public static readonly Error ConcurrencyError = new(
+    public static readonly AppError ConcurrencyAppError = new(
         ErrorType.ServerInternalError,
         "Concurrency occurred at database level, please retry."
     );

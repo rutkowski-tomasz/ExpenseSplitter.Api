@@ -1,4 +1,4 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Allocations;
@@ -19,7 +19,7 @@ public class CreateExpenseCommandHandlerTests
 
     public CreateExpenseCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var expenseRepositoryMock = new Mock<IExpenseRepository>();
         var allocationRepositoryMock = new Mock<IAllocationRepository>();
@@ -82,7 +82,7 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(SettlementErrors.Forbidden);
+        result.AppError.Should().Be(SettlementErrors.Forbidden);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ExpenseErrors.EmptyTitle);
+        result.AppError.Should().Be(ExpenseErrors.EmptyTitle);
     }
     
     
@@ -133,6 +133,6 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ParticipantErrors.NotFound);
+        result.AppError.Should().Be(ParticipantErrors.NotFound);
     }
 }

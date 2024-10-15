@@ -11,14 +11,13 @@ public class GetExpenseQueryHandlerTests
     private readonly GetExpenseQueryHandler handler;
     private readonly Fixture fixture;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
-    private readonly Mock<IAllocationRepository> allocationRepository;
     private readonly Mock<ISettlementUserRepository> settlementUserRepository;
 
     public GetExpenseQueryHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
-        allocationRepository = new Mock<IAllocationRepository>();
+        Mock<IAllocationRepository> allocationRepository = new();
         settlementUserRepository = new Mock<ISettlementUserRepository>();
 
         expenseRepositoryMock
@@ -61,7 +60,7 @@ public class GetExpenseQueryHandlerTests
         var result = await handler.Handle(query, default);
         
         result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ExpenseErrors.NotFound.Type);
+        result.AppError.Type.Should().Be(ExpenseErrors.NotFound.Type);
     }
 
     [Fact]
@@ -75,6 +74,6 @@ public class GetExpenseQueryHandlerTests
         var result = await handler.Handle(query, default);
         
         result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
+        result.AppError.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 }

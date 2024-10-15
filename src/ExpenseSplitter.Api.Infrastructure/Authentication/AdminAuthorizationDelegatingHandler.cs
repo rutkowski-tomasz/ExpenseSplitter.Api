@@ -6,14 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 
-public sealed class AdminAuthorizationDelegatingHandler : DelegatingHandler
+public sealed class AdminAuthorizationDelegatingHandler(IOptions<KeycloakOptions> keycloakOptions) : DelegatingHandler
 {
-    private readonly KeycloakOptions keycloakOptions;
-
-    public AdminAuthorizationDelegatingHandler(IOptions<KeycloakOptions> keycloakOptions)
-    {
-        this.keycloakOptions = keycloakOptions.Value;
-    }
+    private readonly KeycloakOptions keycloakOptions = keycloakOptions.Value;
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
@@ -44,10 +39,10 @@ public sealed class AdminAuthorizationDelegatingHandler : DelegatingHandler
 
         using var authorizationRequest = new HttpRequestMessage(
             HttpMethod.Post,
-            new Uri(keycloakOptions.TokenUrl))
-        {
-            Content = authorizationRequestContent
-        };
+            new Uri($"{keycloakOptions.BaseUrl}/{keycloakOptions.TokenPath}")
+        );
+
+        authorizationRequest.Content = authorizationRequestContent;
 
         var authorizationResponse = await base.SendAsync(authorizationRequest, cancellationToken);
 

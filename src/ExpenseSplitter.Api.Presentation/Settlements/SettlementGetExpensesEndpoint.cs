@@ -20,8 +20,8 @@ public class SettlementGetExpensesEndpoint() : Endpoint<Guid, GetExpensesForSett
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new(request),
-    result => new(
+    request => new GetExpensesForSettlementQuery(request),
+    result => new GetExpensesForSettlementResponse(
         result.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(
             expense.Id,
             expense.Title,

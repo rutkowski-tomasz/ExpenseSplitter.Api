@@ -13,5 +13,5 @@ public class DeleteExpenseEndpoint() : Endpoint<DeleteExpenseRequest, DeleteExpe
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new (request.ExpenseId)
+    request => new DeleteExpenseCommand(request.ExpenseId)
 );

@@ -1,7 +1,7 @@
 ﻿using ExpenseSplitter.Api.Domain.Allocations;
+using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
-using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Domain.UnitTests.Allocations;
 

@@ -4,21 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Idempotency;
 
-internal sealed class IdempotencyService : IIdempotencyService
+internal sealed class IdempotencyService(
+    ApplicationDbContext context,
+    IHttpContextAccessor accessor
+) : IIdempotencyService
 {
     private const string IdempotencyKeyHeaderName = "X-Idempotency-Key";
-
-    private readonly ApplicationDbContext context;
-    private readonly IHttpContextAccessor contextAccessor;
-
-    public IdempotencyService(
-        ApplicationDbContext context,
-        IHttpContextAccessor contextAccessor
-    )
-    {
-        this.context = context;
-        this.contextAccessor = contextAccessor;
-    }
 
     public bool IsIdempotencyKeyInHeaders()
     {
@@ -47,11 +38,11 @@ internal sealed class IdempotencyService : IIdempotencyService
 
     public async Task SaveIdempotencyKey(Guid parsedIdempotencyKey, string name, CancellationToken cancellationToken)
     {
-        var idempotentRequest = new IdempotentRequest()
+        var idempotentRequest = new IdempotentRequest
         {
             Id = parsedIdempotencyKey,
             Name = name,
-            CreatedOnUtc = DateTime.UtcNow,
+            CreatedOnUtc = DateTime.UtcNow
         };
 
         await context.AddAsync(idempotentRequest, cancellationToken);
@@ -61,7 +52,7 @@ internal sealed class IdempotencyService : IIdempotencyService
 
     private string? GetIdempotencyKeyFromHeaders()
     {
-        var headers = contextAccessor.HttpContext?.Request.Headers;
+        var headers = accessor.HttpContext?.Request.Headers;
         var idempotencyKey = headers![IdempotencyKeyHeaderName].FirstOrDefault();
         return idempotencyKey;
     }

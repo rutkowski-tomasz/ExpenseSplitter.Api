@@ -1,6 +1,6 @@
-using ExpenseSplitter.Api.Application.Abstraction.Clock;
+using ExpenseSplitter.Api.Application.Abstractions.Clock;
 
-namespace ExpenseSplitter.Api.Infrastructure.Configurations;
+namespace ExpenseSplitter.Api.Infrastructure.Clock;
 
 public class DateTimeProvider : IDateTimeProvider
 {

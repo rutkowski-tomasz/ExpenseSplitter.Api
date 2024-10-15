@@ -15,7 +15,7 @@ public class ClaimParticipantCommandHandlerTests
 
     public ClaimParticipantCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         participantRepositoryMock = new Mock<IParticipantRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -75,7 +75,7 @@ public class ClaimParticipantCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.Forbidden.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class ClaimParticipantCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(ParticipantErrors.NotFound.Type);
+        response.AppError.Type.Should().Be(ParticipantErrors.NotFound.Type);
     }
 
     [Fact]

@@ -90,6 +90,6 @@ Authorization: Bearer {{login.response.body.accessToken}}
 
 ###
 
-# @name reimbrusement
-GET {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}/reimbrusement
+# @name reimbursement
+GET {{baseUrl}}/api/v1/settlements/{{createSettlement.response.body.$}}/reimbursement
 Authorization: Bearer {{login.response.body.accessToken}}

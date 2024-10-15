@@ -1,5 +1,4 @@
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
-using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Application.Settlements.JoinSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -16,7 +15,7 @@ public class JoinSettlementCommandHandlerTests
 
     public JoinSettlementCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         var userContextMock = new Mock<IUserContext>();
@@ -64,7 +63,7 @@ public class JoinSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.NotFound.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.NotFound.Type);
     }
 
     [Fact]
@@ -79,7 +78,7 @@ public class JoinSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementUserErrors.AlreadyJoined.Type);
+        response.AppError.Type.Should().Be(SettlementUserErrors.AlreadyJoined.Type);
     }
 
     [Fact]

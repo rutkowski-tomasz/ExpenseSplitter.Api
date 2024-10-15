@@ -12,5 +12,5 @@ public enum ErrorType
     Conflict,
     BadGateway,
     Unauthorized,
-    NotModified,
+    NotModified
 }

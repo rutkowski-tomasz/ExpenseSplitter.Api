@@ -36,7 +36,7 @@ To let you quickly understand the domain and relationships of the project entiti
 | 🟦 GET | /settlements/{settlementId}/expenses | |
 | 🟨 PUT | /settlements/join | Join using invite code |
 | 🟨 PUT | /settlements/{settlementId}/leave | |
-| 🟦 GET | /settlements/{settlementId}/reimbrusement | Balances and suggested reimbrusements |
+| 🟦 GET | /settlements/{settlementId}/reimbursement | Balances and suggested reimbursements |
 | 🟪 PATCH | /settlements/{settlementId}/participants/{participantId}/claim | |
 | 🟩 POST | /expenses | |
 | 🟦 GET | /expenses/{expenseId} | |

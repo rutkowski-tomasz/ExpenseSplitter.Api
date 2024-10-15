@@ -4,19 +4,11 @@ using BadHttpRequestException = Microsoft.AspNetCore.Http.BadHttpRequestExceptio
 
 namespace ExpenseSplitter.Api.Presentation.Middleware;
 
-public class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware(
+    RequestDelegate next,
+    ILogger<ExceptionHandlingMiddleware> logger
+)
 {
-    private readonly RequestDelegate next;
-    private readonly ILogger<ExceptionHandlingMiddleware> logger;
-
-    public ExceptionHandlingMiddleware(
-        RequestDelegate next,
-        ILogger<ExceptionHandlingMiddleware> logger)
-    {
-        this.next = next;
-        this.logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -34,7 +26,7 @@ public class ExceptionHandlingMiddleware
                 Status = exceptionDetails.Status,
                 Type = exceptionDetails.Type,
                 Title = exceptionDetails.Title,
-                Detail = exceptionDetails.Detail,
+                Detail = exceptionDetails.Detail
             };
 
             if (exceptionDetails.Errors is not null)
@@ -73,11 +65,11 @@ public class ExceptionHandlingMiddleware
                 "Server error",
                 "An unexpected error has occurred",
                 null
-            ),
+            )
         };
     }
 
-    internal sealed record ExceptionDetails(
+    private sealed record ExceptionDetails(
         int Status,
         string Type,
         string Title,

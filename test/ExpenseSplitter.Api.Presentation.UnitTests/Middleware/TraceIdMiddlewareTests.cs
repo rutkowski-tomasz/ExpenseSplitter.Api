@@ -1,6 +1,5 @@
 ﻿using ExpenseSplitter.Api.Presentation.Middleware;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Api.Presentation.UnitTests.Middleware;
 
@@ -11,7 +10,6 @@ public class TraceIdMiddlewareTests
     public TraceIdMiddlewareTests()
     {
         var nextMock = new Mock<RequestDelegate>();
-        var loggerMock = new Mock<ILogger<TraceIdMiddleware>>();
         middleware = new TraceIdMiddleware(nextMock.Object);
     }
 

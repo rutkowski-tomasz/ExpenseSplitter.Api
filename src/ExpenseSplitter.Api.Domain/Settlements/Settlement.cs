@@ -36,7 +36,7 @@ public sealed class Settlement : Entity<SettlementId>
         
         var settlement = new Settlement(SettlementId.New(), name, inviteCode, creatorUserId, createdOnUtc);
 
-        settlement.RaiseDomainEvent(new SettlementCreatedDomainEvent(settlement.Id));
+        settlement.AddOnSaveDomainEvent(new SettlementCreatedDomainEvent(settlement.Id));
         return settlement;
     }
 

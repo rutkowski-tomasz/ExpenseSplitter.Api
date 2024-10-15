@@ -14,7 +14,7 @@ public class RegisterUserCommandHandlerTests
 
     public RegisterUserCommandHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         authenticationServiceMock = new Mock<IAuthenticationService>();
         var userRepositoryMock = new Mock<IUserRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -62,6 +62,6 @@ public class RegisterUserCommandHandlerTests
         var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(UserErrors.EmptyNickname);
+        result.AppError.Should().Be(UserErrors.EmptyNickname);
     }
 }

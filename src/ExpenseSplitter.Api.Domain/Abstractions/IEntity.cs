@@ -4,7 +4,7 @@ public interface IEntity
 {
     DateTime LastModified { get; set; }
 
-    IReadOnlyList<IDomainEvent> GetDomainEvents();
+    IReadOnlyList<IDomainEvent> GetOnSaveDomainEvents();
 
-    void ClearDomainEvents();
+    void ClearOnSaveDomainEvents();
 }

@@ -6,9 +6,7 @@ namespace ExpenseSplitter.Api.Presentation.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddEndpoints(
-        this IServiceCollection services,
-        Assembly assembly)
+    public static void AddEndpoints(this IServiceCollection services, Assembly assembly)
     {
         var serviceDescriptors = assembly
             .DefinedTypes
@@ -18,7 +16,5 @@ public static class ServiceCollectionExtensions
             .ToArray();
 
         services.TryAddEnumerable(serviceDescriptors);
-
-        return services;
     }
 }

@@ -61,7 +61,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         });
     }
 
-    private void ConfigureIHttpContextAccessor(IServiceCollection services)
+    private static void ConfigureIHttpContextAccessor(IServiceCollection services)
     {
         var httpContextAccessorDescriptor = services
             .Single(s => s.ServiceType == typeof(IHttpContextAccessor));
@@ -73,7 +73,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
-            new(ClaimTypes.NameIdentifier, TestUserId),
+            new(ClaimTypes.NameIdentifier, TestUserId)
         }));
 
         context.User = claimsPrincipal;

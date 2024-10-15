@@ -7,26 +7,20 @@ using Microsoft.Extensions.Options;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 
-internal sealed class JwtService : IJwtService
+internal sealed class JwtService(HttpClient client, IOptions<KeycloakOptions> keycloakOptions)
+    : IJwtService
 {
-    private static readonly Error AuthenticationFailed = new(
+    private static readonly AppError AuthenticationFailed = new(
         ErrorType.Unauthorized,
         "Invalid email or password"
     );
 
-    private static readonly Error BadGateway = new(
+    private static readonly AppError BadGateway = new(
         ErrorType.BadGateway,
         "Can't communicate with identity provider"
     );
 
-    private readonly HttpClient httpClient;
-    private readonly KeycloakOptions keycloakOptions;
-
-    public JwtService(HttpClient httpClient, IOptions<KeycloakOptions> keycloakOptions)
-    {
-        this.httpClient = httpClient;
-        this.keycloakOptions = keycloakOptions.Value;
-    }
+    private readonly KeycloakOptions keycloakOptions = keycloakOptions.Value;
 
     public async Task<Result<string>> GetAccessTokenAsync(
         string email,
@@ -47,8 +41,8 @@ internal sealed class JwtService : IJwtService
             };
 
             using var authorizationRequestContent = new FormUrlEncodedContent(authRequestParameters);
-
-            var response = await httpClient.PostAsync("", authorizationRequestContent, cancellationToken);
+                
+            var response = await client.PostAsync(keycloakOptions.TokenPath, authorizationRequestContent, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -59,12 +53,7 @@ internal sealed class JwtService : IJwtService
 
             var authorizationToken = await response.Content.ReadFromJsonAsync<AuthorizationToken>(cancellationToken: cancellationToken);
 
-            if (authorizationToken is null)
-            {
-                return Result.Failure<string>(AuthenticationFailed);
-            }
-
-            return authorizationToken.AccessToken;
+            return authorizationToken?.AccessToken ?? Result.Failure<string>(AuthenticationFailed);
         }
         catch (HttpRequestException)
         {

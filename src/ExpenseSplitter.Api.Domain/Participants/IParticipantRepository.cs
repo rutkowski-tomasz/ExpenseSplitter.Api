@@ -8,5 +8,5 @@ public interface IParticipantRepository
     void Remove(Participant participant);
     Task<bool> IsParticipantInSettlement(SettlementId settlementId, ParticipantId participantId, CancellationToken cancellationToken);
     Task<bool> AreAllParticipantsInSettlement(SettlementId settlementId, IEnumerable<ParticipantId> participantIds, CancellationToken cancellationToken);
-    Task<IEnumerable<Participant>> GetAllBySettlementId(SettlementId settlementId, CancellationToken cancellationToken);
+    Task<List<Participant>> GetAllBySettlementId(SettlementId settlementId, CancellationToken cancellationToken);
 }

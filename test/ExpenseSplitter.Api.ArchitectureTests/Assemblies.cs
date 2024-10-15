@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace ExpenseSplitter.Api.ArchitectureTests;
 
-public class Assemblies
+public abstract class Assemblies
 {
     public static Assembly Domain => typeof(Entity<>).Assembly;
 

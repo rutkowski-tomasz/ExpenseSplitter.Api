@@ -4,16 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 
-internal sealed class ParticipantRepository : Repository<Participant, ParticipantId>, IParticipantRepository
+internal sealed class ParticipantRepository(ApplicationDbContext dbContext)
+    : Repository<Participant, ParticipantId>(dbContext), IParticipantRepository
 {
-
-    public ParticipantRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public Task<bool> IsParticipantInSettlement(SettlementId settlementId, ParticipantId participantId, CancellationToken cancellationToken)
     {
-    }
-
-    public async Task<bool> IsParticipantInSettlement(SettlementId settlementId, ParticipantId participantId, CancellationToken cancellationToken)
-    {
-        return await DbContext
+        return DbContext
             .Set<Participant>()
             .AnyAsync(x => x.SettlementId == settlementId && x.Id == participantId, cancellationToken);
     }
@@ -29,9 +25,9 @@ internal sealed class ParticipantRepository : Repository<Participant, Participan
         return participantIds.All(x => participants.Contains(x));
     }
 
-    public async Task<IEnumerable<Participant>> GetAllBySettlementId(SettlementId settlementId, CancellationToken cancellationToken)
+    public Task<List<Participant>> GetAllBySettlementId(SettlementId settlementId, CancellationToken cancellationToken)
     {
-        return await DbContext
+        return DbContext
             .Set<Participant>()
             .Where(x => x.SettlementId == settlementId)
             .ToListAsync(cancellationToken);

@@ -1,7 +1,7 @@
 ﻿using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
-using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Domain.Allocations;
 
@@ -25,7 +25,7 @@ public sealed class Allocation : Entity<AllocationId>
 
     public Amount Amount { get; private set; }
 
-    public Expense? Expense { get; set; } = null!;
+    public Expense? Expense { get; init; }
 
     public static Allocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
     {

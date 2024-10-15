@@ -3,23 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 
-internal abstract class Repository<TEntity, TEntityId>
+internal abstract class Repository<TEntity, TEntityId>(ApplicationDbContext dbContext)
     where TEntity : Entity<TEntityId>
     where TEntityId : class
 {
-    protected readonly ApplicationDbContext DbContext;
+    protected readonly ApplicationDbContext DbContext = dbContext;
 
-    protected Repository(ApplicationDbContext dbContext)
-    {
-        DbContext = dbContext;
-    }
-
-    public async Task<TEntity?> GetById(
+    public Task<TEntity?> GetById(
         TEntityId id,
         CancellationToken cancellationToken
     )
     {
-        return await DbContext
+        return DbContext
             .Set<TEntity>()
             .FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
     }

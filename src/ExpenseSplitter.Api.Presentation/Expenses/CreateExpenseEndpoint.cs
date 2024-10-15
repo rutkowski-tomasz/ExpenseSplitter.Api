@@ -26,7 +26,7 @@ public class CreateExpenseEndpoint() : Endpoint<CreateExpenseRequest, CreateExpe
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
     ),
-    request => new (
+    request => new CreateExpenseCommand(
         request.Body.Name,
         request.Body.PaymentDate,
         request.Body.SettlementId,

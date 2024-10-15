@@ -1,12 +1,11 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Etag;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 using ExpenseSplitter.Api.Domain.Allocations;
+using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
-using ExpenseSplitter.Api.Domain.Shared;
-using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 public class GetSettlementQueryHandlerTests
@@ -16,13 +15,14 @@ public class GetSettlementQueryHandlerTests
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
     private readonly GetSettlementQueryHandler handler;
+    private readonly Mock<IParticipantRepository> participantRepositoryMock;
 
     public GetSettlementQueryHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementRepositoryMock = new Mock<ISettlementRepository>();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        var participantRepositoryMock = new Mock<IParticipantRepository>();
+        participantRepositoryMock = new Mock<IParticipantRepository>();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
         var etagServiceMock = new Mock<IEtagService>();
 
@@ -48,6 +48,10 @@ public class GetSettlementQueryHandlerTests
             .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(fixture.Create<SettlementUser>());
 
+        participantRepositoryMock
+            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fixture.CreateMany<Participant>().ToList());
+
         var query = fixture.Create<GetSettlementQuery>();
 
         var response = await handler.Handle(query, default);
@@ -68,7 +72,7 @@ public class GetSettlementQueryHandlerTests
         var response = await handler.Handle(query, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.NotFound.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.NotFound.Type);
     }
 
     [Fact]
@@ -88,9 +92,13 @@ public class GetSettlementQueryHandlerTests
             .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(settlementUser);
 
+        participantRepositoryMock
+            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(participants);
+        
         expenseRepositoryMock
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Expense>()
+            .ReturnsAsync(new List<Expense>
             {
                 GenerateExpense(alice.Id, 10, participants, new decimal[] { 8, 2 }),
                 GenerateExpense(alice.Id, 10, participants, new decimal[] { 7, 3 }),
@@ -107,11 +115,11 @@ public class GetSettlementQueryHandlerTests
         response.Value.YourCost.Should().Be(21);
     }
 
-    private Expense GenerateExpense(
+    private static Expense GenerateExpense(
         ParticipantId payingParticipantId,
         decimal value,
-        List<Participant> participants,
-        decimal[] values
+        IReadOnlyList<Participant> participants,
+        IReadOnlyList<decimal> values
     )
     {
         var expenseResult = Expense.Create(
@@ -124,9 +132,9 @@ public class GetSettlementQueryHandlerTests
 
         var expense = expenseResult.Value;
 
-        participants.Should().HaveCount(values.Length);
+        participants.Should().HaveCount(values.Count);
 
-        expense.Allocations = new List<Allocation>();
+        expense.Allocations = [];
         for (var i = 0; i < participants.Count; i += 1)
         {
             var participant = participants[i];

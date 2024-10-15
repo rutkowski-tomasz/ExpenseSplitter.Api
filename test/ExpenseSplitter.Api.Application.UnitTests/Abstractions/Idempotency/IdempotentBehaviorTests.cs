@@ -29,9 +29,7 @@ public class IdempotentBehaviorTests
         );
     }
 
-    private class TestCommand : IBaseCommand
-    {
-    }
+    private class TestCommand : IBaseCommand;
 
     [Fact]
     public async Task Handle_ShouldReturnNextValue_WhenIdempotencyKeyIsNotHeaders()
@@ -61,7 +59,7 @@ public class IdempotentBehaviorTests
         var result = await behavior.Handle(new TestCommand(), next, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.PreConditionFailed);
+        result.AppError.Type.Should().Be(ErrorType.PreConditionFailed);
     }
     
     [Fact]
@@ -76,7 +74,7 @@ public class IdempotentBehaviorTests
         var result = await behavior.Handle(new TestCommand(), next, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
+        result.AppError.Type.Should().Be(ErrorType.Conflict);
     }
     
     [Fact]

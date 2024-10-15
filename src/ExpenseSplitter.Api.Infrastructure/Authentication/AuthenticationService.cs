@@ -3,28 +3,24 @@ using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Infrastructure.Authentication.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 
-internal sealed class AuthenticationService : IAuthenticationService
+internal sealed class AuthenticationService(
+    HttpClient client,
+    ILogger<AuthenticationService> logger,
+    IOptions<KeycloakOptions> keycloakOptions
+) : IAuthenticationService
 {
-    private static readonly Error RegistrationError = new(
+    private static readonly AppError RegistrationAppError = new(
         ErrorType.BadRequest,
         "An error occurred during user registration"
     );
 
     private const string PasswordCredentialType = "password";
 
-    private readonly HttpClient httpClient;
-    private readonly ILogger<AuthenticationService> logger;
-
-
-    public AuthenticationService(HttpClient httpClient, ILogger<AuthenticationService> logger)
-    {
-        this.httpClient = httpClient;
-        this.logger = logger;
-
-    }
+    private readonly KeycloakOptions keycloakOptions = keycloakOptions.Value;
 
     public async Task<Result<string>> RegisterAsync(
         string email,
@@ -34,33 +30,35 @@ internal sealed class AuthenticationService : IAuthenticationService
     {
         var userRepresentationModel = UserRepresentationModel.Create(email);
 
-        userRepresentationModel.Credentials = new CredentialRepresentationModel[]
-        {
-            new()
+        userRepresentationModel.Credentials =
+        [
+            new CredentialRepresentationModel
             {
                 Value = password,
                 Temporary = false,
                 Type = PasswordCredentialType
             }
-        };
+        ];
 
-        var response = await httpClient.PostAsJsonAsync(
-            "users",
+        var response = await client.PostAsJsonAsync(
+            keycloakOptions.AdminUsersPath,
             userRepresentationModel,
-            cancellationToken);
+            cancellationToken
+        );
 
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            logger.LogWarning(
-                "Keycloak returned non-success response {StatusCode} {Content}",
-                response.StatusCode,
-                await response.Content.ReadAsStringAsync(cancellationToken)
-            );
-
-            return Result.Failure<string>(RegistrationError);
+            return ExtractIdentityIdFromLocationHeader(response);
         }
 
-        return ExtractIdentityIdFromLocationHeader(response);
+        logger.LogWarning(
+            "Keycloak returned non-success response {StatusCode} {Content}",
+            response.StatusCode,
+            await response.Content.ReadAsStringAsync(cancellationToken)
+        );
+
+        return Result.Failure<string>(RegistrationAppError);
+
     }
 
     private static string ExtractIdentityIdFromLocationHeader(

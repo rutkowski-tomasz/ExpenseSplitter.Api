@@ -10,9 +10,9 @@ public class EtagService(
     IHttpContextAccessor httpContextAccessor
 ) : IEtagService
 {
-    public const string ETagHeader = "ETag";
-    public const string IfMatchHeader = "If-Match";
-    public const string IfNoneMatchHeader = "If-None-Match";
+    private const string ETagHeader = "ETag";
+    private const string IfMatchHeader = "If-Match";
+    private const string IfNoneMatchHeader = "If-None-Match";
 
     public bool HasIfMatchConflict(object value)
     {
@@ -48,7 +48,7 @@ public class EtagService(
         httpContextAccessor.HttpContext!.Response.Headers[ETagHeader] = etag;
     }
 
-    private string GenerateEtag(object value)
+    private static string GenerateEtag(object value)
     {
         var serialized = JsonSerializer.Serialize(value);
         var bytes = Encoding.UTF8.GetBytes(serialized);

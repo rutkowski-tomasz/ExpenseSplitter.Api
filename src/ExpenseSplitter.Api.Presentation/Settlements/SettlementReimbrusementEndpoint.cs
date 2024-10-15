@@ -1,41 +1,41 @@
-using ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
+using ExpenseSplitter.Api.Application.Settlements.CalculateReimbursement;
 using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Settlements;
 
-public record CalculateReimbrusementRequest([FromRoute] Guid SettlementId);
+public record CalculateReimbursementRequest([FromRoute] Guid SettlementId);
 
-public record SettlementReimbrusementResponse(
-    IEnumerable<SettlementReimbrusementResponseBalance> Balances,
-    IEnumerable<SettlementReimbrusementResponseSuggestedReimbrusement> SuggestedReimbrusements
+public record SettlementReimbursementResponse(
+    IEnumerable<SettlementReimbursementResponseBalance> Balances,
+    IEnumerable<SettlementReimbursementResponseSuggestedReimbursement> SuggestedReimbursements
 );
 
-public record SettlementReimbrusementResponseBalance(
+public record SettlementReimbursementResponseBalance(
     Guid ParticipantId,
     decimal Value
 );
 
-public record SettlementReimbrusementResponseSuggestedReimbrusement(
+public record SettlementReimbursementResponseSuggestedReimbursement(
     Guid FromParticipantId,
     Guid ToParticipantId,
     decimal Value
 );
 
-public class SettlementReimbrusementEndpoint() : Endpoint<CalculateReimbrusementRequest, CalculateReimbrusementQuery, CalculateReimbrusementQueryResult, SettlementReimbrusementResponse>(
-    Endpoints.Settlements.Get("{settlementId}/reimbrusement").ProducesErrorCodes(
+public class SettlementReimbursementEndpoint() : Endpoint<CalculateReimbursementRequest, CalculateReimbursementQuery, CalculateReimbursementQueryResult, SettlementReimbursementResponse>(
+    Endpoints.Settlements.Get("{settlementId}/reimbursement").ProducesErrorCodes(
         StatusCodes.Status403Forbidden
     ),
-    request => new (request.SettlementId),
-    result => new(
-        result.Balances.Select(balance => new SettlementReimbrusementResponseBalance(
+    request => new CalculateReimbursementQuery(request.SettlementId),
+    result => new SettlementReimbursementResponse(
+        result.Balances.Select(balance => new SettlementReimbursementResponseBalance(
             balance.ParticipantId,
             balance.Value
         )),
-        result.SuggestedReimbrusements.Select(suggestedReimbrusement => new SettlementReimbrusementResponseSuggestedReimbrusement(
-            suggestedReimbrusement.FromParticipantId,
-            suggestedReimbrusement.ToParticipantId,
-            suggestedReimbrusement.Value
+        result.SuggestedReimbursements.Select(suggestedReimbursement => new SettlementReimbursementResponseSuggestedReimbursement(
+            suggestedReimbursement.FromParticipantId,
+            suggestedReimbursement.ToParticipantId,
+            suggestedReimbursement.Value
         ))
     )
 );

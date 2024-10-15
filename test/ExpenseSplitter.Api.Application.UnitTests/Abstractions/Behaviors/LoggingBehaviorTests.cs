@@ -1,5 +1,4 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Behaviors;
-using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Settlements;
 using MediatR;
@@ -7,13 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Abstractions.Behaviors;
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
 public class LoggingBehaviorTests
 {
     private readonly Mock<ILogger<TestCommand>> loggerMock;
     private readonly LoggingBehavior<TestCommand, Result<int>> loggingBehavior;
     private readonly TestCommand request;
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public record TestCommand : IRequest;
 
     public LoggingBehaviorTests()
@@ -23,7 +22,7 @@ public class LoggingBehaviorTests
             loggerMock.Object
         );
 
-        request = new Fixture().Create<TestCommand>();
+        request = new TestCommand();
     }
 
     [Fact]
@@ -39,7 +38,7 @@ public class LoggingBehaviorTests
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Processing request {nameof(TestCommand)}")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Processing request {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
@@ -47,7 +46,7 @@ public class LoggingBehaviorTests
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Request success {nameof(TestCommand)}")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Request success {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
@@ -67,7 +66,7 @@ public class LoggingBehaviorTests
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Information,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Processing request {nameof(TestCommand)}")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Processing request {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);
@@ -75,7 +74,7 @@ public class LoggingBehaviorTests
         loggerMock.Verify(logger => logger.Log(
             LogLevel.Error,
             It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Request failure {nameof(TestCommand)}")),
+            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Request failure {nameof(TestCommand)}")),
             It.IsAny<Exception>(),
             It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
         Times.Once);

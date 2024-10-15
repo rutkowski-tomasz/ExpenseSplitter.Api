@@ -1,25 +1,24 @@
-using System.Runtime.InteropServices;
-using ExpenseSplitter.Api.Application.Settlements.CalculateReimbrusement;
+using ExpenseSplitter.Api.Application.Settlements.CalculateReimbursement;
 using ExpenseSplitter.Api.Domain.Allocations;
+using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
-using ExpenseSplitter.Api.Domain.Shared;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
-public class CalculateReimbrusementQueryHandlerTests
+public class CalculateReimbursementQueryHandlerTests
 {
-    private readonly CalculateReimbrusementQueryHandler handler;
+    private readonly CalculateReimbursementQueryHandler handler;
     private readonly Fixture fixture;
     private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
     private readonly Mock<IExpenseRepository> expenseRepositoryMock;
     private readonly Mock<IParticipantRepository> participantRepositoryMock;
 
-    public CalculateReimbrusementQueryHandlerTests()
+    public CalculateReimbursementQueryHandlerTests()
     {
-        fixture = CustomFixutre.Create();
+        fixture = CustomFixture.Create();
         settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
         expenseRepositoryMock = new Mock<IExpenseRepository>();
         participantRepositoryMock = new Mock<IParticipantRepository>();
@@ -28,7 +27,11 @@ public class CalculateReimbrusementQueryHandlerTests
             .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        handler = new CalculateReimbrusementQueryHandler(
+        participantRepositoryMock
+            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        handler = new CalculateReimbursementQueryHandler(
             settlementUserRepositoryMock.Object,
             expenseRepositoryMock.Object,
             participantRepositoryMock.Object
@@ -38,7 +41,7 @@ public class CalculateReimbrusementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
-        var query = fixture.Create<CalculateReimbrusementQuery>();
+        var query = fixture.Create<CalculateReimbursementQuery>();
 
         var result = await handler.Handle(query, default);
 
@@ -48,7 +51,7 @@ public class CalculateReimbrusementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserCantAccessGivenSettlement()
     {
-        var query = fixture.Create<CalculateReimbrusementQuery>();
+        var query = fixture.Create<CalculateReimbursementQuery>();
 
         settlementUserRepositoryMock
             .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
@@ -60,7 +63,7 @@ public class CalculateReimbrusementQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldHandleUnbalancedReimbrusement()
+    public async Task Handle_ShouldHandleUnbalancedReimbursement()
     {
         var alice = Participant.Create(SettlementId.New(), "Alice").Value;
         var bob = Participant.Create(SettlementId.New(), "Bob").Value;
@@ -81,20 +84,20 @@ public class CalculateReimbrusementQueryHandlerTests
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expenses);
         
-        var query = fixture.Create<CalculateReimbrusementQuery>();
+        var query = fixture.Create<CalculateReimbursementQuery>();
 
         var result = await handler.Handle(query, default);
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Balances.First().Should().BeEquivalentTo(new CalculateReimbrusementQueryResultBalance(
+        result.Value.Balances.First().Should().BeEquivalentTo(new CalculateReimbursementQueryResultBalance(
             alice.Id.Value,
             -1m
         ));
-        result.Value.Balances.Skip(1).First().Should().BeEquivalentTo(new CalculateReimbrusementQueryResultBalance(
+        result.Value.Balances.Skip(1).First().Should().BeEquivalentTo(new CalculateReimbursementQueryResultBalance(
             bob.Id.Value,
             1m
         ));
-        result.Value.SuggestedReimbrusements.First().Should().BeEquivalentTo(new CalculateReimbrusementQueryResultSuggestedReimbrusement(
+        result.Value.SuggestedReimbursements.First().Should().BeEquivalentTo(new CalculateReimbursementQueryResultSuggestedReimbursement(
             alice.Id.Value,
             bob.Id.Value,
             1m
@@ -102,7 +105,7 @@ public class CalculateReimbrusementQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldHandleUnbalancedReimbrusementForThreeParticipants()
+    public async Task Handle_ShouldHandleUnbalancedReimbursementForThreeParticipants()
     {
         var alice = Participant.Create(SettlementId.New(), "Alice").Value;
         var bob = Participant.Create(SettlementId.New(), "Bob").Value;
@@ -129,32 +132,32 @@ public class CalculateReimbrusementQueryHandlerTests
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expenses);
         
-        var query = fixture.Create<CalculateReimbrusementQuery>();
+        var query = fixture.Create<CalculateReimbursementQuery>();
 
         var result = await handler.Handle(query, default);
 
         result.IsSuccess.Should().BeTrue();
 
-        result.Value.Should().BeEquivalentTo(new CalculateReimbrusementQueryResult(
-            new List<CalculateReimbrusementQueryResultBalance>
+        result.Value.Should().BeEquivalentTo(new CalculateReimbursementQueryResult(
+            new List<CalculateReimbursementQueryResultBalance>
             {
                 new(alice.Id.Value, 10),
                 new(bob.Id.Value, 15),
-                new(charlie.Id.Value, -25),
+                new(charlie.Id.Value, -25)
             },
-            new List<CalculateReimbrusementQueryResultSuggestedReimbrusement>
+            new List<CalculateReimbursementQueryResultSuggestedReimbursement>
             {
                 new(charlie.Id.Value, alice.Id.Value, 10),
-                new(charlie.Id.Value, bob.Id.Value, 15),
+                new(charlie.Id.Value, bob.Id.Value, 15)
             }
         ));
     }
 
-    private Expense GenerateExpense(
+    private static Expense GenerateExpense(
         ParticipantId payingParticipantId,
         decimal value,
-        List<Participant> participants,
-        decimal[] values
+        IReadOnlyList<Participant> participants,
+        IReadOnlyList<decimal> values
     )
     {
         var expenseResult = Expense.Create(
@@ -167,9 +170,9 @@ public class CalculateReimbrusementQueryHandlerTests
 
         var expense = expenseResult.Value;
 
-        participants.Should().HaveCount(values.Length);
+        participants.Should().HaveCount(values.Count);
 
-        expense.Allocations = new List<Allocation>();
+        expense.Allocations = [];
         for (var i = 0; i < participants.Count; i += 1)
         {
             var participant = participants[i];
