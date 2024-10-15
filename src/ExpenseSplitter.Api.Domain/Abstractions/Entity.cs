@@ -12,12 +12,12 @@ public abstract class Entity<TEntityId>(TEntityId id) : IEntity
         return domainEvents.ToList();
     }
 
-    public void ClearDomainEvents()
+    public void ClearOnSaveEvents()
     {
         domainEvents.Clear();
     }
 
-    protected void RaiseDomainEvent(IDomainEvent domainEvent)
+    protected void AddOnSaveEvent(IDomainEvent domainEvent)
     {
         domainEvents.Add(domainEvent);
     }

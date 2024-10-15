@@ -6,5 +6,5 @@ public interface IEntity
 
     IReadOnlyList<IDomainEvent> GetDomainEvents();
 
-    void ClearDomainEvents();
+    void ClearOnSaveEvents();
 }

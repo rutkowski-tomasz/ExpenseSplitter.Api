@@ -35,7 +35,7 @@ public class EntityTests
         var entity = new TestEntity(guid);
 
         entity.RaiseTestDomainEvent();
-        entity.ClearDomainEvents();
+        entity.ClearOnSaveEvents();
         var domainEvents = entity.GetDomainEvents();
         
         domainEvents.Should().BeEmpty();
@@ -46,7 +46,7 @@ public class EntityTests
     {
         public void RaiseTestDomainEvent()
         {
-            RaiseDomainEvent(new TestDomainEvent());
+            AddOnSaveEvent(new TestDomainEvent());
         }
     }
 

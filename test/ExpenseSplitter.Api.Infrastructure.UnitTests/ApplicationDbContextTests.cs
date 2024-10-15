@@ -53,7 +53,7 @@ public class ApplicationDbContextTests
     {
         public TestEntity(Guid id) : base(id)
         {
-            RaiseDomainEvent(new TestDomainEvent());
+            AddOnSaveEvent(new TestDomainEvent());
         }
     }
 
