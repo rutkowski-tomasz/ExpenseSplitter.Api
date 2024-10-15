@@ -27,7 +27,7 @@ internal sealed class RegisterUserCommandHandler(
 
         if (identityIdResult.IsFailure)
         {
-            return identityIdResult.Error;
+            return identityIdResult.AppError;
         }
 
         var identityId = identityIdResult.Value;
@@ -36,7 +36,7 @@ internal sealed class RegisterUserCommandHandler(
 
         if (userResult.IsFailure)
         {
-            return userResult.Error;
+            return userResult.AppError;
         }
 
         var user = userResult.Value;

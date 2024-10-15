@@ -82,7 +82,7 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(SettlementErrors.Forbidden);
+        result.AppError.Should().Be(SettlementErrors.Forbidden);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ExpenseErrors.EmptyTitle);
+        result.AppError.Should().Be(ExpenseErrors.EmptyTitle);
     }
     
     
@@ -133,6 +133,6 @@ public class CreateExpenseCommandHandlerTests
         var result = await createExpenseCommandHandler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ParticipantErrors.NotFound);
+        result.AppError.Should().Be(ParticipantErrors.NotFound);
     }
 }

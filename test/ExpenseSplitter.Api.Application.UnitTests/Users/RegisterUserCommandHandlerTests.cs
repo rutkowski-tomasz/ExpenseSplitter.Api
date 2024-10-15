@@ -62,6 +62,6 @@ public class RegisterUserCommandHandlerTests
         var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(UserErrors.EmptyNickname);
+        result.AppError.Should().Be(UserErrors.EmptyNickname);
     }
 }

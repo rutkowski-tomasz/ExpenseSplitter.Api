@@ -24,7 +24,7 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<TRequest> logger) : IP
             logger.LogError(
                 "Request failure {@RequestName}, {@Error}, {@DateTimeUtc}",
                 typeof(TRequest).Name,
-                result.Error,
+                result.AppError,
                 DateTime.UtcNow
             );
         }

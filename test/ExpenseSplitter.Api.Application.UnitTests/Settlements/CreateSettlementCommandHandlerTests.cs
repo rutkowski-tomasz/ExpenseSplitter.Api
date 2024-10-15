@@ -74,7 +74,7 @@ public class CreateSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.EmptyName.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.EmptyName.Type);
 
         settlementRepositoryMock.Verify(x => x.Add(It.Is<Settlement>(y => y.Name == command.Name)), Times.Never);
     }

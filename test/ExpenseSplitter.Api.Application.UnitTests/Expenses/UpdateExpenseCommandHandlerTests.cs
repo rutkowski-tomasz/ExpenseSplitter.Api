@@ -80,7 +80,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ExpenseErrors.NotFound);
+        result.AppError.Should().Be(ExpenseErrors.NotFound);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(SettlementErrors.Forbidden);
+        result.AppError.Should().Be(SettlementErrors.Forbidden);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
+        result.AppError.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
+        result.AppError.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
+        result.AppError.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
+        result.AppError.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
     
     [Fact]
@@ -211,7 +211,7 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(AmountErrors.NegativeValue.Type);
+        result.AppError.Type.Should().Be(AmountErrors.NegativeValue.Type);
     }
     
     [Fact]
@@ -249,6 +249,6 @@ public class UpdateExpenseCommandHandlerTests
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ConcurrencyException.ConcurrencyError.Type);
+        result.AppError.Type.Should().Be(ConcurrencyException.ConcurrencyAppError.Type);
     }
 }

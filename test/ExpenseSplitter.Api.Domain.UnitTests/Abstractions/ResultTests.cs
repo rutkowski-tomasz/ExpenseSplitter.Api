@@ -11,19 +11,19 @@ public class ResultTests
 
         result.IsSuccess.Should().BeTrue();
         result.IsFailure.Should().BeFalse();
-        result.Error.Should().Be(Error.None);
+        result.AppError.Should().Be(AppError.None);
     }
 
     [Fact]
     public void Failure_ShouldCreateFailInstance()
     {
-        var error = new Fixture().Create<Error>();
+        var error = new Fixture().Create<AppError>();
         var result = Result.Failure(error);
 
         result.IsSuccess.Should().BeFalse();
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(error.Type);
-        result.Error.Description.Should().Be(error.Description);
+        result.AppError.Type.Should().Be(error.Type);
+        result.AppError.Description.Should().Be(error.Description);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class ResultTests
 
         result.IsSuccess.Should().BeTrue();
         result.IsFailure.Should().BeFalse();
-        result.Error.Should().Be(Error.None);
+        result.AppError.Should().Be(AppError.None);
         result.Value.Should().Be(123);
     }
 
@@ -44,6 +44,6 @@ public class ResultTests
 
         result.IsSuccess.Should().BeFalse();
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(Error.None);
+        result.AppError.Should().Be(AppError.None);
     }
 }

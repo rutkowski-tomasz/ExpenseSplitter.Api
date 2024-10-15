@@ -37,11 +37,11 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyServic
         return response;
     }
     
-    private static TResponse CreateFailureResult(Error error)
+    private static TResponse CreateFailureResult(AppError appError)
     {
         if (!IsGenericResult())
         {
-            return (TResponse) Result.Failure(error);
+            return (TResponse) Result.Failure(appError);
         }
 
         var resultType = typeof(TResponse).GetGenericArguments()[0];
@@ -52,7 +52,7 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyServic
             Name: nameof(Result.Failure)
         });
         var genericFailureMethod = failureMethod.MakeGenericMethod(resultType);
-        var resultFailureObject = genericFailureMethod.Invoke(null, [error]);
+        var resultFailureObject = genericFailureMethod.Invoke(null, [appError]);
 
         return (TResponse) resultFailureObject!;
     }

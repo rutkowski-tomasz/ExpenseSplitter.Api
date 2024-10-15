@@ -66,7 +66,7 @@ public class UpdateExpenseCommandHandler(
         }
         catch (ConcurrencyException)
         {
-            return Result.Failure(ConcurrencyException.ConcurrencyError);
+            return Result.Failure(ConcurrencyException.ConcurrencyAppError);
         }
 
         return Result.Success();

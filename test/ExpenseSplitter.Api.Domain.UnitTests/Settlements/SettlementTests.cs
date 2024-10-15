@@ -29,7 +29,7 @@ public class SettlementTests
         var settlement = Settlement.Create("", "", creatorUserId, DateTime.UtcNow);
 
         settlement.IsFailure.Should().BeTrue();
-        settlement.Error.Type.Should().Be(SettlementErrors.EmptyName.Type);
+        settlement.AppError.Type.Should().Be(SettlementErrors.EmptyName.Type);
     }
 
     [Fact]

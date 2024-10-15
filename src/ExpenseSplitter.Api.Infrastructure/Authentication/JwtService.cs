@@ -10,12 +10,12 @@ namespace ExpenseSplitter.Api.Infrastructure.Authentication;
 internal sealed class JwtService(HttpClient client, IOptions<KeycloakOptions> keycloakOptions)
     : IJwtService
 {
-    private static readonly Error AuthenticationFailed = new(
+    private static readonly AppError AuthenticationFailed = new(
         ErrorType.Unauthorized,
         "Invalid email or password"
     );
 
-    private static readonly Error BadGateway = new(
+    private static readonly AppError BadGateway = new(
         ErrorType.BadGateway,
         "Can't communicate with identity provider"
     );

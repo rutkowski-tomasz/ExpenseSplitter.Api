@@ -58,7 +58,7 @@ public class UpdateSettlementCommandHandler(
         }
         catch (ConcurrencyException)
         {
-            return Result.Failure(ConcurrencyException.ConcurrencyError);
+            return Result.Failure(ConcurrencyException.ConcurrencyAppError);
         }
 
         return Result.Success();
@@ -89,7 +89,7 @@ public class UpdateSettlementCommandHandler(
         var participantWithFailure = newParticipants.FirstOrDefault(x => x.IsFailure);
         if (participantWithFailure is not null)
         {
-            return Result.Failure(participantWithFailure.Error);
+            return Result.Failure(participantWithFailure.AppError);
         }
         
         foreach (var newParticipant in newParticipants)

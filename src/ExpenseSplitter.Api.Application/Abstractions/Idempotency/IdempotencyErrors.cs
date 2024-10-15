@@ -4,12 +4,12 @@ namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
 public static class IdempotencyErrors
 {
-    public static readonly Error IdempotencyKeyIsNotGuid = new(
+    public static readonly AppError IdempotencyKeyIsNotGuid = new(
         ErrorType.PreConditionFailed,
         "The idempotency key from headers is not a valid guid"
     );
     
-    public static readonly Error IdempotentKeyAlreadyProcessed = new(
+    public static readonly AppError IdempotentKeyAlreadyProcessed = new(
         ErrorType.Conflict,
         "The idempotency key from headers was already processed"
     );

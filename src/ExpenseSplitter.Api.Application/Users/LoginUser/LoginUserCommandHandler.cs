@@ -14,7 +14,7 @@ internal sealed class LoginUserCommandHandler(IJwtService service)
         var result = await service.GetAccessTokenAsync(command.Email, command.Password, cancellationToken);
 
         return result.IsFailure
-            ? Result.Failure<LoginUserResult>(result.Error)
+            ? Result.Failure<LoginUserResult>(result.AppError)
             : new LoginUserResult(result.Value);
     }
 }

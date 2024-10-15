@@ -34,25 +34,25 @@ public abstract class EndpointBase(
         => ToHttpResult(await sender.Send(command));
 
     private static IResult ToHttpResult<TCommandResult, TResponse>(Result<TCommandResult> result, Func<TCommandResult, TResponse> mapResponse)
-        => result.IsSuccess ? TypedResults.Ok(mapResponse(result.Value)) : MapResultError(result.Error);
+        => result.IsSuccess ? TypedResults.Ok(mapResponse(result.Value)) : MapResultError(result.AppError);
 
     private static IResult ToHttpResult(Result result)
-        => result.IsSuccess ? TypedResults.Ok() : MapResultError(result.Error);
+        => result.IsSuccess ? TypedResults.Ok() : MapResultError(result.AppError);
 
-    private static IResult MapResultError(Error error)
+    private static IResult MapResultError(AppError appError)
     {
-        return error.Type switch
+        return appError.Type switch
         {
-            ErrorType.Validation => Results.BadRequest(error.Description),
-            ErrorType.NotFound => Results.NotFound(error.Description),
+            ErrorType.Validation => Results.BadRequest(appError.Description),
+            ErrorType.NotFound => Results.NotFound(appError.Description),
             ErrorType.Forbidden => Results.Forbid(),
-            ErrorType.BadRequest => Results.BadRequest(error.Description),
-            ErrorType.PreConditionFailed => Results.Problem(error.Description, statusCode: StatusCodes.Status412PreconditionFailed),
-            ErrorType.Conflict => Results.Conflict(error.Description),
-            ErrorType.BadGateway => Results.Problem(error.Description, statusCode: StatusCodes.Status502BadGateway),
+            ErrorType.BadRequest => Results.BadRequest(appError.Description),
+            ErrorType.PreConditionFailed => Results.Problem(appError.Description, statusCode: StatusCodes.Status412PreconditionFailed),
+            ErrorType.Conflict => Results.Conflict(appError.Description),
+            ErrorType.BadGateway => Results.Problem(appError.Description, statusCode: StatusCodes.Status502BadGateway),
             ErrorType.Unauthorized => Results.Unauthorized(),
             ErrorType.NotModified => Results.StatusCode(StatusCodes.Status304NotModified),
-            _ => Results.Problem(error.Description, statusCode: StatusCodes.Status500InternalServerError)
+            _ => Results.Problem(appError.Description, statusCode: StatusCodes.Status500InternalServerError)
         };
     }
 }

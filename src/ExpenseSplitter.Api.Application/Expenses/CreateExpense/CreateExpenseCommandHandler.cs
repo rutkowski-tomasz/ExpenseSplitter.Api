@@ -39,7 +39,7 @@ public class CreateExpenseCommandHandler(
         var totalAmountResult = Amount.Create(request.Allocations.Sum(x => x.Value));
         if (totalAmountResult.IsFailure)
         {
-            return Result.Failure<Guid>(totalAmountResult.Error);
+            return Result.Failure<Guid>(totalAmountResult.AppError);
         }
     
         var expenseResult = Expense.Create(
@@ -52,7 +52,7 @@ public class CreateExpenseCommandHandler(
 
         if (expenseResult.IsFailure)
         {
-            return Result.Failure<Guid>(expenseResult.Error);
+            return Result.Failure<Guid>(expenseResult.AppError);
         }
 
         var expense = expenseResult.Value;

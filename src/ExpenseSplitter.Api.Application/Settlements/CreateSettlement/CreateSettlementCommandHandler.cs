@@ -44,7 +44,7 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
 
         if (settlementResult.IsFailure)
         {
-            return settlementResult.Error;
+            return settlementResult.AppError;
         }
         
         var settlement = settlementResult.Value;
@@ -55,7 +55,7 @@ public class CreateSettlementCommandHandler : ICommandHandler<CreateSettlementCo
             var participantResult = Participant.Create(settlement.Id, participantName);
             if (participantResult.IsFailure)
             {
-                return participantResult.Error;
+                return participantResult.AppError;
             }
 
             participantRepository.Add(participantResult.Value);

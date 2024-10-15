@@ -13,7 +13,7 @@ internal sealed class AuthenticationService(
     IOptions<KeycloakOptions> keycloakOptions
 ) : IAuthenticationService
 {
-    private static readonly Error RegistrationError = new(
+    private static readonly AppError RegistrationAppError = new(
         ErrorType.BadRequest,
         "An error occurred during user registration"
     );
@@ -57,7 +57,7 @@ internal sealed class AuthenticationService(
             await response.Content.ReadAsStringAsync(cancellationToken)
         );
 
-        return Result.Failure<string>(RegistrationError);
+        return Result.Failure<string>(RegistrationAppError);
 
     }
 

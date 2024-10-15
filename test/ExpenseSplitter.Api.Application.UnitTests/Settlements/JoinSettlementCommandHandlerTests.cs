@@ -63,7 +63,7 @@ public class JoinSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementErrors.NotFound.Type);
+        response.AppError.Type.Should().Be(SettlementErrors.NotFound.Type);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class JoinSettlementCommandHandlerTests
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
-        response.Error.Type.Should().Be(SettlementUserErrors.AlreadyJoined.Type);
+        response.AppError.Type.Should().Be(SettlementUserErrors.AlreadyJoined.Type);
     }
 
     [Fact]
