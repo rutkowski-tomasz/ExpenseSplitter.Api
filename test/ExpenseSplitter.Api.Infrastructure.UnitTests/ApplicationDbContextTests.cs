@@ -31,7 +31,7 @@ public class ApplicationDbContextTests
         await context.SaveChangesAsync();
         
         mockPublisher.Verify(x => x.Publish(
-            It.IsAny<IDomainEvent>(),
+            It.IsAny<DomainEvent>(),
             It.IsAny<CancellationToken>()
         ), Times.Once);
         mockPublisher.VerifyNoOtherCalls();
@@ -45,7 +45,7 @@ public class ApplicationDbContextTests
 
         await context.SaveChangesAsync();
 
-        entity.GetDomainEvents().Should().BeEmpty();
+        entity.GetPersistDomainEvents().Should().BeEmpty();
     }
     
     
@@ -53,11 +53,11 @@ public class ApplicationDbContextTests
     {
         public TestEntity(Guid id) : base(id)
         {
-            AddOnSaveEvent(new TestDomainEvent());
+            AddPersistDomainEvent(new TestDomainEvent());
         }
     }
 
-    private record TestDomainEvent : IDomainEvent;
+    private record TestDomainEvent : DomainEvent;
     
     private class TestApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,

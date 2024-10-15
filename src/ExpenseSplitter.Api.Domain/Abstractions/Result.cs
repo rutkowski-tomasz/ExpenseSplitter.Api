@@ -27,7 +27,9 @@ public class Result
     public static Result<TValue> Create<TValue>(TValue? value) =>
         value is not null ? Success(value) : Failure<TValue>(AppError.None);
 
-    public static implicit operator Result(AppError appError) => Failure(appError);
+    public static implicit operator Result(AppError appError) => ToResult(appError);
+
+    public static Result ToResult(AppError appError) => Failure(appError);
 }
 
 public class Result<TValue> : Result

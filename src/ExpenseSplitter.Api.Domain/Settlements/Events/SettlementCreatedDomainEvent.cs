@@ -2,4 +2,4 @@
 
 namespace ExpenseSplitter.Api.Domain.Settlements.Events;
 
-public record SettlementCreatedDomainEvent(SettlementId Id) : IDomainEvent;
+public record SettlementCreatedDomainEvent(SettlementId Id) : DomainEvent;

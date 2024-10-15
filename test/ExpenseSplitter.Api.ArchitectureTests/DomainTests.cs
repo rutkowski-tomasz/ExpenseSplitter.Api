@@ -11,7 +11,7 @@ public class DomainTests
         var result = Types
             .InAssembly(Assemblies.Domain)
             .That()
-            .ImplementInterface(typeof(IDomainEvent))
+            .ImplementInterface(typeof(DomainEvent))
             .Should()
             .HaveNameEndingWith("DomainEvent")
             .GetResult();
