@@ -36,7 +36,7 @@ jobs:
     with:
       image_name: rutkowski/expensesplitter-api
       enable_push: true
-      build_context: src
+      build_context: .
       dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
       release_tag: ${{ needs.version.outputs.release_tag }}
     secrets: inherit
