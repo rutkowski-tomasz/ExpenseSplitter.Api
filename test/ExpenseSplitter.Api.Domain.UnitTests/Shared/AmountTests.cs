@@ -1,4 +1,4 @@
-using ExpenseSplitter.Api.Domain.Shared;
+using ExpenseSplitter.Api.Domain.Common;
 
 namespace ExpenseSplitter.Api.Domain.UnitTests.Shared;
 
