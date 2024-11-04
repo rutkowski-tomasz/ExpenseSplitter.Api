@@ -27,7 +27,7 @@ public class CachingBehaviorTests
     {
         var cachedResult = Result.Success(2137);
         cacheService
-            .Setup(x => x.GetOrCreateAsync(
+            .Setup(x => x.GetOrCreate(
                 It.Is<string>(y => y == "test"),
                 It.IsAny<Func<CancellationToken, Task<Result<int>>>>(),
                 It.IsAny<TimeSpan?>(),

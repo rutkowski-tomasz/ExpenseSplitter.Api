@@ -15,14 +15,14 @@ public class IdempotentBehaviorTests
     {
         idempotencyService = new Mock<IIdempotencyService>();
 
-        idempotencyService
-            .Setup(x => x.IsIdempotencyKeyInHeaders())
-            .Returns(true);
-
         idempotencyKey = Guid.NewGuid();
         idempotencyService
-            .Setup(x => x.TryParseIdempotencyKey(out idempotencyKey))
-            .Returns(true);
+            .Setup(x => x.GetIdempotencyKeyFromHeaders())
+            .Returns(idempotencyKey);
+        
+        idempotencyService
+            .Setup(x => x.GetProcessedRequest<string>(idempotencyKey, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((true, "{\"IsSuccess\":true,\"Value\":43,\"AppError\":null}"));
 
         behavior = new IdempotentBehavior<TestCommand, Result<int>>(
             idempotencyService.Object
@@ -35,8 +35,8 @@ public class IdempotentBehaviorTests
     public async Task Handle_ShouldReturnNextValue_WhenIdempotencyKeyIsNotHeaders()
     {
         idempotencyService
-            .Setup(x => x.IsIdempotencyKeyInHeaders())
-            .Returns(false);
+            .Setup(x => x.GetIdempotencyKeyFromHeaders())
+            .Returns(Result.Failure<Guid>(new AppError(ErrorType.NotFound, "Idempotency key not found")));
 
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(3)));
 
@@ -49,37 +49,25 @@ public class IdempotentBehaviorTests
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenIdempotencyKeyIsNotParseable()
     {
-        Guid parsedIdempotencyKey;
         idempotencyService
-            .Setup(x => x.TryParseIdempotencyKey(out parsedIdempotencyKey))
-            .Returns(false);
+            .Setup(x => x.GetIdempotencyKeyFromHeaders())
+            .Returns(Result.Failure<Guid>(new AppError(ErrorType.NotFound, "Idempotency key not found")));
 
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
 
         var result = await behavior.Handle(new TestCommand(), next, default);
 
-        result.IsFailure.Should().BeTrue();
-        result.AppError.Type.Should().Be(ErrorType.PreConditionFailed);
-    }
-    
-    [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenIdempotencyKeyWasProcessed()
-    {
-        idempotencyService
-            .Setup(x => x.IsIdempotencyKeyProcessed(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
-
-        var result = await behavior.Handle(new TestCommand(), next, default);
-
-        result.IsFailure.Should().BeTrue();
-        result.AppError.Type.Should().Be(ErrorType.Conflict);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(43);
     }
     
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
+        idempotencyService
+            .Setup(x => x.GetProcessedRequest<string>(idempotencyKey, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((false, null));
+
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
 
         var result = await behavior.Handle(new TestCommand(), next, default);
@@ -87,6 +75,8 @@ public class IdempotentBehaviorTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(43);
         
-        idempotencyService.Verify(x => x.SaveIdempotencyKey(idempotencyKey, "TestCommand", It.IsAny<CancellationToken>()));
+        idempotencyService.Verify(x =>
+            x.SaveIdempotentRequest(idempotencyKey, It.IsAny<string?>(), It.IsAny<CancellationToken>())
+        );
     }
 }

@@ -3,7 +3,7 @@ POST {{baseUrl}}/api/v1/users/login
 Content-Type: application/json
 
 {
-    "email": "test@example.com",
+    "email": "testa@example.com",
     "password": "password"
 }
 
@@ -34,6 +34,7 @@ Authorization: Bearer {{login.response.body.accessToken}}
 POST {{baseUrl}}/api/v1/expenses
 Authorization: Bearer {{login.response.body.accessToken}}
 Content-Type: application/json
+X-Idempotency-Key: 498e3dfd-503c-4f2a-b566-84c2168dffe3
 
 {
     "name": "Postman expense",
