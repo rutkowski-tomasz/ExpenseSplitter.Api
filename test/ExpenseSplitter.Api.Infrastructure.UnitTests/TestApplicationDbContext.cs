@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace ExpenseSplitter.Api.Infrastructure.UnitTests;
 
@@ -16,13 +17,13 @@ internal class TestApplicationDbContext(
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
 
-        var mockPublisher = new Mock<IPublisher>();
-        var dateTimeProvider = new Mock<IDateTimeProvider>();
+        var publisher = Substitute.For<IPublisher>();
+        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
         var context = new TestApplicationDbContext(
             options,
-            mockPublisher.Object,
-            dateTimeProvider.Object
+            publisher,
+            dateTimeProvider
         );
         return context;
     }

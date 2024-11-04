@@ -1,65 +1,133 @@
-﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+﻿using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
+// Note there is also IdempotentFilter which works on request level
 internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyService service)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
     where TResponse : Result
 {
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        Converters = { new ResultJsonConverterFactory() }
+    };
+
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!service.IsIdempotencyKeyInHeaders())
+        var getIdempotencyKey = service.GetIdempotencyKeyFromHeaders();
+        if (getIdempotencyKey.IsFailure)
         {
             return await next();
         }
-
-        if (!service.TryParseIdempotencyKey(out var parsedIdempotencyKey))
-        {
-            return CreateFailureResult(IdempotencyErrors.IdempotencyKeyIsNotGuid);
-        }
-
-        if (await service.IsIdempotencyKeyProcessed(parsedIdempotencyKey, cancellationToken))
-        {
-            return CreateFailureResult(IdempotencyErrors.IdempotentKeyAlreadyProcessed);
-        }
-
-        await service.SaveIdempotencyKey(
-            parsedIdempotencyKey, 
-            typeof(TRequest).Name,
+        
+        var parsedIdempotencyKey = getIdempotencyKey.Value;
+        var (isProcessed, cachedResponse) = await service.GetProcessedRequest<string>(
+            parsedIdempotencyKey,
             cancellationToken
         );
-
+        
+        if (isProcessed)
+        {
+            var deserialized = JsonSerializer.Deserialize<TResponse?>(cachedResponse!, JsonSerializerOptions);
+            return deserialized;
+        }
+        
         var response = await next();
+
+        var serialized = JsonSerializer.Serialize(response, JsonSerializerOptions);
+        await service.SaveIdempotentRequest(parsedIdempotencyKey, serialized, cancellationToken);
 
         return response;
     }
-    
-    private static TResponse CreateFailureResult(AppError appError)
+}
+
+public class ResultJsonConverterFactory : JsonConverterFactory
+{
+    public override bool CanConvert(Type typeToConvert)
     {
-        if (!IsGenericResult())
-        {
-            return (TResponse) Result.Failure(appError);
-        }
-
-        var resultType = typeof(TResponse).GetGenericArguments()[0];
-        var resultMethodInfos = typeof(Result).GetMethods();
-        var failureMethod = resultMethodInfos.First(m => m is
-        {
-            IsGenericMethod: true,
-            Name: nameof(Result.Failure)
-        });
-        var genericFailureMethod = failureMethod.MakeGenericMethod(resultType);
-        var resultFailureObject = genericFailureMethod.Invoke(null, [appError]);
-
-        return (TResponse) resultFailureObject!;
+        return typeToConvert.IsGenericType && 
+               typeToConvert.GetGenericTypeDefinition() == typeof(Result<>);
     }
 
-    private static bool IsGenericResult()
+    public override JsonConverter? CreateConverter(
+        Type typeToConvert, 
+        JsonSerializerOptions options)
     {
-        return typeof(TResponse).IsGenericType
-            && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>);
+        var valueType = typeToConvert.GetGenericArguments()[0];
+        
+        var converterInstance = (JsonConverter)Activator.CreateInstance(
+            typeof(ResultJsonConverter<>).MakeGenericType(valueType),
+            BindingFlags.Instance | BindingFlags.Public,
+            binder: null,
+            args: null,
+            culture: null)!;
+
+        return converterInstance;
     }
 }
+
+public class ResultJsonConverter<TValue> : JsonConverter<Result<TValue>>
+{
+    public override Result<TValue> Read(
+        ref Utf8JsonReader reader, 
+        Type typeToConvert, 
+        JsonSerializerOptions options)
+    {
+        using var jsonDocument = JsonDocument.ParseValue(ref reader);
+        var root = jsonDocument.RootElement;
+
+        if (root.TryGetProperty("IsSuccess", out var isSuccessProperty) && 
+            root.TryGetProperty("AppError", out var appErrorProperty))
+        {
+            var isSuccess = isSuccessProperty.GetBoolean();
+
+            if (isSuccess)
+            {
+                if (root.TryGetProperty("Value", out var valueProperty))
+                {
+                    var value = valueProperty.ValueKind != JsonValueKind.Null
+                        ? JsonSerializer.Deserialize<TValue>(valueProperty.GetRawText(), options)
+                        : default;
+                    
+                    return Result.Success(value!);
+                }
+                
+                return Result.Success<TValue>(default!);
+            }
+
+            var appError = JsonSerializer.Deserialize<AppError>(appErrorProperty.GetRawText(), options);
+            return Result.Failure<TValue>(appError!);
+        }
+
+        throw new JsonException("Invalid Result JSON format");
+    }
+
+    public override void Write(
+        Utf8JsonWriter writer, 
+        Result<TValue> value, 
+        JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteBoolean("IsSuccess", value.IsSuccess);
+        
+        if (value.IsSuccess)
+        {
+            writer.WritePropertyName("Value");
+            JsonSerializer.Serialize(writer, value.Value, options);
+        }
+        else
+        {
+            writer.WritePropertyName("AppError");
+            JsonSerializer.Serialize(writer, value.AppError, options);
+        }
+        
+        writer.WriteEndObject();
+    }
+}
+

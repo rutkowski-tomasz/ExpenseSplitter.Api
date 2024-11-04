@@ -24,6 +24,7 @@ using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Abstractions.Etag;
 using ExpenseSplitter.Api.Infrastructure.Clock;
 using ExpenseSplitter.Api.Infrastructure.Etag;
+using ExpenseSplitter.Api.Infrastructure.Serializer;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
@@ -35,7 +36,9 @@ public static class InfrastructureDependencyInjection
 
         AddAuthentication(services, configuration);
 
-        AddCaching(services);
+        AddCaching(services, configuration);
+        
+        AddSerializer(services);
 
         AddVersioning(services);
 
@@ -105,10 +108,23 @@ public static class InfrastructureDependencyInjection
         ;
     }
 
-    private static void AddCaching(IServiceCollection services)
+    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMemoryCache();
-        services.AddSingleton<ICacheService, CacheService>();
+        services.AddStackExchangeRedisCache(redisOptions =>
+        {
+            var connection = configuration.GetConnectionString("Redis");
+
+            redisOptions.Configuration = connection;
+        });
+        services.AddTransient<ICacheService, DistributedCacheService>();
+
+        // services.AddSingleton<ICacheService, InMemoryCacheService>();
+        // services.AddMemoryCache();
+    }
+
+    private static void AddSerializer(IServiceCollection services)
+    {
+        services.AddTransient<ISerializer, MessagePackSerializer>();
     }
 
     private static void AddVersioning(IServiceCollection services)

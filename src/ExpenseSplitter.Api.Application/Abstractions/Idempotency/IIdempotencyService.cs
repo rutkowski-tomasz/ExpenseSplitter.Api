@@ -1,10 +1,10 @@
-﻿namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
+﻿using ExpenseSplitter.Api.Domain.Abstractions;
+
+namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
 public interface IIdempotencyService
 {
-    bool IsIdempotencyKeyInHeaders();
-    bool TryParseIdempotencyKey(out Guid o);
-    Task<bool> IsIdempotencyKeyProcessed(Guid parsedIdempotencyKey, CancellationToken cancellationToken);
-    Task SaveIdempotencyKey(Guid parsedIdempotencyKey, string name, CancellationToken cancellationToken);
+    Result<Guid> GetIdempotencyKeyFromHeaders();
+    Task<(bool isProcessed, T? result)> GetProcessedRequest<T>(Guid parsedIdempotencyKey, CancellationToken cancellationToken);
+    Task SaveIdempotentRequest<T>(Guid parsedIdempotencyKey, T value, CancellationToken cancellationToken);
 }
-
