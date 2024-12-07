@@ -1,6 +1,4 @@
-﻿using ExpenseSplitter.Api.Domain.Abstractions;
-
-namespace ExpenseSplitter.Api.Application.Abstractions.Caching;
+﻿namespace ExpenseSplitter.Api.Application.Abstractions.Caching;
 
 public interface ICacheService
 {

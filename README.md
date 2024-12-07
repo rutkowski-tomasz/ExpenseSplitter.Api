@@ -55,7 +55,7 @@ To let you quickly understand the domain and relationships of the project entiti
 ## Start services locally
 
 ```sh
-docker-compose up -d expensesplitter-db expensesplitter-idp
+docker-compose up -d expensesplitter-db expensesplitter-idp expensesplitter-cache
 ```
 
 ## Create migration
