@@ -9,7 +9,7 @@ public abstract class Entity<TEntityId>(TEntityId id) : IEntity
 
     public IReadOnlyList<IDomainEvent> GetOnSaveDomainEvents()
     {
-        return domainEvents.ToList();
+        return [.. domainEvents];
     }
 
     public void ClearOnSaveDomainEvents()

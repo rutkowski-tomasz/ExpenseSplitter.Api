@@ -6,12 +6,15 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            // "justMyCode": false,
+            "justMyCode": false,
             "program": "${workspaceFolder}/src/ExpenseSplitter.Api.Presentation/bin/Debug/net8.0/ExpenseSplitter.Api.Presentation.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/ExpenseSplitter.Api.Presentation",
             "stopAtEntry": false,
             "console": "internalConsole",
+            "logging": {
+                "moduleLoad": false
+            },
             // "serverReadyAction": {
             //     "action": "openExternally",
             //     "pattern": "\\bNow listening on:\\s+(https?://\\S+)"

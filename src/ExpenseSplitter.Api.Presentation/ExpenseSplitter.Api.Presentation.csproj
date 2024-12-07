@@ -9,7 +9,6 @@
         <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
         <AnalysisMode>All</AnalysisMode>
         <AnalysisLevel>latest</AnalysisLevel>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     </PropertyGroup>
