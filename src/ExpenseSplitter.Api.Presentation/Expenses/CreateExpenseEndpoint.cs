@@ -1,6 +1,7 @@
 using ExpenseSplitter.Api.Application.Expenses.CreateExpense;
 using ExpenseSplitter.Api.Presentation.Extensions;
 using ExpenseSplitter.Api.Presentation.MediatrEndpoints;
+using ExpenseSplitter.Api.Presentation.Middleware;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.Api.Presentation.Expenses;
@@ -37,5 +38,7 @@ public class CreateExpenseEndpoint() : Endpoint<CreateExpenseRequest, CreateExpe
         ))
     ),
     result => result,
-    builder => builder.RequireRateLimiting(RateLimitingExtensions.IpRateLimiting)
+    builder => builder
+        .RequireRateLimiting(RateLimitingExtensions.IpRateLimiting)
+        .AddEndpointFilter<IdempotentFilter>()
 );

@@ -21,7 +21,7 @@ internal sealed class CachingBehavior<TRequest, TResponse>
     )
     {
         var key = request.Key;
-        var cachedResponse = await cacheService.GetOrCreateAsync(
+        var cachedResponse = await cacheService.GetOrCreate(
             key,
             _ => next(),
             request.Expiration,

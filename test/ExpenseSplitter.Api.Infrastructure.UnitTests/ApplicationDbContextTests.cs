@@ -2,12 +2,13 @@
 using ExpenseSplitter.Api.Domain.Abstractions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace ExpenseSplitter.Api.Infrastructure.UnitTests;
 
 public class ApplicationDbContextTests
 {
-    private readonly Mock<IPublisher> mockPublisher;
+    private readonly IPublisher publisher = Substitute.For<IPublisher>();
     private readonly TestApplicationDbContext context;
 
     public ApplicationDbContextTests()
@@ -16,10 +17,9 @@ public class ApplicationDbContextTests
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
 
-        mockPublisher = new Mock<IPublisher>();
-        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+        var dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
-        context = new TestApplicationDbContext(options, mockPublisher.Object, dateTimeProviderMock.Object);
+        context = new TestApplicationDbContext(options, publisher, dateTimeProvider);
     }
 
     [Fact]
@@ -29,12 +29,8 @@ public class ApplicationDbContextTests
         context.Add(entity);
 
         await context.SaveChangesAsync();
-        
-        mockPublisher.Verify(x => x.Publish(
-            It.IsAny<IDomainEvent>(),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
-        mockPublisher.VerifyNoOtherCalls();
+
+        await publisher.Received(1).Publish(Arg.Any<IDomainEvent>(), Arg.Any<CancellationToken>()); 
     }
 
     [Fact]
