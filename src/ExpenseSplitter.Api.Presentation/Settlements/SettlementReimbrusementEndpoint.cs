@@ -23,9 +23,9 @@ public record SettlementReimbursementResponseSuggestedReimbursement(
 );
 
 public class SettlementReimbursementEndpoint() : Endpoint<CalculateReimbursementRequest, CalculateReimbursementQuery, CalculateReimbursementQueryResult, SettlementReimbursementResponse>(
-    Endpoints.Settlements.Get("{settlementId}/reimbursement").ProducesErrorCodes(
+    Endpoints.Settlements.Get("{settlementId}/reimbursement").ProducesErrorCodes([
         StatusCodes.Status403Forbidden
-    ),
+    ]),
     request => new CalculateReimbursementQuery(request.SettlementId),
     result => new SettlementReimbursementResponse(
         result.Balances.Select(balance => new SettlementReimbursementResponseBalance(

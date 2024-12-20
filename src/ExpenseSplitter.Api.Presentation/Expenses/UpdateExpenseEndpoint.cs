@@ -23,11 +23,11 @@ public sealed record UpdateExpenseRequestAllocation(
 );
 
 public class UpdateExpenseEndpoint() : Endpoint<UpdateExpenseRequest, UpdateExpenseCommand>(
-    Endpoints.Expenses.Put("{expenseId}").ProducesErrorCodes(
+    Endpoints.Expenses.Put("{expenseId}").ProducesErrorCodes([
         StatusCodes.Status400BadRequest,
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new UpdateExpenseCommand(
         request.ExpenseId,
         request.Body.Title,

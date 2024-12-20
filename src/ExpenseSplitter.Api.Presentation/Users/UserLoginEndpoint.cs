@@ -11,10 +11,10 @@ public record UserLoginRequestBody(string Email, string Password);
 public record LoginUserResponse(string AccessToken);
 
 public class UserLoginEndpoint() : Endpoint<UserLoginRequest, LoginUserCommand, LoginUserResult, LoginUserResponse>(
-    Endpoints.Users.Post("login").ProducesErrorCodes(
+    Endpoints.Users.Post("login").ProducesErrorCodes([
         StatusCodes.Status400BadRequest,
         StatusCodes.Status401Unauthorized
-    ),
+    ]),
     request => new LoginUserCommand(request.Body.Email, request.Body.Password),
     result => new LoginUserResponse(result.AccessToken)
 );

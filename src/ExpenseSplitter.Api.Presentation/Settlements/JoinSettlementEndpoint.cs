@@ -9,10 +9,10 @@ public record JoinSettlementRequest([FromBody] JoinSettlementRequestBody Body);
 public record JoinSettlementRequestBody(string InviteCode);
 
 public class CreateExpenseEndpoint() : Endpoint<JoinSettlementRequest, JoinSettlementCommand, Guid, Guid>(
-    Endpoints.Settlements.Post("join").ProducesErrorCodes(
+    Endpoints.Settlements.Post("join").ProducesErrorCodes([
         StatusCodes.Status400BadRequest,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new JoinSettlementCommand(request.Body.InviteCode),
     result => result
 );

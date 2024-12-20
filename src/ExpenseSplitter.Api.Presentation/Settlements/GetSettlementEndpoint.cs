@@ -21,11 +21,11 @@ public record GetSettlementResponseParticipant(
 );
 
 public class GetSettlementEndpoint() : Endpoint<GetSettlementRequest, GetSettlementQuery, GetSettlementQueryResult, GetSettlementResponse>(
-    Endpoints.Settlements.Get("{settlementId}").ProducesErrorCodes(
+    Endpoints.Settlements.Get("{settlementId}").ProducesErrorCodes([
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound,
         StatusCodes.Status304NotModified
-    ),
+    ]),
     request => new GetSettlementQuery(request.SettlementId),
     result => new GetSettlementResponse(
         result.Id,

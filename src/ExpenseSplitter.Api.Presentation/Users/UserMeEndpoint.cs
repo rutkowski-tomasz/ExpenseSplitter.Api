@@ -10,9 +10,9 @@ public sealed record UserMeResponse(
 );
 
 public class UserMeEndpoint() : Endpoint<GetLoggedInUserQuery, GetLoggedInUserQueryResult, UserMeResponse>(
-    Endpoints.Users.Get("me").ProducesErrorCodes(
+    Endpoints.Users.Get("me").ProducesErrorCodes([
         StatusCodes.Status400BadRequest
-    ),
+    ]),
     result => new UserMeResponse(
         result.Id,
         result.Email,

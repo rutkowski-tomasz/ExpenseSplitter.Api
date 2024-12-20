@@ -22,10 +22,10 @@ public record GetExpenseResponseAllocation(
 );
 
 public class GetExpenseEndpoint() : Endpoint<GetExpenseRequest, GetExpenseQuery, GetExpenseQueryResult, GetExpenseResponse>(
-    Endpoints.Expenses.Get("{expenseId}").ProducesErrorCodes(
+    Endpoints.Expenses.Get("{expenseId}").ProducesErrorCodes([
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new GetExpenseQuery(request.ExpenseId),
     result => new GetExpenseResponse(
         result.Id,

@@ -9,9 +9,9 @@ public record DeleteExpenseRequest(
 );
 
 public class DeleteExpenseEndpoint() : Endpoint<DeleteExpenseRequest, DeleteExpenseCommand>(
-    Endpoints.Expenses.Delete("{expenseId}").ProducesErrorCodes(
+    Endpoints.Expenses.Delete("{expenseId}").ProducesErrorCodes([
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new DeleteExpenseCommand(request.ExpenseId)
 );
