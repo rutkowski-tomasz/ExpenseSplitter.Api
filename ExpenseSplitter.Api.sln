@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		requests\Expense.http = requests\Expense.http
 		requests\Settlement.http = requests\Settlement.http
 		requests\User.http = requests\User.http
+		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24F665EB-15E0-4AF2-818D-BECE1BF0C281}"

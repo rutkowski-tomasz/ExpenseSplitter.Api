@@ -367,3 +367,6 @@ dotnet_diagnostic.S6605.severity = none
 dotnet_diagnostic.IDE0058.severity = suggestion
 dotnet_diagnostic.IDE0055.severity = suggestion
 dotnet_diagnostic.CA1515.severity = suggestion
+
+[**/Migrations/**]
+generated_code = true

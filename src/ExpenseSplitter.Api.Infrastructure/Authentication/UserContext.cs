@@ -18,17 +18,13 @@ internal sealed class UserContext : IUserContext
     {
         get
         {
-            var claim = httpContextAccessor
+            var claim = (httpContextAccessor
                 .HttpContext?
                 .User
                 .Claims
                 .SingleOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?
-                .Value;
-            
-            if (claim is null)
-            {
-                throw new ApplicationException("User context is unavailable");
-            }
+                .Value)
+                    ?? throw new ApplicationException("User context is unavailable");
 
             var guid = Guid.Parse(claim);
             var userId = new UserId(guid);
