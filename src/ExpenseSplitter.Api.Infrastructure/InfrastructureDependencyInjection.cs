@@ -109,16 +109,17 @@ public static class InfrastructureDependencyInjection
         ;
     }
 
-    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
+    private static void AddCaching(IServiceCollection services, IConfiguration _)
     {
+        #pragma warning disable EXTEXP0018
         services.AddHybridCache(options =>
-        {
-            options.DefaultEntryOptions = new HybridCacheEntryOptions()
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
             {
                 LocalCacheExpiration = TimeSpan.FromMinutes(5),
                 Expiration = TimeSpan.FromMinutes(5)
-            };
-        });
+            }
+        );
+        #pragma warning restore EXTEXP0018
 
         // services.AddStackExchangeRedisCache(redisOptions =>
         // {

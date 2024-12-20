@@ -16,7 +16,7 @@ public class HybridCacheService(HybridCache cache) : ICacheService
     
     public async Task<T> GetOrCreate<T>(
         string key,
-        Func<CancellationToken, ValueTask<T>> factory,
+        Func<CancellationToken, Task<T>> factory,
         TimeSpan? expiration = null,
         CancellationToken cancellationToken = default
     )
@@ -26,21 +26,24 @@ public class HybridCacheService(HybridCache cache) : ICacheService
             Expiration = expiration
         };
         
-        var result = await cache.GetOrCreateAsync(key, factory, options, cancellationToken: cancellationToken);
+        var result = await cache.GetOrCreateAsync(
+            key,
+            async ct => await factory(ct),
+            options,
+            cancellationToken: cancellationToken
+        );
 
         return result;
     }
 
-    public Task<Dictionary<string, T>> BatchGetOrCreate<T>(
+    public async Task<Dictionary<string, T>> BatchGetOrCreate<T>(
         List<string> keys,
         Func<List<string>, CancellationToken, Task<Dictionary<string, T>>> factoryFunction,
         TimeSpan? expiration = null,
         CancellationToken cancellationToken = default
     )
     {
-        var cacheLookupTasks = keys.Select(x =>
-            TryGet(x, cancellationToken)
-        );
+        var cacheLookupTasks = keys.Select(x => TryGet<T>(x, cancellationToken));
         var cacheLookupResults = await Task.WhenAll(cacheLookupTasks);
 
         var keysToResolve = new List<string>();
@@ -49,14 +52,13 @@ public class HybridCacheService(HybridCache cache) : ICacheService
         for (var i = 0; i < keys.Count; i += 1)
         {
             var cacheLookupResult = cacheLookupResults[i];
-            if (!IsCacheHit(cacheLookupResult))
+            if (!cacheLookupResult.isFound || cacheLookupResult.result is null)
             {
                 keysToResolve.Add(keys[i]);
                 continue;
             }
             
-            var deserialized = serializer.Deserialize<T>(cacheLookupResult!, cancellationToken);
-            results.Add(keys[i], deserialized);
+            results.Add(keys[i], cacheLookupResult.result);
         }
         
         if (keysToResolve.Count == 0)
@@ -70,8 +72,8 @@ public class HybridCacheService(HybridCache cache) : ICacheService
             results.Add(key, value);
         }
 
-        var cacheEntryOptions = GetDistributedCacheEntryOptions(expiration);
-        var cacheSetTasks = resolvedKeys.Select(x => CacheSet(x.Key, x.Value, cacheEntryOptions, cancellationToken));
+        var options = GetDistributedCacheEntryOptions(expiration);
+        var cacheSetTasks = resolvedKeys.Select(x => CacheSet(x.Key, x.Value, options, cancellationToken));
         await Task.WhenAll(cacheSetTasks);
 
         return results;
