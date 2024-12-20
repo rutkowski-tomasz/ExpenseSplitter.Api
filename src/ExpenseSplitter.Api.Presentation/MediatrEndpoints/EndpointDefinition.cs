@@ -54,9 +54,9 @@ public record EndpointDefinition
         return new EndpointDefinition { Route = route, Map = MapDelete };
     }
 
-    public EndpointDefinition ProducesErrorCodes(params int[] errorCodes)
+    public EndpointDefinition ProducesErrorCodes(ReadOnlySpan<int> errorCodes)
     {
-        ErrorCodes = errorCodes;
+        ErrorCodes = errorCodes.ToArray();
         return this;
     }
 }
