@@ -23,6 +23,7 @@ public class ExceptionHandlingMiddleware(
 
             var problemDetails = new ProblemDetails
             {
+                Instance = $"{context.Request.Method} {context.Request.Path}",
                 Status = exceptionDetails.Status,
                 Type = exceptionDetails.Type,
                 Title = exceptionDetails.Title,
