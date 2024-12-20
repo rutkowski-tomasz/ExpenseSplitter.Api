@@ -25,6 +25,7 @@ using ExpenseSplitter.Api.Application.Abstractions.Etag;
 using ExpenseSplitter.Api.Infrastructure.Clock;
 using ExpenseSplitter.Api.Infrastructure.Etag;
 using ExpenseSplitter.Api.Infrastructure.Serializer;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
@@ -108,15 +109,25 @@ public static class InfrastructureDependencyInjection
         ;
     }
 
-    private static void AddCaching(IServiceCollection services, IConfiguration configuration)
+    private static void AddCaching(IServiceCollection services, IConfiguration _)
     {
-        services.AddStackExchangeRedisCache(redisOptions =>
-        {
-            var connection = configuration.GetConnectionString("Redis");
+        #pragma warning disable EXTEXP0018
+        services.AddHybridCache(options =>
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(5),
+                Expiration = TimeSpan.FromMinutes(5)
+            }
+        );
+        #pragma warning restore EXTEXP0018
 
-            redisOptions.Configuration = connection;
-        });
-        services.AddTransient<ICacheService, DistributedCacheService>();
+        // services.AddStackExchangeRedisCache(redisOptions =>
+        // {
+        //     var connection = configuration.GetConnectionString("Redis");
+        //
+        //     redisOptions.Configuration = connection;
+        // });
+        // services.AddTransient<ICacheService, DistributedCacheService>();
 
         // services.AddSingleton<ICacheService, InMemoryCacheService>();
         // services.AddMemoryCache();

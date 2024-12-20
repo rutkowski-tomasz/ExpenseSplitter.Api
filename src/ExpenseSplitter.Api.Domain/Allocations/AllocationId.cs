@@ -2,5 +2,5 @@
 
 public record AllocationId(Guid Value)
 {
-    public static AllocationId New() => new(Guid.NewGuid());
+    public static AllocationId New() => new(Guid.CreateVersion7());
 }

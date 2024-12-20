@@ -1,26 +1,25 @@
-﻿using Serilog.Context;
+﻿using Microsoft.AspNetCore.Http.Features;
+using Serilog.Context;
 
 namespace ExpenseSplitter.Api.Presentation.Middleware;
 
 public class TraceIdMiddleware(RequestDelegate next)
 {
     private const string TraceIdHeader = "traceId";
+    private const string RequestIdHeader = "requestId";
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var traceId = GetTraceId(context);
-        context.Items[TraceIdHeader] = traceId;
-        context.Response.Headers.TryAdd(TraceIdHeader, traceId);
+        var requestId = context.TraceIdentifier;
+        context.Response.Headers.TryAdd(RequestIdHeader, requestId);
 
-        using (LogContext.PushProperty("TraceId", traceId))
+        var traceId = context.Features.Get<IHttpActivityFeature>()?.Activity.Id;
+        context.Response.Headers.TryAdd(TraceIdHeader, traceId);
+        
+        using (LogContext.PushProperty("requestId", requestId))
+        using (LogContext.PushProperty("traceId", traceId))
         {
             await next(context);
         }
-    }
-
-    private static string GetTraceId(HttpContext context)
-    {
-        context.Request.Headers.TryGetValue(TraceIdHeader, out var traceId);
-        return traceId.FirstOrDefault() ?? context.TraceIdentifier;
     }
 }

@@ -25,7 +25,7 @@ public class ApplicationDbContextTests
     [Fact]
     public async Task SaveChangesAsync_ShouldPublishDomainEvents()
     {
-        var entity = new TestEntity(Guid.NewGuid());
+        var entity = new TestEntity(Guid.CreateVersion7());
         context.Add(entity);
 
         await context.SaveChangesAsync();
@@ -36,7 +36,7 @@ public class ApplicationDbContextTests
     [Fact]
     public async Task SaveChangesAsync_ShouldClearsDomainEvents()
     {
-        var entity = new TestEntity(Guid.NewGuid());
+        var entity = new TestEntity(Guid.CreateVersion7());
         context.Add(entity);
 
         await context.SaveChangesAsync();

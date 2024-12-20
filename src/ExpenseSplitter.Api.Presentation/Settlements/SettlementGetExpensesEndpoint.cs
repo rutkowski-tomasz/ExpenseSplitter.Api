@@ -16,10 +16,10 @@ public sealed record GetExpensesForSettlementResponseExpense(
 );
 
 public class SettlementGetExpensesEndpoint() : Endpoint<Guid, GetExpensesForSettlementQuery, GetExpensesForSettlementQueryResult, GetExpensesForSettlementResponse>(
-    Endpoints.Settlements.Get("{settlementId}/expenses").ProducesErrorCodes(
+    Endpoints.Settlements.Get("{settlementId}/expenses").ProducesErrorCodes([
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new GetExpensesForSettlementQuery(request),
     result => new GetExpensesForSettlementResponse(
         result.Expenses.Select(expense => new GetExpensesForSettlementResponseExpense(

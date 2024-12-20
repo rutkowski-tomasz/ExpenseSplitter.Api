@@ -20,10 +20,10 @@ public sealed record UpdateSettlementRequestParticipant(
 );
 
 public class UpdateSettlementEndpoint() : Endpoint<UpdateSettlementRequest, UpdateSettlementCommand>(
-    Endpoints.Settlements.Put("{settlementId}").ProducesErrorCodes(
+    Endpoints.Settlements.Put("{settlementId}").ProducesErrorCodes([
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new UpdateSettlementCommand(
         request.SettlementId,
         request.Body.Name,

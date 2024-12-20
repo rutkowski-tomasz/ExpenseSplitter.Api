@@ -15,7 +15,7 @@ public class IdempotentBehaviorTests
     {
         idempotencyService = new Mock<IIdempotencyService>();
 
-        idempotencyKey = Guid.NewGuid();
+        idempotencyKey = Guid.CreateVersion7();
         idempotencyService
             .Setup(x => x.GetIdempotencyKeyFromHeaders())
             .Returns(idempotencyKey);

@@ -22,11 +22,11 @@ public sealed record CreateExpenseRequestAllocation(
 );
 
 public class CreateExpenseEndpoint() : Endpoint<CreateExpenseRequest, CreateExpenseCommand, Guid, Guid>(
-    Endpoints.Expenses.Post("").ProducesErrorCodes(
+    Endpoints.Expenses.Post("").ProducesErrorCodes([
         StatusCodes.Status400BadRequest,
         StatusCodes.Status403Forbidden,
         StatusCodes.Status404NotFound
-    ),
+    ]),
     request => new CreateExpenseCommand(
         request.Body.Name,
         request.Body.PaymentDate,

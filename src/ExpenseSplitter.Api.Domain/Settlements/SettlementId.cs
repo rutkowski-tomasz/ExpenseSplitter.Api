@@ -2,5 +2,5 @@
 
 public record SettlementId(Guid Value)
 {
-    public static SettlementId New() => new(Guid.NewGuid());
+    public static SettlementId New() => new(Guid.CreateVersion7());
 }

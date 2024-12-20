@@ -13,10 +13,10 @@ public record UserRegisterRequestBody(
 );
 
 public class UserRegisterEndpoint() : Endpoint<UserRegisterRequest, RegisterUserCommand, Guid, Guid>(
-    Endpoints.Users.Post("register").ProducesErrorCodes(
+    Endpoints.Users.Post("register").ProducesErrorCodes([
         StatusCodes.Status400BadRequest,
         StatusCodes.Status401Unauthorized
-    ),
+    ]),
     request => new RegisterUserCommand(
         request.Body.Email,
         request.Body.Nickname,

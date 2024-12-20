@@ -32,7 +32,7 @@ public class TraceIdMiddlewareTests
     public async Task InvokeAsync_ShouldReuseTraceId_WhenTraceIdIsPresentInRequestHeaders()
     {
         var context = new DefaultHttpContext();
-        var existingTraceId = Guid.NewGuid().ToString();
+        var existingTraceId = Guid.CreateVersion7().ToString();
         context.Request.Headers["traceId"] = existingTraceId;
 
         await middleware.InvokeAsync(context);
