@@ -121,7 +121,7 @@ public class UpdateExpenseCommandHandlerTests
             .Build<UpdateExpenseCommand>()
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
-                new(Guid.NewGuid(), Guid.NewGuid(), -1M)
+                new(Guid.CreateVersion7(), Guid.CreateVersion7(), -1M)
             })
             .Create();
 
@@ -178,8 +178,8 @@ public class UpdateExpenseCommandHandlerTests
             .Build<UpdateExpenseCommand>()
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
-                new (null, Guid.NewGuid(), -0.01M),
-                new (null, Guid.NewGuid(), 1M)
+                new (null, Guid.CreateVersion7(), -0.01M),
+                new (null, Guid.CreateVersion7(), 1M)
             })
             .Create();
         

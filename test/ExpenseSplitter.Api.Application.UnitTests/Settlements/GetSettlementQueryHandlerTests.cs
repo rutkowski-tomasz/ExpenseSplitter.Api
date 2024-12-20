@@ -123,7 +123,7 @@ public class GetSettlementQueryHandlerTests
     )
     {
         var expenseResult = Expense.Create(
-            Guid.NewGuid().ToString(),
+            Guid.CreateVersion7().ToString(),
             Amount.Create(value).Value,
             DateOnly.FromDateTime(DateTime.UtcNow),
             SettlementId.New(),

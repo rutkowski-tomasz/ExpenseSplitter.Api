@@ -2,5 +2,5 @@
 
 public record UserId(Guid Value)
 {
-    public static UserId New() => new(Guid.NewGuid());
+    public static UserId New() => new(Guid.CreateVersion7());
 }
