@@ -35,8 +35,7 @@ public class LoggingDelegatingHandler(ILogger<LoggingDelegatingHandler> logger) 
         catch (Exception e)
         {
             logger.LogError(e, "HTTP request failed");
-
-            throw;
+            throw new HttpRequestException(e.Message, e);
         }
     }
 }

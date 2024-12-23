@@ -61,13 +61,13 @@ internal sealed class InMemoryCacheService(IMemoryCache cache) : ICacheService
         return results;
     }
 
-    public Task<(bool isFound, T? result)> TryGet<T>(string key, CancellationToken _)
+    public Task<(bool isFound, T? result)> TryGet<T>(string key, CancellationToken cancellationToken)
     {
         var isFound = cache.TryGetValue<T>(key, out var result);
         return Task.FromResult((isFound, result));
     }
 
-    public Task Set<T>(string key, T value, TimeSpan? expiration = null, CancellationToken _ = default)
+    public Task Set<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)
     {
         cache.Set(key, value, expiration ?? DefaultExpiration);
         return Task.CompletedTask;

@@ -100,9 +100,9 @@ public class GetSettlementQueryHandlerTests
             .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Expense>
             {
-                GenerateExpense(alice.Id, 10, participants, new decimal[] { 8, 2 }),
-                GenerateExpense(alice.Id, 10, participants, new decimal[] { 7, 3 }),
-                GenerateExpense(bob.Id, 7, participants, new decimal[] { 6, 1 })
+                GenerateExpense(alice.Id, 10, participants, [8, 2]),
+                GenerateExpense(alice.Id, 10, participants, [7, 3]),
+                GenerateExpense(bob.Id, 7, participants, [6, 1])
             });
 
         var query = fixture.Create<GetSettlementQuery>();
@@ -118,8 +118,8 @@ public class GetSettlementQueryHandlerTests
     private static Expense GenerateExpense(
         ParticipantId payingParticipantId,
         decimal value,
-        IReadOnlyList<Participant> participants,
-        IReadOnlyList<decimal> values
+        List<Participant> participants,
+        List<decimal> values
     )
     {
         var expenseResult = Expense.Create(

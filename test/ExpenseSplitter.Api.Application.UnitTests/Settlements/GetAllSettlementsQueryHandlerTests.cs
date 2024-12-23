@@ -31,7 +31,7 @@ public class GetAllSettlementsQueryHandlerTests
         response.IsSuccess.Should().BeTrue();
         response.Value.Settlements.Should().HaveCount(2);
 
-        var firstSettlement = settlements.First();
+        var firstSettlement = settlements[0];
         response.Value.Settlements.First().Id.Should().Be(firstSettlement.Id.Value);
         response.Value.Settlements.First().Name.Should().Be(firstSettlement.Name);
     }

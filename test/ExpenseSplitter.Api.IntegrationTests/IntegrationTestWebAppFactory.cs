@@ -33,7 +33,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        var user = User.Create("Test user", "test@test.com", new UserId(new Guid(TestUserId))).Value;
+        var user = User.Create("Test user", "test@test.com", new UserId(Guid.Parse(TestUserId))).Value;
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
     }
@@ -50,12 +50,10 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options
-                    .UseNpgsql(postgreSqlContainer.GetConnectionString())
-                    .UseSnakeCaseNamingConvention();
-            });
+            services.AddDbContext<ApplicationDbContext>(options => options
+                .UseNpgsql(postgreSqlContainer.GetConnectionString())
+                .UseSnakeCaseNamingConvention()
+            );
 
             ConfigureIHttpContextAccessor(services);
         });

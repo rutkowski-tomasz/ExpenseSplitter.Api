@@ -9,7 +9,7 @@ public class IdempotentBehaviorTests
 {
     private readonly Mock<IIdempotencyService> idempotencyService;
     private readonly IdempotentBehavior<TestCommand, Result<int>> behavior;
-    private Guid idempotencyKey;
+    private readonly Guid idempotencyKey;
 
     public IdempotentBehaviorTests()
     {
@@ -29,7 +29,7 @@ public class IdempotentBehaviorTests
         );
     }
 
-    private class TestCommand : IBaseCommand;
+    private sealed class TestCommand : IBaseCommand;
 
     [Fact]
     public async Task Handle_ShouldReturnNextValue_WhenIdempotencyKeyIsNotHeaders()

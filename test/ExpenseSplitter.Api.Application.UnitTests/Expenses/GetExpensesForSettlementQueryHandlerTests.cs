@@ -39,7 +39,7 @@ public class GetExpensesForSettlementQueryHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Value.Expenses.Should().HaveCount(2);
-        result.Value.Expenses.First().Title.Should().Be(expenses.First().Title);
+        result.Value.Expenses.First().Title.Should().Be(expenses[0].Title);
     }
 
     [Fact]

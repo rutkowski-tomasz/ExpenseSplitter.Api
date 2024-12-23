@@ -86,7 +86,7 @@ public class UpdateSettlementCommandHandler(
             ))
             .ToList();
         
-        var participantWithFailure = newParticipants.FirstOrDefault(x => x.IsFailure);
+        var participantWithFailure = newParticipants.Find(x => x.IsFailure);
         if (participantWithFailure is not null)
         {
             return Result.Failure(participantWithFailure.AppError);

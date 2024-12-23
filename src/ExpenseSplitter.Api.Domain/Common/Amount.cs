@@ -6,13 +6,13 @@ public record Amount
 {
     public static Amount operator +(Amount first, Amount second)
     {
-        ArgumentNullException.ThrowIfNull(first, nameof(first));
+        ArgumentNullException.ThrowIfNull(first);
         return first.Add(second);
     }
 
-    public Amount Add(Amount other)
+    private Amount Add(Amount other)
     {
-        ArgumentNullException.ThrowIfNull(other, nameof(other));
+        ArgumentNullException.ThrowIfNull(other);
         return new Amount(Value + other.Value);
     }
 

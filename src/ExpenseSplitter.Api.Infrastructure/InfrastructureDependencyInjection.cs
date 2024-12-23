@@ -37,7 +37,7 @@ public static class InfrastructureDependencyInjection
 
         AddAuthentication(services, configuration);
 
-        AddCaching(services, configuration);
+        AddCaching(services);
         
         AddSerializer(services);
 
@@ -109,7 +109,7 @@ public static class InfrastructureDependencyInjection
         ;
     }
 
-    private static void AddCaching(IServiceCollection services, IConfiguration _)
+    private static void AddCaching(IServiceCollection services)
     {
         #pragma warning disable EXTEXP0018
         services.AddHybridCache(options =>
@@ -121,6 +121,7 @@ public static class InfrastructureDependencyInjection
         );
         #pragma warning restore EXTEXP0018
 
+        #pragma warning disable S125
         // services.AddStackExchangeRedisCache(redisOptions =>
         // {
         //     var connection = configuration.GetConnectionString("Redis");
@@ -131,6 +132,7 @@ public static class InfrastructureDependencyInjection
 
         // services.AddSingleton<ICacheService, InMemoryCacheService>();
         // services.AddMemoryCache();
+        #pragma warning restore S125
     }
 
     private static void AddSerializer(IServiceCollection services)

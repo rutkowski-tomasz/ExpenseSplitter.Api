@@ -71,9 +71,9 @@ public class CalculateReimbursementQueryHandlerTests
 
         var expenses = new List<Expense>
         {
-            GenerateExpense(alice.Id, 10, participants, new decimal[] { 8, 2 }),
-            GenerateExpense(alice.Id, 10, participants, new decimal[] { 7, 3 }),
-            GenerateExpense(bob.Id, 7, participants, new decimal[] { 6, 1 })
+            GenerateExpense(alice.Id, 10, participants, [8, 2]),
+            GenerateExpense(alice.Id, 10, participants, [7, 3]),
+            GenerateExpense(bob.Id, 7, participants, [6, 1])
         };
 
         participantRepositoryMock
@@ -114,14 +114,14 @@ public class CalculateReimbursementQueryHandlerTests
 
         var expenses = new List<Expense>
         {
-            GenerateExpense(alice.Id, 20, participants, new decimal[] { 10, 5, 5 }),
-            GenerateExpense(bob.Id, 15, participants, new decimal[] { 0, 10, 5 }),
-            GenerateExpense(charlie.Id, 10, participants, new decimal[] { 5, 0, 5 }),
-            GenerateExpense(alice.Id, 30, participants, new decimal[] { 10, 10, 10 }),
-            GenerateExpense(bob.Id, 25, participants, new decimal[] { 5, 15, 5 }),
-            GenerateExpense(charlie.Id, 20, participants, new decimal[] { 10, 5, 5 }),
-            GenerateExpense(alice.Id, 35, participants, new decimal[] { 15, 10, 10 }),
-            GenerateExpense(bob.Id, 40, participants, new decimal[] { 20, 10, 10 })
+            GenerateExpense(alice.Id, 20, participants, [10, 5, 5]),
+            GenerateExpense(bob.Id, 15, participants, [0, 10, 5]),
+            GenerateExpense(charlie.Id, 10, participants, [5, 0, 5]),
+            GenerateExpense(alice.Id, 30, participants, [10, 10, 10]),
+            GenerateExpense(bob.Id, 25, participants, [5, 15, 5]),
+            GenerateExpense(charlie.Id, 20, participants, [10, 5, 5]),
+            GenerateExpense(alice.Id, 35, participants, [15, 10, 10]),
+            GenerateExpense(bob.Id, 40, participants, [20, 10, 10])
         };
 
         participantRepositoryMock
@@ -156,8 +156,8 @@ public class CalculateReimbursementQueryHandlerTests
     private static Expense GenerateExpense(
         ParticipantId payingParticipantId,
         decimal value,
-        IReadOnlyList<Participant> participants,
-        IReadOnlyList<decimal> values
+        List<Participant> participants,
+        List<decimal> values
     )
     {
         var expenseResult = Expense.Create(

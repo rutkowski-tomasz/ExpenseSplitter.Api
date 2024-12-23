@@ -42,7 +42,7 @@ public class EntityTests
     }
     
     
-    private class TestEntity(Guid id) : Entity<Guid>(id)
+    private sealed class TestEntity(Guid id) : Entity<Guid>(id)
     {
         public void RaiseTestDomainEvent()
         {
@@ -50,5 +50,5 @@ public class EntityTests
         }
     }
 
-    private record TestDomainEvent : IDomainEvent;
+    private sealed record TestDomainEvent : IDomainEvent;
 }

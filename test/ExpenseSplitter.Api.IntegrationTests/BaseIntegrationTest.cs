@@ -11,7 +11,7 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
 
     protected BaseIntegrationTest(IntegrationTestWebAppFactory appFactory)
     {
-        var scope = appFactory.Services.CreateScope();
+        using var scope = appFactory.Services.CreateScope();
 
         Sender = scope.ServiceProvider.GetRequiredService<ISender>();
         DbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
