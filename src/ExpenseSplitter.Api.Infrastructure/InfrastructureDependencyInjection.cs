@@ -111,7 +111,7 @@ public static class InfrastructureDependencyInjection
 
     private static void AddCaching(IServiceCollection services)
     {
-        #pragma warning disable EXTEXP0018
+#pragma warning disable EXTEXP0018
         services.AddHybridCache(options =>
             options.DefaultEntryOptions = new HybridCacheEntryOptions
             {
@@ -119,9 +119,10 @@ public static class InfrastructureDependencyInjection
                 Expiration = TimeSpan.FromMinutes(5)
             }
         );
-        #pragma warning restore EXTEXP0018
+        services.AddTransient<ICacheService, HybridCacheService>();
+#pragma warning restore EXTEXP0018
 
-        #pragma warning disable S125
+#pragma warning disable S125
         // services.AddStackExchangeRedisCache(redisOptions =>
         // {
         //     var connection = configuration.GetConnectionString("Redis");
@@ -132,7 +133,7 @@ public static class InfrastructureDependencyInjection
 
         // services.AddSingleton<ICacheService, InMemoryCacheService>();
         // services.AddMemoryCache();
-        #pragma warning restore S125
+#pragma warning restore S125
     }
 
     private static void AddSerializer(IServiceCollection services)
