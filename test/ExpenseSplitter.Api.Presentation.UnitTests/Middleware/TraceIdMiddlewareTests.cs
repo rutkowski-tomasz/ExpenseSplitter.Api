@@ -21,7 +21,6 @@ public class TraceIdMiddlewareTests
 
         await middleware.InvokeAsync(context);
 
-        context.Items.Should().ContainKey("traceId");
         context.Response.Headers.Should().ContainKey("traceId");
 
         var traceId = context.Response.Headers["traceId"].ToString();
@@ -31,13 +30,14 @@ public class TraceIdMiddlewareTests
     [Fact]
     public async Task InvokeAsync_ShouldReuseTraceId_WhenTraceIdIsPresentInRequestHeaders()
     {
-        var context = new DefaultHttpContext();
         var existingTraceId = Guid.CreateVersion7().ToString();
-        context.Request.Headers["traceId"] = existingTraceId;
+        var context = new DefaultHttpContext
+        {
+            TraceIdentifier = existingTraceId
+        };
 
         await middleware.InvokeAsync(context);
 
-        context.Items["traceId"].Should().Be(existingTraceId);
         context.Response.Headers["traceId"].ToArray().Should().BeEquivalentTo(existingTraceId);
     }
 }

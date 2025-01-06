@@ -7,17 +7,20 @@ using MediatR;
 
 namespace ExpenseSplitter.Api.Application.Abstractions.Idempotency;
 
+internal static class JsonSerializerConfig
+{
+    internal static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        Converters = { new ResultJsonConverterFactory() }
+    };
+}
+
 // Note there is also IdempotentFilter which works on request level
 internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyService service)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
     where TResponse : Result
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-    {
-        Converters = { new ResultJsonConverterFactory() }
-    };
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var getIdempotencyKey = service.GetIdempotencyKeyFromHeaders();
@@ -34,13 +37,13 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyServic
         
         if (isProcessed)
         {
-            var deserialized = JsonSerializer.Deserialize<TResponse?>(cachedResponse!, JsonSerializerOptions);
+            var deserialized = JsonSerializer.Deserialize<TResponse?>(cachedResponse!, JsonSerializerConfig.JsonSerializerOptions);
             return deserialized;
         }
         
         var response = await next();
 
-        var serialized = JsonSerializer.Serialize(response, JsonSerializerOptions);
+        var serialized = JsonSerializer.Serialize(response, JsonSerializerConfig.JsonSerializerOptions);
         await service.SaveIdempotentRequest(parsedIdempotencyKey, serialized, cancellationToken);
 
         return response;

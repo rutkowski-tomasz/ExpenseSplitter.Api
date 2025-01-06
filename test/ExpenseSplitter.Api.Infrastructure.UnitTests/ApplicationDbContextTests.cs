@@ -6,7 +6,7 @@ using NSubstitute;
 
 namespace ExpenseSplitter.Api.Infrastructure.UnitTests;
 
-public class ApplicationDbContextTests
+public sealed class ApplicationDbContextTests : IDisposable
 {
     private readonly IPublisher publisher = Substitute.For<IPublisher>();
     private readonly TestApplicationDbContext context;
@@ -45,7 +45,7 @@ public class ApplicationDbContextTests
     }
     
     
-    private class TestEntity : Entity<Guid>
+    private sealed class TestEntity : Entity<Guid>
     {
         public TestEntity(Guid id) : base(id)
         {
@@ -53,9 +53,9 @@ public class ApplicationDbContextTests
         }
     }
 
-    private record TestDomainEvent : IDomainEvent;
+    private sealed record TestDomainEvent : IDomainEvent;
     
-    private class TestApplicationDbContext(
+    private sealed class TestApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,
         IPublisher publisher,
         IDateTimeProvider dateTimeProvider
@@ -66,5 +66,10 @@ public class ApplicationDbContextTests
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<TestEntity>();
         }
+    }
+
+    public void Dispose()
+    {
+        context.Dispose();
     }
 }

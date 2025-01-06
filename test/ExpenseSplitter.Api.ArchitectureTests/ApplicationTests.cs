@@ -136,21 +136,14 @@ public class ApplicationTests
     }
 }
 
-public class GenericArgumentsEndWithCustomRule : ICustomRule
+internal sealed class GenericArgumentsEndWithCustomRule(string with) : ICustomRule
 {
-    private readonly string endWith;
-
-    public GenericArgumentsEndWithCustomRule(string endWith)
-    {
-        this.endWith = endWith;
-    }
-
     public bool MeetsRule(Mono.Cecil.TypeDefinition type)
     {
-        var interfaceType = type.Interfaces.First().InterfaceType;
-        var genericInstaceType = interfaceType as Mono.Cecil.GenericInstanceType;
-        var genericArguments = genericInstaceType!.GenericArguments;
+        var interfaceType = type.Interfaces[0].InterfaceType;
+        var genericInstanceType = interfaceType as Mono.Cecil.GenericInstanceType;
+        var genericArguments = genericInstanceType!.GenericArguments;
         
-        return genericArguments.First().Name.EndsWith(endWith);
+        return genericArguments[0].Name.EndsWith(with, StringComparison.InvariantCulture);
     }
 }

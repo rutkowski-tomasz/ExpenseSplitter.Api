@@ -5,7 +5,7 @@ using NSubstitute;
 
 namespace ExpenseSplitter.Api.Infrastructure.UnitTests;
 
-internal class TestApplicationDbContext(
+internal sealed class TestApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
     IPublisher publisher,
     IDateTimeProvider dateTimeProvider

@@ -16,7 +16,7 @@ public class CachingBehaviorTests
         behavior = new CachingBehavior<TestQuery, Result<int>>(cacheService.Object);
     }
 
-    private record TestQuery : ICachedQuery
+    private sealed record TestQuery : ICachedQuery
     {
         public string Key => "test";
         public TimeSpan? Expiration => null;

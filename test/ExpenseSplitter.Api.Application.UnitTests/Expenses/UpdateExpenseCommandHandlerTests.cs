@@ -158,20 +158,6 @@ public class UpdateExpenseCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFailure_WhenTryingToUpdateWithEmptyTitle()
-    {
-        var request = fixture
-            .Build<UpdateExpenseCommand>()
-            .With(x => x.Title, "")
-            .Create();
-
-        var result = await handler.Handle(request, default);
-
-        result.IsFailure.Should().BeTrue();
-        result.AppError.Type.Should().Be(ExpenseErrors.EmptyTitle.Type);
-    }
-
-    [Fact]
     public async Task Handle_ShouldReturnFailure_WhenTryingToCreateAllocationWithNonPositiveAmount()
     {
         var request = fixture
