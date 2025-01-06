@@ -18,15 +18,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Semantic Release
-        if: ${{ github.ref == 'refs/heads/main' }}
-        id: semantic_release
-        uses: cycjimmy/semantic-release-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version and push git tag
+        id: version
+        uses: mathieudutour/github-tag-action@v6.2
         with:
-          working_directory: semantic-release
-        continue-on-error: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create a GitHub release
+        if: github.ref == 'refs/heads/main'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.version.outputs.new_tag }}
+          name: ${{ steps.version.outputs.new_tag }}
+          body: ${{ steps.version.outputs.changelog }}
+
+      - name: Generate build summary
+        run: |
+          echo "🏷️ Version: ${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "📌 Release Tag: ${{ steps.version.outputs.new_tag }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
     outputs:
-      release_tag: ${{ steps.semantic_release.outputs.new_release_version || format('alpha-{0}', github.sha) }}
+      release_tag: ${{ steps.version.outputs.new_tag }}
