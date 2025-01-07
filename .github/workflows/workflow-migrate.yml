@@ -17,7 +17,11 @@ jobs:
       - name: Create EF Migration Script
         run: |
           dotnet tool install --global dotnet-ef
-          dotnet ef migrations script --project src/ExpenseSplitter.Api.Infrastructure --output migration.sql --idempotent
+          dotnet ef migrations script \
+            --project src/ExpenseSplitter.Api.Infrastructure \
+            --startup-project src/ExpenseSplitter.Api.Presentation \
+            --output migration.sql \
+            --idempotent
 
       - uses: actions/upload-artifact@v4
         with:
