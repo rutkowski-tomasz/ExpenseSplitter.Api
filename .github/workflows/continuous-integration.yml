@@ -41,3 +41,7 @@ jobs:
       release_tag: ${{ needs.version.outputs.release_tag }}
     secrets: inherit
 
+  migrate:
+    needs: build_scan
+    name: Migrate
+    uses: ./.github/workflows/workflow-migrate.yml

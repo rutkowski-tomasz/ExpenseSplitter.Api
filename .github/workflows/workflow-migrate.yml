@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+
+jobs:
+  migrate:
+    name: EF Migrate
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Create EF Migration Script
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet ef migrations script --project src/ExpenseSplitter.Api.Infrastructure --output migration.sql --idempotent
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: migration.sql
+          path: migration.sql
+
+      # Apply migration script
+      # - uses: ikalnytskyi/action-setup-postgres@v7
+      # - run: psql "${{ secrets.DB_CONNECTION_STRING }}" -f migration.sql
+
+      # Alternative to creating script: bundle
+      # - name: Bundle Migrations
+      #   run: |
+      #     dotnet tool install --global dotnet-ef
+      #     dotnet ef migrations bundle --project src/ExpenseSplitter.Api.Infrastructure --output bundle
+      
+      # - name: Run EF Migrations
+      #   run: ./bundle --connection "${{ secrets.DB_CONNECTION_STRING }}"
