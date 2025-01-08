@@ -27,12 +27,14 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore coverage history
-        uses: dawidd6/action-download-artifact@v7
+        uses: actions/cache/restore@v4
         if: ${{ env.PublishTestCoverage }}
         with:
-          name: CoverageHistory
           path: CoverageHistory
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          key: coverage-history-${{ github.ref_name }}
+          restore-keys: |
+            coverage-history-${{ github.ref_name }}
+            coverage-history-
         continue-on-error: true
 
       - name: Test
@@ -53,12 +55,12 @@ jobs:
           name: CoverageReports
           path: CoverageReports
 
-      - name: Upload coverage history
+      - name: Save coverage history
         if: ${{ env.PublishTestCoverage }}
-        uses: actions/upload-artifact@v4
+        uses: actions/cache/save@v4
         with:
-          name: CoverageHistory
           path: CoverageHistory
+          key: coverage-history-${{ github.ref_name }}
 
       - name: Publish coverage in build summary
         run: cat CoverageReports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
