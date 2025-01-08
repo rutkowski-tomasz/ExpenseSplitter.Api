@@ -11,8 +11,7 @@ env:
   Dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
   Registry: ghcr.io
   PushImage: ${{ github.ref == 'refs/heads/main' }}
-  PublishTestCoverage: true
-
+  PublishTestCoverage: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   test:
@@ -29,12 +28,11 @@ jobs:
 
       - name: Restore coverage history
         uses: actions/cache/restore@v4
-        if: ${{ env.PublishTestCoverage }}
         with:
           path: CoverageHistory
-          key: coverage-history-${{ github.ref_name }}
+          key: coverage-history-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            coverage-history-${{ github.ref_name }}
+            coverage-history-${{ github.ref_name }}-
             coverage-history-
         continue-on-error: true
 
@@ -61,7 +59,8 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: CoverageHistory
-          key: coverage-history-${{ github.ref_name }}
+          key: coverage-history-${{ github.ref_name }}-${{ github.sha }}
+          enableCrossOsArchive: false
 
       - name: Publish coverage in build summary
         run: cat CoverageReports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
