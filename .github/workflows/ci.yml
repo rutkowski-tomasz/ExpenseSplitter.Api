@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  ImageName: rutkowski/expensesplitter-api
+  ImageName: rutkowski-tomasz/expensesplitter-api
   BuildContext: .
   Dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
   Registry: ghcr.io
