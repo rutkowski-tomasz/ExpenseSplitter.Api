@@ -1,7 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Expenses;
-using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 
@@ -24,7 +23,7 @@ internal sealed class CalculateReimbursementQueryHandler(
         var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         var expenses = await expenseRepository.GetAllBySettlementId(settlementId, cancellationToken);
 
-        var balances = CalculateBalances(settlement, expenses);
+        var balances = CalculateBalances(settlement!, expenses);
         var suggestedReimbursements = CalculateSuggestedReimbursements(balances);
 
         return new CalculateReimbursementQueryResult(
