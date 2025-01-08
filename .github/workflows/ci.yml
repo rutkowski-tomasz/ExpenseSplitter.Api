@@ -35,7 +35,8 @@ jobs:
           path: CoverageHistory
           # github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           check_artifacts: true
-          # search_artifacts: true
+          workflow: ci.yml
+          search_artifacts: true
         continue-on-error: true
 
       - name: Test
