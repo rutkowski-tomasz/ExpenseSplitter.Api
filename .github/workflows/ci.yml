@@ -11,7 +11,7 @@ env:
   Dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
   Registry: ghcr.io
   PushImage: ${{ github.ref == 'refs/heads/main' }}
-  PublishTestCoverage: ${{ github.ref == 'refs/heads/main' }}
+  PublishTestCoverage: true
 
 
 jobs:
