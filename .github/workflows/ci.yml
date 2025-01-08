@@ -32,15 +32,10 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          # github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          check_artifacts: true
+          # search_artifacts: true
         continue-on-error: true
-
-      - name: Restore coverage history
-        uses: actions/download-artifact@v4
-        if: ${{ env.PublishTestCoverage }}
-        with:
-          name: CoverageHistory
-          path: CoverageHistory
 
       - name: Test
         run: dotnet test --collect:"XPlat Code Coverage" *.sln
