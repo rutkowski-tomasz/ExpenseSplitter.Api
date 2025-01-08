@@ -89,6 +89,8 @@ jobs:
   version:
     name: Version
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -117,9 +119,8 @@ jobs:
   image:
     name: Image
     needs: [test, scan, version]
-    
-    #   release_tag: ${{ needs.version.outputs.release_tag }}
-
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
