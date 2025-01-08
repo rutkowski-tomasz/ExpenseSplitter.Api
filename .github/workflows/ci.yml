@@ -13,6 +13,7 @@ env:
   PushImage: ${{ github.ref == 'refs/heads/main' }}
   PublishTestCoverage: ${{ github.ref == 'refs/heads/main' }}
 
+
 jobs:
   test:
     name: Test
