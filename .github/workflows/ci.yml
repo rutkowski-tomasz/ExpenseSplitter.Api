@@ -10,7 +10,7 @@ env:
   BuildContext: .
   Dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
   Registry: ghcr.io
-  PushImage: ${{ github.ref == 'refs/heads/main' }}
+  PushImage: true
 
 jobs:
   test:
@@ -151,14 +151,14 @@ jobs:
         if: ${{ env.PushImage }}
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ env.Registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Construct image tag
         id: image_tag
         run: |
-          image_tag=$(echo "${{ env.Registry }}/${{ env.ImageName }}:${{ needs.version.outputs.new_version }}" | tr '[:upper:]' '[:lower:]')
-          echo $image_tag
+          image_tag=$(echo "${{ env.ImageName }}" | tr '[:upper:]' '[:lower:]')
           echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
 
       - name: Build image
@@ -167,14 +167,16 @@ jobs:
           context: ${{ env.BuildContext }}
           file: ${{ env.Dockerfile }}
           push: ${{ env.PushImage }}
-          tags: ${{ steps.image_tag.outputs.image_tag }}
+          tags: |
+            ${{ env.Registry }}/${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}
+            ${{ env.PushImage && format('{0}/{1}:latest', env.Registry, steps.image_tag.outputs.image_tag) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          image-ref: ${{ steps.image_tag.outputs.image_tag }}
+          image-ref: ${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
