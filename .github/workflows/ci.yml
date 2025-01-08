@@ -117,7 +117,7 @@ jobs:
           fi
 
   image:
-    name: Image
+    name: Container Image
     needs: [test, scan, version]
     permissions:
       packages: write
@@ -164,8 +164,8 @@ jobs:
             severity: 'HIGH,CRITICAL'
 
   migrate:
-    name: Migrate
-    needs: [image]
+    name: DB Migration Script
+    needs: [test, scan, version]
     runs-on: ubuntu-latest
 
     steps:
