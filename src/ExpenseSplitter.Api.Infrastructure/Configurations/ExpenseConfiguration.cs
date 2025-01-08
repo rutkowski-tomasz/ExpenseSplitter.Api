@@ -44,6 +44,8 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .HasPrincipalKey(x => x.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Navigation(s => s.Allocations).AutoInclude();
+
         builder.Property<uint>("Version").IsRowVersion();
         
         builder.Navigation(expense => expense.Allocations)

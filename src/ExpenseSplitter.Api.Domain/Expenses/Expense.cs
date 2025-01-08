@@ -8,30 +8,28 @@ namespace ExpenseSplitter.Api.Domain.Expenses;
 
 public sealed class Expense : AggregateRoot<ExpenseId>
 {
-    private readonly List<Allocation> allocations;
+    private readonly List<Allocation> allocations = new();
 
     private Expense(
-        string title,
-        DateOnly paymentDate,
         ExpenseId id,
         SettlementId settlementId,
+        string title,
+        DateOnly paymentDate,
         ParticipantId payingParticipantId,
-        Amount totalAmount,
-        List<Allocation> expenseAllocations
+        Amount amount
     ) : base(id)
     {
         SettlementId = settlementId;
         Title = title;
         PaymentDate = paymentDate;
         PayingParticipantId = payingParticipantId;
-        Amount = totalAmount;
-        allocations = expenseAllocations;
+        Amount = amount;
     }
 
     public SettlementId SettlementId { get; private set; }
     public string Title { get; private set; }
     public Amount Amount { get; private set; }
-    public DateOnly PaymentDate { get; private set;  }
+    public DateOnly PaymentDate { get; private set; }
     public ParticipantId PayingParticipantId { get; private set; }
     public IReadOnlyList<Allocation> Allocations => allocations.AsReadOnly();
 
@@ -49,9 +47,16 @@ public sealed class Expense : AggregateRoot<ExpenseId>
         }
 
         var expenseId = ExpenseId.New();
-
         var totalAmount = Amount.Zero();
-        var newAllocations = new List<Allocation>();
+        
+        var expense = new Expense(
+            expenseId,
+            settlementId,
+            title,
+            date,
+            payingParticipantId,
+            totalAmount
+        );
 
         foreach (var (participantId, amount) in expenseAllocations)
         {
@@ -63,20 +68,9 @@ public sealed class Expense : AggregateRoot<ExpenseId>
 
             totalAmount += amountResult.Value;
 
-            var newAllocation = Allocation.Create(amountResult.Value, expenseId, participantId);
-            newAllocations.Add(newAllocation);
+            expense.AddAllocation(amountResult.Value, participantId);
         }
 
-        var expense = new Expense(
-            title,
-            date,
-            expenseId,
-            settlementId,
-            payingParticipantId,
-            totalAmount,
-            newAllocations
-        );
-        
         return expense;
     }
 
