@@ -33,7 +33,7 @@ jobs:
         with:
           name: CoverageHistory
           path: CoverageHistory
-          # github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           check_artifacts: true
           workflow: ci.yml
           search_artifacts: true
