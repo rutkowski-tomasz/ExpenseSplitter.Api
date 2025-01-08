@@ -1,0 +1,205 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+env:
+  ImageName: rutkowski/expensesplitter-api
+  BuildContext: .
+  Dockerfile: src/ExpenseSplitter.Api.Presentation/Dockerfile
+  Registry: ghcr.io
+  PushImage: ${{ github.ref == 'refs/heads/main' }}
+  PublishTestCoverage: ${{ github.ref == 'refs/heads/main' }}
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore coverage history
+        uses: dawidd6/action-download-artifact@v7
+        if: ${{ env.PublishTestCoverage }}
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        continue-on-error: true
+
+      - name: Test
+        run: dotnet test --collect:"XPlat Code Coverage" *.sln
+
+      - name: Generate report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
+        with:
+          reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
+          targetdir: 'CoverageReports'
+          historydir: 'CoverageHistory'
+          reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
+          filefilters: '-*/Migrations/*'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverageReports
+          path: CoverageReports
+
+      - name: Upload coverage history
+        if: ${{ env.PublishTestCoverage }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverageHistory
+          path: CoverageHistory
+
+      - name: Add comment to PR
+        if: github.event_name == 'pull_request'
+        run: gh pr comment $PR_NUMBER --body-file CoverageReports/SummaryGithub.md
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+
+      - name: Publish coverage in build summary
+        run: cat CoverageReports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+  scan:
+    name: Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v4.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bump version and tag
+        id: version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create a GitHub release
+        if: ${{ env.PushImage }}
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.version.outputs.new_tag }}
+          name: ${{ steps.version.outputs.new_tag }}
+          body: ${{ steps.version.outputs.changelog }}
+
+      - name: Ouput version in summary
+        run: |
+          echo "🏷️ Version: ${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          if ${{ env.PushImage }}; then
+            echo "📌 Release Tag: ${{ steps.version.outputs.new_tag }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  image:
+    name: Image
+    needs: [test, scan, version]
+    
+    #   release_tag: ${{ needs.version.outputs.release_tag }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to image registry
+        if: ${{ env.PushImage }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Construct image tag
+        id: image_tag
+        run: |
+          echo ${{ github.event.inputs.deploy }}
+          image_tag=$(echo "${{ env.Registry }}/${{ env.ImageName }}" | tr '[:upper:]' '[:lower:]')
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.BuildContext }}
+          file: ${{ env.Dockerfile }}
+          push: ${{ env.PushImage }}
+          tags: ${{ steps.image_tag.outputs.image_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+            image-ref: ${{ steps.image_tag.outputs.image_tag }}
+            format: 'table'
+            exit-code: '1'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'HIGH,CRITICAL'
+
+  migrate:
+    name: Migrate
+    needs: [image]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Create migration script
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet ef migrations script \
+            --project src/ExpenseSplitter.Api.Infrastructure \
+            --startup-project src/ExpenseSplitter.Api.Presentation \
+            --output migration.sql \
+            --idempotent
+
+      - name: Upload migration script
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration.sql
+          path: migration.sql
+
+      # Apply migration script
+      # - uses: ikalnytskyi/action-setup-postgres@v7
+      # - run: psql "${{ secrets.DB_CONNECTION_STRING }}" -f migration.sql
+
+      # Alternative to creating script: bundle
+      # - name: Bundle Migrations
+      #   run: |
+      #     dotnet tool install --global dotnet-ef
+      #     dotnet ef migrations bundle --project src/ExpenseSplitter.Api.Infrastructure --output bundle
+      
+      # - name: Run EF Migrations
+      #   run: ./bundle --connection "${{ secrets.DB_CONNECTION_STRING }}"
