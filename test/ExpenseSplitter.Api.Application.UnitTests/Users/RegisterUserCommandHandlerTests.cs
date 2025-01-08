@@ -9,20 +9,17 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Users;
 public class RegisterUserCommandHandlerTests
 {
     private readonly RegisterUserCommandHandler handler;
-    private readonly Fixture fixture;
-    private readonly Mock<IAuthenticationService> authenticationServiceMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly IAuthenticationService authenticationService = Substitute.For<IAuthenticationService>();
+    private readonly IUserRepository userRepository = Substitute.For<IUserRepository>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
 
     public RegisterUserCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        authenticationServiceMock = new Mock<IAuthenticationService>();
-        var userRepositoryMock = new Mock<IUserRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-
         handler = new RegisterUserCommandHandler(
-            authenticationServiceMock.Object,
-            userRepositoryMock.Object,
-            unitOfWorkMock.Object
+            authenticationService,
+            userRepository,
+            unitOfWork
         );
     }
 
@@ -34,9 +31,9 @@ public class RegisterUserCommandHandlerTests
             .With(x => x.Email, fixture.Create<MailAddress>().Address)
             .Create();
 
-        authenticationServiceMock
-            .Setup(x => x.RegisterAsync(command.Email, command.Password, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Guid.CreateVersion7().ToString());
+        authenticationService
+            .RegisterAsync(command.Email, command.Password, Arg.Any<CancellationToken>())
+            .Returns(Guid.CreateVersion7().ToString());
 
         var result = await handler.Handle(command, default);
 
@@ -55,9 +52,9 @@ public class RegisterUserCommandHandlerTests
 
         var identityId = Guid.CreateVersion7();
 
-        authenticationServiceMock
-            .Setup(x => x.RegisterAsync(command.Email, command.Password, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(identityId.ToString());
+        authenticationService
+            .RegisterAsync(command.Email, command.Password, Arg.Any<CancellationToken>())
+            .Returns(identityId.ToString());
 
         var result = await handler.Handle(command, default);
 

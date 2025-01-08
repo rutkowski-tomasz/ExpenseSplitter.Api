@@ -5,7 +5,7 @@ using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Domain.SettlementUsers;
 
-public sealed class SettlementUser : Entity<SettlementUserId>
+public sealed class SettlementUser : AggregateRoot<SettlementUserId>
 {
     private SettlementUser(
         SettlementUserId id,

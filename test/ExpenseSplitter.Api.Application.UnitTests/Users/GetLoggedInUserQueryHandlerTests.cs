@@ -6,29 +6,25 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Users;
 
 public class GetLoggedInUserQueryHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<IUserRepository> userRepositoryMock;
-    private readonly Mock<IUserContext> userContextMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly IUserRepository userRepository = Substitute.For<IUserRepository>();
+    private readonly IUserContext userContext = Substitute.For<IUserContext>();
     private readonly GetLoggedInUserQueryHandler handler;
 
     public GetLoggedInUserQueryHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        userRepositoryMock = new Mock<IUserRepository>();
-        userContextMock = new Mock<IUserContext>();
-
-        handler = new GetLoggedInUserQueryHandler(userRepositoryMock.Object, userContextMock.Object);
+        handler = new GetLoggedInUserQueryHandler(userRepository, userContext);
     }
     
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
         var user = fixture.Create<User>();
-        userContextMock.Setup(x => x.UserId).Returns(user.Id);
+        userContext.UserId.Returns(user.Id);
 
-        userRepositoryMock
-            .Setup(x => x.GetById(user.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
+        userRepository
+            .GetById(user.Id, Arg.Any<CancellationToken>())
+            .Returns(user);
         
         var query = fixture.Create<GetLoggedInUserQuery>();
 
@@ -54,7 +50,7 @@ public class GetLoggedInUserQueryHandlerTests
     public async Task Handle_ShouldFail_WhenUserDoesntExistInUserRepository()
     {
         var userId = fixture.Create<UserId>();
-        userContextMock.Setup(x => x.UserId).Returns(userId);
+        userContext.UserId.Returns(userId);
         
         var query = fixture.Create<GetLoggedInUserQuery>();
 

@@ -8,30 +8,31 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Participants;
 
 public class ClaimParticipantCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<IParticipantRepository> participantRepositoryMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ClaimParticipantCommandHandler handler;
+    private readonly Settlement settlement;
 
     public ClaimParticipantCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        participantRepositoryMock = new Mock<IParticipantRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        settlement = fixture.Create<Settlement>();
+        settlement.AddParticipant(fixture.Create<string>());
+        settlement.AddParticipant(fixture.Create<string>());
 
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<SettlementUser>());
+        settlementUserRepository
+            .GetBySettlementId(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(fixture.Create<SettlementUser>());
 
-        participantRepositoryMock
-            .Setup(x => x.IsParticipantInSettlement(It.IsAny<SettlementId>(), It.IsAny<ParticipantId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        settlementRepository
+            .GetById(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(settlement);
 
         handler = new ClaimParticipantCommandHandler(
-            settlementUserRepositoryMock.Object,
-            participantRepositoryMock.Object,
-            unitOfWorkMock.Object
+            settlementUserRepository,
+            settlementRepository,
+            unitOfWork
         );
     }
 
@@ -66,9 +67,9 @@ public class ClaimParticipantCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenSettlementUserDoesNotExist()
     {
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((SettlementUser)null!);
+        settlementUserRepository
+            .GetBySettlementId(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns((SettlementUser)default);
 
         var command = fixture.Create<ClaimParticipantCommand>();
 
@@ -81,10 +82,6 @@ public class ClaimParticipantCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenParticipantIdIsNotInSettlement()
     {
-        participantRepositoryMock
-            .Setup(x => x.IsParticipantInSettlement(It.IsAny<SettlementId>(), It.IsAny<ParticipantId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
         var command = fixture.Create<ClaimParticipantCommand>();
 
         var response = await handler.Handle(command, default);
@@ -94,9 +91,13 @@ public class ClaimParticipantCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShoulSuccess()
+    public async Task Handle_ShouldSuccess()
     {
-        var command = fixture.Create<ClaimParticipantCommand>();
+        var command = fixture
+            .Build<ClaimParticipantCommand>()
+            .With(x => x.ParticipantId, settlement.Participants[0].Id.Value)
+            .With(x => x.SettlementId, settlement.Id.Value)
+            .Create();
 
         var response = await handler.Handle(command, default);
 

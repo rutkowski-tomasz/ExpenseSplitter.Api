@@ -5,15 +5,13 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class GetAllSettlementsQueryHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
     private readonly GetSettlementsQueryHandler handler;
 
     public GetAllSettlementsQueryHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
-        handler = new GetSettlementsQueryHandler(settlementRepositoryMock.Object);
+        handler = new GetSettlementsQueryHandler(settlementRepository);
     }
 
     [Fact]
@@ -22,9 +20,9 @@ public class GetAllSettlementsQueryHandlerTests
         var settlements = fixture.CreateMany<Settlement>(2).ToList();
         var query = fixture.Create<GetAllSettlementsQuery>();
     
-        settlementRepositoryMock
-            .Setup(x => x.GetPaged(query.Page, query.PageSize, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlements);
+        settlementRepository
+            .GetPaged(query.Page, query.PageSize, Arg.Any<CancellationToken>())
+            .Returns(settlements);
 
         var response = await handler.Handle(query, default);
 

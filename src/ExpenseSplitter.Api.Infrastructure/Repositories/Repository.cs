@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ExpenseSplitter.Api.Infrastructure.Repositories;
 
 internal abstract class Repository<TEntity, TEntityId>(ApplicationDbContext dbContext)
-    where TEntity : Entity<TEntityId>
+    where TEntity : AggregateRoot<TEntityId>
     where TEntityId : class
 {
     protected readonly ApplicationDbContext DbContext = dbContext;

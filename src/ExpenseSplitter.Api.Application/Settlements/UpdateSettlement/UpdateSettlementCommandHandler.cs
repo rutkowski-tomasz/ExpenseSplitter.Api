@@ -9,17 +9,16 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 namespace ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 
 public class UpdateSettlementCommandHandler(
-    ISettlementUserRepository userRepository,
+    ISettlementUserRepository settlementUserRepository,
     ISettlementRepository repository,
-    IParticipantRepository participantRepository,
-    IDateTimeProvider timeProvider,
+    IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork
 ) : ICommandHandler<UpdateSettlementCommand>
 {
     public async Task<Result> Handle(UpdateSettlementCommand request, CancellationToken cancellationToken)
     {
         var settlementId = new SettlementId(request.Id);
-        if (!await userRepository.CanUserAccessSettlement(settlementId, cancellationToken))
+        if (!await settlementUserRepository.CanUserAccessSettlement(settlementId, cancellationToken))
         {
             return SettlementErrors.Forbidden;
         }
@@ -30,23 +29,26 @@ public class UpdateSettlementCommandHandler(
             return SettlementErrors.NotFound;
         }
 
-        settlement.SetUpdatedOnUtc(timeProvider.UtcNow);
+        settlement.SetUpdatedOnUtc(dateTimeProvider.UtcNow);
         var setNameResult = settlement.SetName(request.Name);
         if (setNameResult.IsFailure)
         {
             return setNameResult;
         }
 
-        var participants = await participantRepository.GetAllBySettlementId(settlementId, cancellationToken);
+        var removeResult = RemoveNonExistingParticipants(settlement, request);
+        if (removeResult.IsFailure)
+        {
+            return removeResult;
+        }
 
-        RemoveNonExistingParticipants(participants, request);
-        var createResult = CreateNewParticipants(request, settlementId);
+        var createResult = CreateNewParticipants(settlement, request);
         if (createResult.IsFailure)
         {
             return createResult;
         }
 
-        var updateResult = UpdateExistingParticipants(participants, request);
+        var updateResult = UpdateExistingParticipants(settlement, request);
         if (updateResult.IsFailure)
         {
             return updateResult;
@@ -64,59 +66,65 @@ public class UpdateSettlementCommandHandler(
         return Result.Success();
     }
 
-    private void RemoveNonExistingParticipants(IEnumerable<Participant> participants, UpdateSettlementCommand updateCommand)
+    private static Result RemoveNonExistingParticipants(Settlement settlement, UpdateSettlementCommand updateCommand)
     {
-        var participantsToRemove = participants
-            .Where(x => !updateCommand.Participants.Any(y => y.Id.HasValue && new ParticipantId(y.Id.Value) == x.Id));
+        var participantIds = updateCommand.Participants
+            .Where(x => x.Id.HasValue)
+            .Select(x => new ParticipantId(x.Id!.Value));
+
+        var participantsToRemove = settlement.Participants
+            .Where(x => !participantIds.Contains(x.Id))
+            .ToList();
 
         foreach (var participantToRemove in participantsToRemove)
         {
-            participantRepository.Remove(participantToRemove);
-        }
-    }
-
-    private Result CreateNewParticipants(UpdateSettlementCommand updateCommand, SettlementId settlementId)
-    {
-        var newParticipants = updateCommand
-            .Participants
-            .Where(x => !x.Id.HasValue)
-            .Select(x => Participant.Create(
-                settlementId,
-                x.Nickname
-            ))
-            .ToList();
-        
-        var participantWithFailure = newParticipants.Find(x => x.IsFailure);
-        if (participantWithFailure is not null)
-        {
-            return Result.Failure(participantWithFailure.AppError);
-        }
-        
-        foreach (var newParticipant in newParticipants)
-        {
-            participantRepository.Add(newParticipant.Value);
+            var removeAllocationResult = settlement.RemoveParticipant(participantToRemove.Id);
+            if (removeAllocationResult.IsFailure)
+            {
+                return removeAllocationResult;
+            }
         }
 
         return Result.Success();
     }
 
-    private static Result UpdateExistingParticipants(IEnumerable<Participant> participants, UpdateSettlementCommand updateCommand)
+    private static Result CreateNewParticipants(Settlement settlement, UpdateSettlementCommand updateCommand)
     {
-        var updates = updateCommand
-            .Participants
-            .Where(x => x.Id.HasValue)
-            .Select(x => new {
-                UpdateModel = x,
-                Entity = participants.SingleOrDefault(y => y.Id == new ParticipantId(x.Id!.Value))
-            })
-            .Where(x => x.Entity is not null);
-
-        foreach (var update in updates)
+        var newParticipants = updateCommand.Participants
+            .Where(x => !x.Id.HasValue)
+            .ToList();
+        
+        foreach (var newParticipant in newParticipants)
         {
-            var setNicknameResult = update.Entity!.SetNickname(update.UpdateModel.Nickname);
-            if (setNicknameResult.IsFailure)
+            var addResult = settlement.AddParticipant(newParticipant.Nickname);
+            if (addResult.IsFailure)
             {
-                return setNicknameResult;
+                return addResult;
+            }
+        }
+
+        return Result.Success();
+    }
+
+    private static Result UpdateExistingParticipants(Settlement settlement, UpdateSettlementCommand updateCommand)
+    {
+        var updateModels = updateCommand.Participants
+            .Where(x => x.Id.HasValue)
+            .ToList();
+        
+        foreach (var updateModel in updateModels)
+        {
+            var participantId = new ParticipantId(updateModel.Id!.Value);
+            var participant = settlement.Participants.FirstOrDefault(y => y.Id == participantId);
+            if (participant is null)
+            {
+                return SettlementErrors.ParticipantNotFound;
+            }
+
+            var updateResult = settlement.UpdateParticipant(participantId, updateModel.Nickname);
+            if (updateResult.IsFailure)
+            {
+                return updateResult;
             }
         }
 

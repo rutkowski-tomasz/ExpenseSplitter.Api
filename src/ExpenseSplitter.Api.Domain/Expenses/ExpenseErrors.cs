@@ -13,4 +13,9 @@ public static class ExpenseErrors
         ErrorType.NotFound,
         "The expense with the specified identifier was not found"
     );
+
+    public static readonly AppError AllocationNotFound = new(
+        ErrorType.NotFound,
+        "The allocation with the specified identifier was not found in expense"
+    );
 }

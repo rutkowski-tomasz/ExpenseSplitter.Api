@@ -12,9 +12,8 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 namespace ExpenseSplitter.Api.Application.Expenses.UpdateExpense;
 
 public class UpdateExpenseCommandHandler(
-    IExpenseRepository repository,
-    ISettlementUserRepository userRepository,
-    IAllocationRepository allocationRepository,
+    IExpenseRepository expenseRepository,
+    ISettlementUserRepository settlementUserRepository,
     ISettlementRepository settlementRepository,
     IDateTimeProvider timeProvider,
     IUnitOfWork unitOfWork
@@ -23,13 +22,13 @@ public class UpdateExpenseCommandHandler(
     public async Task<Result> Handle(UpdateExpenseCommand request, CancellationToken cancellationToken)
     {
         var expenseId = new ExpenseId(request.Id);
-        var expense = await repository.GetById(expenseId, cancellationToken);
+        var expense = await expenseRepository.GetById(expenseId, cancellationToken);
         if (expense is null)
         {
             return Result.Failure(ExpenseErrors.NotFound);
         }
 
-        if (!await userRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
+        if (!await settlementUserRepository.CanUserAccessSettlement(expense.SettlementId, cancellationToken))
         {
             return Result.Failure(SettlementErrors.Forbidden);
         }
@@ -42,19 +41,20 @@ public class UpdateExpenseCommandHandler(
         {
             return updateResult;
         }
-
-        var allocations = (await allocationRepository
-            .GetAllByExpenseId(expenseId, cancellationToken))
-            .ToList();
         
-        RemoveNonExistingAllocations(allocations, request);
-        var createResult = CreateNewAllocations(request, expenseId);
+        var removeResult = RemoveNonExistingAllocations(expense, request);
+        if (removeResult.IsFailure)
+        {
+            return removeResult;
+        }
+        
+        var createResult = CreateNewAllocations(expense, request);
         if (createResult.IsFailure)
         {
             return createResult;
         }
 
-        var updateAllocationsResult = UpdateExistingAllocations(allocations, request);
+        var updateAllocationsResult = UpdateExistingAllocations(expense, request);
         if (updateAllocationsResult.IsFailure)
         {
             return updateAllocationsResult;
@@ -86,27 +86,36 @@ public class UpdateExpenseCommandHandler(
             return totalAmountResult;
         }
 
-        expense.SetAmount(totalAmountResult.Value);
         expense.SetPaymentDate(request.PaymentDate);
         expense.SetPayingParticipantId(new ParticipantId(request.PayingParticipantId));
         return Result.Success();
     }
 
-    private void RemoveNonExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
+    private static Result RemoveNonExistingAllocations(Expense expense, UpdateExpenseCommand updateCommand)
     {
-        var allocationsToRemove = allocations
-            .Where(x => !updateCommand.Allocations.Any(y => y.Id.HasValue && new AllocationId(y.Id.Value) == x.Id));
+        var allocationIds = updateCommand.Allocations
+            .Where(x => x.Id.HasValue)
+            .Select(x => new AllocationId(x.Id!.Value));
+
+        var allocationsToRemove = expense.Allocations
+            .Where(x => !allocationIds.Contains(x.Id))
+            .ToList();
 
         foreach (var allocationToRemove in allocationsToRemove)
         {
-            allocationRepository.Remove(allocationToRemove);
+            var removeAllocationResult = expense.RemoveAllocation(allocationToRemove.Id);
+            if (removeAllocationResult.IsFailure)
+            {
+                return removeAllocationResult;
+            }
         }
+
+        return Result.Success();
     }
 
-    private Result CreateNewAllocations(UpdateExpenseCommand updateCommand, ExpenseId expenseId)
+    private static Result CreateNewAllocations(Expense expense, UpdateExpenseCommand updateCommand)
     {
-        var newAllocations = updateCommand
-            .Allocations
+        var newAllocations = updateCommand.Allocations
             .Where(x => !x.Id.HasValue);
 
         foreach (var newAllocation in newAllocations)
@@ -117,39 +126,44 @@ public class UpdateExpenseCommandHandler(
                 return amountResult;
             }
 
-            var allocation = Allocation.Create(
-                amountResult.Value,
-                expenseId,
-                new ParticipantId(newAllocation.ParticipantId)
-            );
-
-            allocationRepository.Add(allocation);
+            var addAllocationResult = expense
+                .AddAllocation(amountResult.Value, new ParticipantId(newAllocation.ParticipantId));
+            if (addAllocationResult.IsFailure)
+            {
+                return addAllocationResult;
+            }
         }
 
         return Result.Success();
     }
 
-    private static Result UpdateExistingAllocations(IEnumerable<Allocation> allocations, UpdateExpenseCommand updateCommand)
+    private static Result UpdateExistingAllocations(Expense expense, UpdateExpenseCommand updateCommand)
     {
-        var updates = updateCommand
-            .Allocations
-            .Where(x => x.Id.HasValue)
-            .Select(x => new {
-                UpdateModel = x,
-                Entity = allocations.SingleOrDefault(y => y.Id == new AllocationId(x.Id!.Value))
-            })
-            .Where(x => x.Entity is not null);
+        var updateModels = updateCommand.Allocations
+            .Where(x => x.Id.HasValue);
 
-        foreach (var update in updates)
+        foreach (var updateModel in updateModels)
         {
-            var amountResult = Amount.Create(update.UpdateModel.Value);
+            var allocationId = new AllocationId(updateModel.Id!.Value);
+            var allocation = expense.Allocations.FirstOrDefault(y => y.Id == allocationId);
+            if (allocation is null)
+            {
+                return ExpenseErrors.AllocationNotFound;
+            }
+
+            var amountResult = Amount.Create(updateModel.Value);
             if (amountResult.IsFailure)
             {
                 return amountResult;
             }
 
-            update.Entity!.SetAmount(amountResult.Value);
-            update.Entity.SetParticipantId(new ParticipantId(update.UpdateModel.ParticipantId));
+            var participantId = new ParticipantId(updateModel.ParticipantId);
+
+            var updateResult = expense.UpdateAllocation(allocationId, amountResult.Value, participantId);
+            if (updateResult.IsFailure)
+            {
+                return updateResult;
+            }
         }
 
         return Result.Success();

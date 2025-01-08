@@ -25,9 +25,7 @@ public sealed class Allocation : Entity<AllocationId>
 
     public Amount Amount { get; private set; }
 
-    public Expense? Expense { get; init; }
-
-    public static Allocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
+    internal static Allocation Create(Amount amount, ExpenseId expenseId, ParticipantId participantId)
     {
         var expenseAllocation = new Allocation(
             amount,
@@ -39,13 +37,9 @@ public sealed class Allocation : Entity<AllocationId>
         return expenseAllocation;
     }
 
-    public void SetAmount(Amount amount)
+    public void Update(Amount amount, ParticipantId participantId)
     {
         Amount = amount;
-    }
-
-    public void SetParticipantId(ParticipantId participantId)
-    {
         ParticipantId = participantId;
     }
 }

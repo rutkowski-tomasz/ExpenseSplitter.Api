@@ -28,4 +28,9 @@ public static class SettlementErrors
         ErrorType.NotModified,
         "ETag is matching with If-None-Match header value"
     );
+    
+    public static readonly AppError ParticipantNotFound = new(
+        ErrorType.NotFound,
+        "The participant with the specified identifier was not found in settlement"
+    );
 }

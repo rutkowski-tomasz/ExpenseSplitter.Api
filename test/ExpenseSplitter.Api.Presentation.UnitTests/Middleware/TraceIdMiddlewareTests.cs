@@ -5,13 +5,7 @@ namespace ExpenseSplitter.Api.Presentation.UnitTests.Middleware;
 
 public class TraceIdMiddlewareTests
 {
-    private readonly TraceIdMiddleware middleware;
-
-    public TraceIdMiddlewareTests()
-    {
-        var nextMock = new Mock<RequestDelegate>();
-        middleware = new TraceIdMiddleware(nextMock.Object);
-    }
+    private readonly TraceIdMiddleware middleware = new(Substitute.For<RequestDelegate>());
 
     [Fact]
     public async Task InvokeAsync_ShouldGenerateTraceId_WhenNoTraceIdIsPresentInRequestHeaders()

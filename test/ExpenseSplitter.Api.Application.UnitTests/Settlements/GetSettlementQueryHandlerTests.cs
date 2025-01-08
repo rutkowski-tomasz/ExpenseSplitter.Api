@@ -1,7 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Etag;
 using ExpenseSplitter.Api.Application.Settlements.GetSettlement;
-using ExpenseSplitter.Api.Domain.Allocations;
-using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
@@ -10,49 +8,44 @@ using ExpenseSplitter.Api.Domain.SettlementUsers;
 namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 public class GetSettlementQueryHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<IExpenseRepository> expenseRepositoryMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly IExpenseRepository expenseRepository = Substitute.For<IExpenseRepository>();
+    private readonly IEtagService etagService = Substitute.For<IEtagService>();
     private readonly GetSettlementQueryHandler handler;
-    private readonly Mock<IParticipantRepository> participantRepositoryMock;
+    private readonly Settlement settlement;
+    private readonly SettlementUser settlementUser;
 
     public GetSettlementQueryHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        participantRepositoryMock = new Mock<IParticipantRepository>();
-        expenseRepositoryMock = new Mock<IExpenseRepository>();
-        var etagServiceMock = new Mock<IEtagService>();
+        settlement = fixture.Create<Settlement>();
+        settlement.AddParticipant(fixture.Create<string>());
+        settlement.AddParticipant(fixture.Create<string>());
+        
+        settlementRepository
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(settlement);
+
+        settlementUser = fixture.Create<SettlementUser>();
+        settlementUser.SetParticipantId(settlement.Participants[0].Id);
+
+        settlementUserRepository
+            .GetBySettlementId(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(settlementUser);
 
         handler = new GetSettlementQueryHandler(
-            settlementRepositoryMock.Object,
-            settlementUserRepositoryMock.Object,
-            participantRepositoryMock.Object,
-            expenseRepositoryMock.Object,
-            etagServiceMock.Object
+            settlementRepository,
+            settlementUserRepository,
+            expenseRepository,
+            etagService
         );
     }
-
+    
     [Fact]
     public async Task Handle_ShouldMapSettlementsToDto()
     {
-        var settlement = fixture.Create<Settlement>();
-
-        settlementRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlement);
-
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<SettlementUser>());
-
-        participantRepositoryMock
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.CreateMany<Participant>().ToList());
-
-        var query = fixture.Create<GetSettlementQuery>();
+        var query = BuildQuery();
 
         var response = await handler.Handle(query, default);
 
@@ -63,11 +56,11 @@ public class GetSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenSettlementWithTheIdDoesntExist()
     {
-        var query = fixture.Create<GetSettlementQuery>();
-
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<SettlementUser>());
+        settlementRepository
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns((Settlement) default);
+        
+        var query = BuildQuery();
 
         var response = await handler.Handle(query, default);
 
@@ -78,34 +71,18 @@ public class GetSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldCorrectlyCalculateTotalAndUserCost()
     {
-        var alice = Participant.Create(SettlementId.New(), "Alice").Value;
-        var bob = Participant.Create(SettlementId.New(), "Bob").Value;
-        var participants = new List<Participant> { alice, bob };
+        var a = settlement.Participants[0];
+        var b = settlement.Participants[1];
 
-        settlementRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<Settlement>());
+        expenseRepository
+            .GetAllBySettlementId(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns([
+                GenerateExpense(a.Id, (a.Id, 8), (b.Id, 2)),
+                GenerateExpense(a.Id, (a.Id, 7), (b.Id, 3)),
+                GenerateExpense(a.Id, (a.Id, 6), (b.Id, 1)),
+            ]);
 
-        var settlementUser = fixture.Create<SettlementUser>();
-        settlementUser.SetParticipantId(alice.Id);
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlementUser);
-
-        participantRepositoryMock
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(participants);
-        
-        expenseRepositoryMock
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Expense>
-            {
-                GenerateExpense(alice.Id, 10, participants, [8, 2]),
-                GenerateExpense(alice.Id, 10, participants, [7, 3]),
-                GenerateExpense(bob.Id, 7, participants, [6, 1])
-            });
-
-        var query = fixture.Create<GetSettlementQuery>();
+        var query = BuildQuery();
 
         var response = await handler.Handle(query, default);
 
@@ -115,39 +92,28 @@ public class GetSettlementQueryHandlerTests
         response.Value.YourCost.Should().Be(21);
     }
 
-    private static Expense GenerateExpense(
+    private GetSettlementQuery BuildQuery()
+    {
+        return fixture
+            .Build<GetSettlementQuery>()
+            .With(x => x.SettlementId, settlement.Id.Value)
+            .Create();
+    }
+
+    private Expense GenerateExpense(
         ParticipantId payingParticipantId,
-        decimal value,
-        List<Participant> participants,
-        List<decimal> values
+        params (ParticipantId ParticipantId, decimal Amount)[] expenseAllocations
     )
     {
         var expenseResult = Expense.Create(
-            Guid.CreateVersion7().ToString(),
-            Amount.Create(value).Value,
-            DateOnly.FromDateTime(DateTime.UtcNow),
-            SettlementId.New(),
-            payingParticipantId
+            fixture.Create<string>(),
+            fixture.Create<DateOnly>(),
+            settlement.Id,
+            payingParticipantId,
+            expenseAllocations.ToDictionary(x => x.ParticipantId, x => x.Amount)
         );
 
-        var expense = expenseResult.Value;
-
-        participants.Should().HaveCount(values.Count);
-
-        expense.Allocations = [];
-        for (var i = 0; i < participants.Count; i += 1)
-        {
-            var participant = participants[i];
-            var allocationValue = values[i];
-
-            expense.Allocations.Add(Allocation.Create(
-                Amount.Create(allocationValue).Value,
-                expenseResult.Value.Id,
-                participant.Id
-            ));
-        }
-
-        return expense;
+        return expenseResult.Value;
     }
 }
 
