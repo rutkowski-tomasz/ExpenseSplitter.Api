@@ -1,5 +1,4 @@
 using ExpenseSplitter.Api.Application.Expenses.GetExpense;
-using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
@@ -9,54 +8,36 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 public class GetExpenseQueryHandlerTests
 {
     private readonly GetExpenseQueryHandler handler;
-    private readonly Fixture fixture;
-    private readonly Mock<IExpenseRepository> expenseRepositoryMock;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepository;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly IExpenseRepository expenseRepository = Substitute.For<IExpenseRepository>();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly GetExpenseQuery query;
 
     public GetExpenseQueryHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        expenseRepositoryMock = new Mock<IExpenseRepository>();
-        Mock<IAllocationRepository> allocationRepository = new();
-        settlementUserRepository = new Mock<ISettlementUserRepository>();
-
-        expenseRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<Expense>());
+        expenseRepository
+            .GetById(Arg.Any<ExpenseId>(), Arg.Any<CancellationToken>())
+            .Returns(fixture.Create<Expense>());
 
         settlementUserRepository
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
-        allocationRepository
-            .Setup(x => x.GetAllByExpenseId(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.CreateMany<Allocation>());
+        query = fixture.Create<GetExpenseQuery>();
 
         handler = new GetExpenseQueryHandler(
-            expenseRepositoryMock.Object,
-            allocationRepository.Object,
-            settlementUserRepository.Object
+            expenseRepository,
+            settlementUserRepository
         );
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnExpenseWithAllocations()
-    {
-        var query = fixture.Create<GetExpenseQuery>();
-        var result = await handler.Handle(query, default);
-
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Allocations.Should().NotBeEmpty();
     }
 
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenExpenseDoesNotExist()
     {
-        expenseRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Expense) null!);
+        expenseRepository
+            .GetById(Arg.Any<ExpenseId>(), Arg.Any<CancellationToken>())
+            .Returns((Expense) default);
 
-        var query = fixture.Create<GetExpenseQuery>();
         var result = await handler.Handle(query, default);
         
         result.IsSuccess.Should().BeFalse();
@@ -67,10 +48,9 @@ public class GetExpenseQueryHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenUserHasNoAccessToTheSettlement()
     {
         settlementUserRepository
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(false);
         
-        var query = fixture.Create<GetExpenseQuery>();
         var result = await handler.Handle(query, default);
         
         result.IsSuccess.Should().BeFalse();

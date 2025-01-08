@@ -103,8 +103,6 @@ public static class InfrastructureDependencyInjection
             .AddScoped<IExpenseRepository, ExpenseRepository>()
             .AddScoped<ISettlementRepository, SettlementRepository>()
             .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped<IAllocationRepository, AllocationRepository>()
-            .AddScoped<IParticipantRepository, ParticipantRepository>()
             .AddScoped<ISettlementUserRepository, SettlementUserRepository>()
         ;
     }

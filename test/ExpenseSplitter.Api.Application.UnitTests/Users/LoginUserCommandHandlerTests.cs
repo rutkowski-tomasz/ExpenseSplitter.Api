@@ -8,23 +8,20 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Users;
 public class LoginUserCommandHandlerTests
 {
     private readonly LoginUserCommandHandler handler;
-    private readonly Fixture fixture;
-    private readonly Mock<IJwtService> jwtServiceMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly IJwtService jwtService = Substitute.For<IJwtService>();
 
     public LoginUserCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        jwtServiceMock = new Mock<IJwtService>();
-
-        handler = new LoginUserCommandHandler(jwtServiceMock.Object);
+        handler = new LoginUserCommandHandler(jwtService);
     }
 
     [Fact]
     public async Task Handler_ShouldReturnAccessToken()
     {
-        jwtServiceMock
-            .Setup(x => x.GetAccessTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync("access-token");
+        jwtService
+            .GetAccessTokenAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns("access-token");
 
         var command = fixture.Create<LoginUserCommand>();
 
@@ -37,9 +34,9 @@ public class LoginUserCommandHandlerTests
     [Fact]
     public async Task Handler_ShouldFail_WhenGettingAccessTokenResultsInFailure()
     {
-        jwtServiceMock
-            .Setup(x => x.GetAccessTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Failure<string>(UserErrors.InvalidCredentials));
+        jwtService
+            .GetAccessTokenAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Failure<string>(UserErrors.InvalidCredentials));
 
         var command = fixture.Create<LoginUserCommand>();
 

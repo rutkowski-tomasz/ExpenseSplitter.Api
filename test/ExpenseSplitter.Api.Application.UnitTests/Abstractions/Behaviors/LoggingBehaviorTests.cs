@@ -8,20 +8,16 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Abstractions.Behaviors;
 
 public class LoggingBehaviorTests
 {
-    private readonly Mock<ILogger<TestCommand>> loggerMock;
+    private readonly ILogger<TestCommand> logger;
     private readonly LoggingBehavior<TestCommand, Result<int>> loggingBehavior;
     private readonly TestCommand request;
 
-    // ReSharper disable once MemberCanBePrivate.Global
     public record TestCommand : IRequest;
 
     public LoggingBehaviorTests()
     {
-        loggerMock = new Mock<ILogger<TestCommand>>();
-        loggingBehavior = new LoggingBehavior<TestCommand, Result<int>>(
-            loggerMock.Object
-        );
-
+        logger = Substitute.For<ILogger<TestCommand>>();
+        loggingBehavior = new LoggingBehavior<TestCommand, Result<int>>(logger);
         request = new TestCommand();
     }
 
@@ -35,50 +31,47 @@ public class LoggingBehaviorTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(1);
 
-        loggerMock.Verify(logger => logger.Log(
+        logger.Received(1).Log(
             LogLevel.Information,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Processing request {nameof(TestCommand)}")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-        Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<Arg.AnyType>((object v) => v.ToString()!.Contains($"Processing request {nameof(TestCommand)}")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<Arg.AnyType, Exception?, string>>());
 
-        loggerMock.Verify(logger => logger.Log(
+        logger.Received(1).Log(
             LogLevel.Information,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Request success {nameof(TestCommand)}")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-        Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<Arg.AnyType>((object v) => v.ToString()!.Contains($"Request success {nameof(TestCommand)}")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<Arg.AnyType, Exception?, string>>());
 
-        loggerMock.VerifyNoOtherCalls();
+        logger.ReceivedCalls().Should().HaveCount(2);
     }
 
     [Fact]
     public async Task Handle_ShouldLogError_WhenDelegateThrowsAnException()
     {
-        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Failure<int>(SettlementErrors.Forbidden)));
+        var next = new RequestHandlerDelegate<Result<int>>(() => 
+            Task.FromResult(Result.Failure<int>(SettlementErrors.Forbidden)));
 
         var result = await loggingBehavior.Handle(request, next, default);
 
         result.IsFailure.Should().BeTrue();
 
-        loggerMock.Verify(logger => logger.Log(
+        logger.Received(1).Log(
             LogLevel.Information,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Processing request {nameof(TestCommand)}")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-        Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<Arg.AnyType>((object v) => v.ToString()!.Contains($"Processing request {nameof(TestCommand)}")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<Arg.AnyType, Exception?, string>>());
 
-        loggerMock.Verify(logger => logger.Log(
+        logger.Received(1).Log(
             LogLevel.Error,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Request failure {nameof(TestCommand)}")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-        Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<Arg.AnyType>((object v) => v.ToString()!.Contains($"Request failure {nameof(TestCommand)}")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<Arg.AnyType, Exception?, string>>());
 
-        loggerMock.VerifyNoOtherCalls();
+        logger.ReceivedCalls().Should().HaveCount(2);
     }
 }

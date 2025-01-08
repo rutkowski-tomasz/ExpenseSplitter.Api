@@ -39,10 +39,16 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
 
         builder
             .HasMany(s => s.Allocations)
-            .WithOne(s => s.Expense)
+            .WithOne()
             .HasForeignKey(x => x.ExpenseId)
-            .HasPrincipalKey(x => x.Id);
+            .HasPrincipalKey(x => x.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(s => s.Allocations).AutoInclude();
 
         builder.Property<uint>("Version").IsRowVersion();
+        
+        builder.Navigation(expense => expense.Allocations)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

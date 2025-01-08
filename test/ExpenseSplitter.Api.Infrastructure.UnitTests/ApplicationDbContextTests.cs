@@ -44,7 +44,6 @@ public sealed class ApplicationDbContextTests : IDisposable
         entity.GetOnSaveDomainEvents().Should().BeEmpty();
     }
     
-    
     private sealed class TestEntity : Entity<Guid>
     {
         public TestEntity(Guid id) : base(id)

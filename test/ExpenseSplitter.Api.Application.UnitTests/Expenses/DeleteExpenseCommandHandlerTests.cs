@@ -9,38 +9,35 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
 public class DeleteExpenseCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<IExpenseRepository> expenseRepositoryMock;
     private readonly DeleteExpenseCommandHandler handler;
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly IExpenseRepository expenseRepository = Substitute.For<IExpenseRepository>();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly Fixture fixture = CustomFixture.Create();
 
     public DeleteExpenseCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        expenseRepositoryMock = new Mock<IExpenseRepository>();
-        Mock<ISettlementRepository> settlementRepositoryMock = new();
-        Mock<IDateTimeProvider> dateTimeProviderMock = new();
-        Mock<IUnitOfWork> unitOfWorkMock = new();
+        var expense = fixture.Create<Expense>();
+        expenseRepository
+            .GetById(Arg.Any<ExpenseId>(), Arg.Any<CancellationToken>())
+            .Returns(expense);
 
-        expenseRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<Expense>());
+        settlementUserRepository
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
-        settlementUserRepositoryMock
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        settlementRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<Settlement>());
+        settlementRepository
+            .GetById(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(fixture.Create<Settlement>());
 
         handler = new DeleteExpenseCommandHandler(
-            settlementUserRepositoryMock.Object,
-            expenseRepositoryMock.Object,
-            settlementRepositoryMock.Object,
-            dateTimeProviderMock.Object,
-            unitOfWorkMock.Object
+            settlementUserRepository,
+            expenseRepository,
+            settlementRepository,
+            dateTimeProvider,
+            unitOfWork
         );
     }
 
@@ -61,12 +58,11 @@ public class DeleteExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenExpenseWitIdDoesNotExist()
     {
-        expenseRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Expense) null!);
+        expenseRepository
+            .GetById(Arg.Any<ExpenseId>(), Arg.Any<CancellationToken>())
+            .Returns((Expense)default);
 
         var command = fixture.Create<DeleteExpenseCommand>();
-
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();
@@ -76,12 +72,11 @@ public class DeleteExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserCantAccessSettlement()
     {
-        settlementUserRepositoryMock
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+        settlementUserRepository
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(false);
 
         var command = fixture.Create<DeleteExpenseCommand>();
-
         var response = await handler.Handle(command, default);
 
         response.IsFailure.Should().BeTrue();

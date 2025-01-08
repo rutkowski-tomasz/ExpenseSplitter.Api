@@ -2,7 +2,6 @@
 using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 
@@ -10,32 +9,28 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class CreateSettlementCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly IUserContext userContext = Substitute.For<IUserContext>();
+    private readonly IInviteCodeService inviteCodeService = Substitute.For<IInviteCodeService>();
+    private readonly IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    
     private readonly CreateSettlementCommandHandler handler;
 
     public CreateSettlementCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
-        Mock<IParticipantRepository> participantRepositoryMock = new();
-        Mock<ISettlementUserRepository> settlementUserRepositoryMock = new();
-        var userContextMock = new Mock<IUserContext>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var inviteCodeServiceMock = new Mock<IInviteCodeService>();
-        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
-
         handler = new CreateSettlementCommandHandler(
-            settlementRepositoryMock.Object,
-            participantRepositoryMock.Object,
-            settlementUserRepositoryMock.Object,
-            userContextMock.Object,
-            inviteCodeServiceMock.Object,
-            dateTimeProviderMock.Object,
-            unitOfWorkMock.Object
+            settlementRepository,
+            settlementUserRepository,
+            userContext,
+            inviteCodeService,
+            dateTimeProvider,
+            unitOfWork
         );
     }
-
+        
     [Fact]
     public async Task Validate_ShouldFail_WhenNameIsEmpty()
     {
@@ -60,7 +55,9 @@ public class CreateSettlementCommandHandlerTests
         response.IsSuccess.Should().BeTrue();
         response.Value.Should().NotBeEmpty();
 
-        settlementRepositoryMock.Verify(x => x.Add(It.Is<Settlement>(y => y.Name == command.Name)), Times.Once);
+        settlementRepository
+            .Received(1)
+            .Add(Arg.Is<Settlement>(y => y.Name == command.Name));
     }
 
     [Fact]
@@ -76,7 +73,9 @@ public class CreateSettlementCommandHandlerTests
         response.IsFailure.Should().BeTrue();
         response.AppError.Type.Should().Be(SettlementErrors.EmptyName.Type);
 
-        settlementRepositoryMock.Verify(x => x.Add(It.Is<Settlement>(y => y.Name == command.Name)), Times.Never);
+        settlementRepository
+            .DidNotReceive()
+            .Add(Arg.Is<Settlement>(y => y.Name == command.Name));
     }
 }
 

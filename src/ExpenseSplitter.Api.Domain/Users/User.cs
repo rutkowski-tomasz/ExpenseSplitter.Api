@@ -2,7 +2,7 @@
 
 namespace ExpenseSplitter.Api.Domain.Users;
 
-public sealed class User : Entity<UserId>
+public sealed class User : AggregateRoot<UserId>
 {
     private User(
         UserId id,

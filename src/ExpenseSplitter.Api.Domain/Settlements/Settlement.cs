@@ -1,11 +1,15 @@
 ﻿using ExpenseSplitter.Api.Domain.Abstractions;
+using ExpenseSplitter.Api.Domain.Common;
+using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements.Events;
 using ExpenseSplitter.Api.Domain.Users;
 
 namespace ExpenseSplitter.Api.Domain.Settlements;
 
-public sealed class Settlement : Entity<SettlementId>
+public sealed class Settlement : AggregateRoot<SettlementId>
 {
+    private readonly List<Participant> participants = [];
+
     private Settlement(
         SettlementId id,
         string name,
@@ -26,6 +30,7 @@ public sealed class Settlement : Entity<SettlementId>
     public UserId CreatorUserId { get; private set; }
     public DateTime CreatedOnUtc { get; private set; }
     public DateTime UpdatedOnUtc { get; private set; }
+    public IReadOnlyList<Participant> Participants => participants.AsReadOnly();
 
     public static Result<Settlement> Create(string name, string inviteCode, UserId creatorUserId, DateTime createdOnUtc)
     {
@@ -54,5 +59,52 @@ public sealed class Settlement : Entity<SettlementId>
     public void SetUpdatedOnUtc(DateTime updatedOnUtc)
     {
         UpdatedOnUtc = updatedOnUtc;
+    }
+
+    public Result AddParticipant(string nickname)
+    {
+        var participantResult = Participant.Create(Id, nickname);
+        if (participantResult.IsFailure)
+        {
+            return participantResult;
+        }
+        
+        participants.Add(participantResult.Value);
+        return Result.Success();
+    }
+    
+    public Result UpdateParticipant(ParticipantId participantId, string nickname)
+    {
+        var participant = participants.FirstOrDefault(x => x.Id == participantId);
+        if (participant is null)
+        {
+            return SettlementErrors.ParticipantNotFound;
+        }
+
+        var setNicknameResult = participant.SetNickname(nickname);
+        return setNicknameResult;
+    }
+    
+    public Result RemoveParticipant(ParticipantId participantId)
+    {
+        var allocation = participants.FirstOrDefault(x => x.Id == participantId);
+        if (allocation is null)
+        {
+            return Result.Failure(SettlementErrors.ParticipantNotFound);
+        }
+
+        participants.Remove(allocation);
+
+        return Result.Success();
+    }
+
+    public bool IsParticipantInSettlement(ParticipantId participantId)
+    {
+        return participants.Select(x => x.Id).Contains(participantId);
+    }
+
+    public bool AreAllParticipantsInSettlement(IEnumerable<ParticipantId> participantIds)
+    {
+        return participantIds.All(participants.Select(x => x.Id).Contains);
     }
 }

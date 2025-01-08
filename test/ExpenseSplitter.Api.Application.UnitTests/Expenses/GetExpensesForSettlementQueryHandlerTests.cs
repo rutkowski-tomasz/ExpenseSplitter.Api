@@ -6,35 +6,24 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
 public class GetExpensesForSettlementQueryHandlerTests
 {
-    private readonly GetExpensesForSettlementQueryHandler getExpensesForSettlementQueryHandler;
-    private readonly Fixture fixture;
-    private readonly Mock<IExpenseRepository> expenseRepositoryMock;
+    private readonly GetExpensesForSettlementQueryHandler handler;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly IExpenseRepository expenseRepository = Substitute.For<IExpenseRepository>();
+    private readonly GetExpensesForSettlementQuery query;
 
     public GetExpensesForSettlementQueryHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        expenseRepositoryMock = new Mock<IExpenseRepository>();
-        
-        getExpensesForSettlementQueryHandler = new GetExpensesForSettlementQueryHandler(
-            expenseRepositoryMock.Object
-        );
+        handler = new GetExpensesForSettlementQueryHandler(expenseRepository);
+        query = fixture.Create<GetExpensesForSettlementQuery>();
     }
 
     [Fact]
     public async Task Handle_ShouldReturnMappedExpenses()
     {
-        var request = fixture.Create<GetExpensesForSettlementQuery>();
         var expenses = fixture.CreateMany<Expense>(2).ToList();
-        expenseRepositoryMock
-            .Setup(x => x.GetPagedBySettlementId(
-                It.Is<SettlementId>(y => y.Value == request.SettlementId), 
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<CancellationToken>()
-            ))
-            .ReturnsAsync(expenses);
+        MockExpenseRepositoryGetPagedBySettlementId(expenses);
 
-        var result = await getExpensesForSettlementQueryHandler.Handle(request, default);
+        var result = await handler.Handle(query, default);
 
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
@@ -45,21 +34,23 @@ public class GetExpensesForSettlementQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnSuccess_WhenNoExpenses()
     {
-        var request = fixture.Create<GetExpensesForSettlementQuery>();
-        var expenses = Enumerable.Empty<Expense>().ToList();
-        expenseRepositoryMock
-            .Setup(x => x.GetPagedBySettlementId(
-                It.Is<SettlementId>(y => y.Value == request.SettlementId), 
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<CancellationToken>()
-            ))
-            .ReturnsAsync(expenses);
+        MockExpenseRepositoryGetPagedBySettlementId([]);
 
-        var result = await getExpensesForSettlementQueryHandler.Handle(request, default);
+        var result = await handler.Handle(query, default);
 
         result.IsSuccess.Should().BeTrue();
         result.Should().NotBeNull();
         result.Value.Expenses.Should().HaveCount(0);
+    }
+
+    private void MockExpenseRepositoryGetPagedBySettlementId(List<Expense> expenses)
+    {
+        expenseRepository.GetPagedBySettlementId(
+                Arg.Is<SettlementId>(y => y.Value == query.SettlementId), 
+                Arg.Any<int>(),
+                Arg.Any<int>(),
+                Arg.Any<CancellationToken>()
+            )
+            .Returns(expenses);
     }
 }

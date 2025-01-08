@@ -12,7 +12,6 @@ public class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
     public void Configure(EntityTypeBuilder<Participant> builder)
     {
         builder.ToTable("participants");
-
         builder.HasKey(participant => participant.Id);
 
         builder.Property(participant => participant.Id)
@@ -21,7 +20,8 @@ public class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
         builder
             .HasOne<Settlement>()
             .WithMany()
-            .HasForeignKey(participant => participant.SettlementId);
+            .HasForeignKey(participant => participant.SettlementId)
+            .HasPrincipalKey(settlement => settlement.Id);   // Add this line
 
         builder.Property(participant => participant.Nickname);
     }

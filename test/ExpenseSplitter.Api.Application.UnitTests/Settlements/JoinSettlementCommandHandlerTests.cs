@@ -8,32 +8,29 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class JoinSettlementCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly IUserContext userContext = Substitute.For<IUserContext>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly JoinSettlementCommandHandler handler;
 
     public JoinSettlementCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        var userContextMock = new Mock<IUserContext>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        settlementRepository
+            .GetByInviteCode(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(fixture.Create<Settlement>());
 
-        settlementRepositoryMock
-            .Setup(x => x.GetByInviteCode(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<Settlement>());
-
-        settlementUserRepositoryMock
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+        settlementUserRepository
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(false);
 
         handler = new JoinSettlementCommandHandler(
-            settlementRepositoryMock.Object,
-            settlementUserRepositoryMock.Object,
-            userContextMock.Object,
-            unitOfWorkMock.Object
+            settlementRepository,
+            settlementUserRepository,
+            userContext,
+            unitOfWork
         );
     }
 
@@ -54,9 +51,9 @@ public class JoinSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenSettlementWithInviteCodeDoesNotExist()
     {
-        settlementRepositoryMock
-            .Setup(x => x.GetByInviteCode(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Settlement) null!);
+        settlementRepository
+            .GetByInviteCode(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((Settlement) default);
 
         var command = fixture.Create<JoinSettlementCommand>();
 
@@ -69,9 +66,9 @@ public class JoinSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserAlreadyJoinedSettlement()
     {
-        settlementUserRepositoryMock
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        settlementUserRepository
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var command = fixture.Create<JoinSettlementCommand>();
 
@@ -82,7 +79,7 @@ public class JoinSettlementCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShoulSuccess()
+    public async Task Handle_ShouldSuccess()
     {
         var command = fixture.Create<JoinSettlementCommand>();
 

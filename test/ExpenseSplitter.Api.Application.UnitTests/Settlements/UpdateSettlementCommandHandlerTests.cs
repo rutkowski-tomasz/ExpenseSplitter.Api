@@ -1,3 +1,4 @@
+using AutoFixture.Dsl;
 using ExpenseSplitter.Api.Application.Abstractions.Clock;
 using ExpenseSplitter.Api.Application.Settlements.UpdateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
@@ -9,68 +10,63 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class UpdateSettlementCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepository;
-    private readonly Mock<ISettlementRepository> settlementRepository;
-    private readonly Mock<IParticipantRepository> participantRepository;
-    private readonly Mock<IDateTimeProvider> dateTimeProvider;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly UpdateSettlementCommandHandler handler;
     private readonly Settlement settlement;
+    private readonly DateTime someDateTime;
 
     public UpdateSettlementCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementUserRepository = new Mock<ISettlementUserRepository>();
-        settlementRepository = new Mock<ISettlementRepository>();
-        participantRepository = new Mock<IParticipantRepository>();
-        dateTimeProvider = new Mock<IDateTimeProvider>();
-        Mock<IUnitOfWork> unitOfWork = new();
+        settlement = fixture.Create<Settlement>();
+        settlement.AddParticipant(fixture.Create<string>());
+        settlement.AddParticipant(fixture.Create<string>());
 
         settlementUserRepository
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .CanUserAccessSettlement(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(true);
 
-        settlement = fixture.Create<Settlement>();
         settlementRepository
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlement);
-
-        participantRepository
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.CreateMany<Participant>().ToList());
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(settlement);
         
+        someDateTime = fixture.Create<DateTime>();
+        dateTimeProvider.UtcNow.Returns(someDateTime);
+
         handler = new UpdateSettlementCommandHandler(
-            settlementUserRepository.Object,
-            settlementRepository.Object,
-            participantRepository.Object,
-            dateTimeProvider.Object,
-            unitOfWork.Object
+            settlementUserRepository,
+            settlementRepository,
+            dateTimeProvider,
+            unitOfWork
         );
     }
-
+    
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenUserHasNoAccessToSettlement()
     {
         settlementUserRepository
-            .Setup(x => x.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .CanUserAccessSettlement(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(false);
 
-        var request = fixture.Create<UpdateSettlementCommand>();
-        var result = await handler.Handle(request, default);
+        var command = ComposeCommand().Create();
+        var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
         result.AppError.Type.Should().Be(SettlementErrors.Forbidden.Type);
     }
-    
+
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenSettlementDoesNotExist()
     {
         settlementRepository
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Settlement) null!);
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns((Settlement) default);
 
-        var request = fixture.Create<UpdateSettlementCommand>();
-        var result = await handler.Handle(request, default);
+        var command = ComposeCommand().Create();
+        var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
         result.AppError.Type.Should().Be(SettlementErrors.NotFound.Type);
@@ -79,36 +75,31 @@ public class UpdateSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldSetUpdatedOnUtc()
     {
-        var now = fixture.Create<DateTime>();
-        dateTimeProvider
-            .Setup(x => x.UtcNow)
-            .Returns(now);
+        var command = ComposeCommand().Create();
 
-        var request = fixture.Create<UpdateSettlementCommand>();
-        var result = await handler.Handle(request, default);
+        var result = await handler.Handle(command, default);
 
         result.IsSuccess.Should().BeTrue();
-        settlement.UpdatedOnUtc.Should().Be(now);
+        settlement.UpdatedOnUtc.Should().Be(someDateTime);
     }
     
     [Fact]
     public async Task Handle_ShouldSetSettlementName()
     {
-        var request = fixture.Create<UpdateSettlementCommand>();
-        var result = await handler.Handle(request, default);
+        var command = ComposeCommand().Create();
+        var result = await handler.Handle(command, default);
 
         result.IsSuccess.Should().BeTrue();
-        settlement.Name.Should().Be(request.Name);
+        settlement.Name.Should().Be(command.Name);
     }
     
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenNameIsEmpty()
     {
-        var request = fixture
-            .Build<UpdateSettlementCommand>()
+        var command = ComposeCommand()
             .With(x => x.Name, "")
             .Create();
-        var result = await handler.Handle(request, default);
+        var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
         result.AppError.Type.Should().Be(SettlementErrors.EmptyName.Type);
@@ -117,75 +108,54 @@ public class UpdateSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldRemoveParticipants_WhenNotPresentInUpdateCommand()
     {
-        var participant1 = fixture.Create<Participant>();
-        var participant2 = fixture.Create<Participant>();
-
-        participantRepository
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([participant1, participant2]);
-
-        var request = fixture
-            .Build<UpdateSettlementCommand>()
-            .With(
-                x => x.Participants, 
-                new List<UpdateSettlementCommandParticipant>
-                {
-                    new (participant2.Id.Value, "Andrzej")
-                }
-            )
+        var command = ComposeCommand()
+            .With(x => x.Participants, [
+                new UpdateSettlementCommandParticipant(settlement.Participants[1].Id.Value, "Andrzej")
+            ])
             .Create();
-        var result = await handler.Handle(request, default);
+
+        var result = await handler.Handle(command, default);
 
         result.IsSuccess.Should().BeTrue();
-        participantRepository.Verify(x => x.Remove(It.Is<Participant>(y => y.Id == participant1.Id)));
+        settlement.Participants.Should().HaveCount(1);
     }
 
     [Fact]
     public async Task Handle_ShouldAddParticipants_WhenNotPresentInRepository()
     {
-        var participant1 = fixture.Create<Participant>();
+        var firstParticipantId = settlement.Participants[0].Id;
+        var secondParticipantName = settlement.Participants[1].Nickname;
 
-        participantRepository
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([participant1]);
-
-        var request = fixture
-            .Build<UpdateSettlementCommand>()
+        var command = ComposeCommand()
             .With(
                 x => x.Participants, 
                 new List<UpdateSettlementCommandParticipant> 
                 {
                     new (null, "Krzysztof"),
-                    new (participant1.Id.Value, participant1.Nickname)
+                    new (settlement.Participants[1].Id.Value, settlement.Participants[1].Nickname)
                 }
             )
             .Create();
-        var result = await handler.Handle(request, default);
+
+        var result = await handler.Handle(command, default);
 
         result.IsSuccess.Should().BeTrue();
-        participantRepository.Verify(x => x.Add(It.Is<Participant>(y => y.Nickname == "Krzysztof")), Times.Once);
+        settlement.Participants.Should().HaveCount(2);
+        settlement.Participants.Should().NotContain(x => x.Id == firstParticipantId);
+        settlement.Participants.Should().Contain(x => x.Nickname == secondParticipantName);
+        settlement.Participants.Should().Contain(x => x.Nickname == "Krzysztof");
     }
     
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenTryingToUpdateParticipantToEmptyName()
     {
-        var participant1 = fixture.Create<Participant>();
-
-        participantRepository
-            .Setup(x => x.GetAllBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([participant1]);
-
-        var request = fixture
-            .Build<UpdateSettlementCommand>()
-            .With(
-                x => x.Participants, 
-                new List<UpdateSettlementCommandParticipant>
-                {
-                    new (participant1.Id.Value, "")
-                }
-            )
+        var command = ComposeCommand()
+            .With(x => x.Participants, [
+                new UpdateSettlementCommandParticipant(settlement.Participants[1].Id.Value, "")
+            ])
             .Create();
-        var result = await handler.Handle(request, default);
+
+        var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
         result.AppError.Type.Should().Be(ParticipantErrors.NicknameEmpty.Type);
@@ -194,19 +164,28 @@ public class UpdateSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenCreatingParticipantWithEmptyNickname()
     {
-        var request = fixture
-            .Build<UpdateSettlementCommand>()
-            .With(
-                x => x.Participants, 
-                new List<UpdateSettlementCommandParticipant>
-                {
-                    new (null, "")
-                }
-            )
+        var command = ComposeCommand()
+            .With(x => x.Participants, [
+                new UpdateSettlementCommandParticipant(null, "")
+            ])
             .Create();
-        var result = await handler.Handle(request, default);
+
+        var result = await handler.Handle(command, default);
 
         result.IsFailure.Should().BeTrue();
         result.AppError.Type.Should().Be(ParticipantErrors.NicknameEmpty.Type);
+    }
+    
+    private IPostprocessComposer<UpdateSettlementCommand> ComposeCommand()
+    {
+        var participants = settlement.Participants.Select(x => new UpdateSettlementCommandParticipant(
+            x.Id.Value,
+            fixture.Create<string>())
+        ).ToList();
+
+        return fixture
+            .Build<UpdateSettlementCommand>()
+            .With(x => x.Id, settlement.Id.Value)
+            .With(x => x.Participants, participants);
     }
 }

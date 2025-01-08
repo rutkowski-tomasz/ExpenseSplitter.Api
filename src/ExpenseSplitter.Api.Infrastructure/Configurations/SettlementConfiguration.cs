@@ -32,6 +32,15 @@ public class SettlementConfiguration : IEntityTypeConfiguration<Settlement>
         builder.Property(settlement => settlement.CreatedOnUtc);
 
         builder.Property(settlement => settlement.UpdatedOnUtc);
+        
+        builder
+            .HasMany(s => s.Participants)
+            .WithOne()
+            .HasForeignKey(x => x.SettlementId)
+            .HasPrincipalKey(x => x.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(x => x.Participants).AutoInclude();
 
         builder.Property<uint>("Version").IsRowVersion();
     }

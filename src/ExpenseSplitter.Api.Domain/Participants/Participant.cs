@@ -19,7 +19,7 @@ public sealed class Participant : Entity<ParticipantId>
 
     public string Nickname { get; private set; }
 
-    public static Result<Participant> Create(SettlementId settlementId, string nickname)
+    internal static Result<Participant> Create(SettlementId settlementId, string nickname)
     {
         if (string.IsNullOrWhiteSpace(nickname))
         {
