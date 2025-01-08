@@ -100,6 +100,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main
 
       - name: Create a GitHub release
         if: ${{ env.PushImage }}
@@ -116,9 +117,38 @@ jobs:
             echo "📌 Release Tag: ${{ steps.version.outputs.new_tag }}" >> $GITHUB_STEP_SUMMARY
           fi
 
+  migrate:
+    name: DB Migration Script
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      # Alternative: dotnet ef migrations bundle
+      - name: Create migration script
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet ef migrations script \ 
+            --project src/ExpenseSplitter.Api.Infrastructure \
+            --startup-project src/ExpenseSplitter.Api.Presentation \
+            --output migration.sql \
+            --idempotent
+
+      - name: Upload migration script
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration.sql
+          path: migration.sql
+        
   image:
-    name: Image
-    needs: [test, scan, version]
+    name: Container Image
+    needs: [test, scan, version, migrate]
     permissions:
       packages: write
     runs-on: ubuntu-latest
@@ -139,7 +169,6 @@ jobs:
       - name: Construct image tag
         id: image_tag
         run: |
-          echo ${{ github.event.inputs.deploy }}
           image_tag=$(echo "${{ env.Registry }}/${{ env.ImageName }}" | tr '[:upper:]' '[:lower:]')
           echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
 
@@ -162,45 +191,3 @@ jobs:
             ignore-unfixed: true
             vuln-type: 'os,library'
             severity: 'HIGH,CRITICAL'
-
-  migrate:
-    name: Migrate
-    needs: [image]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Create migration script
-        run: |
-          dotnet tool install --global dotnet-ef
-          dotnet ef migrations script \
-            --project src/ExpenseSplitter.Api.Infrastructure \
-            --startup-project src/ExpenseSplitter.Api.Presentation \
-            --output migration.sql \
-            --idempotent
-
-      - name: Upload migration script
-        uses: actions/upload-artifact@v4
-        with:
-          name: migration.sql
-          path: migration.sql
-
-      # Apply migration script
-      # - uses: ikalnytskyi/action-setup-postgres@v7
-      # - run: psql "${{ secrets.DB_CONNECTION_STRING }}" -f migration.sql
-
-      # Alternative to creating script: bundle
-      # - name: Bundle Migrations
-      #   run: |
-      #     dotnet tool install --global dotnet-ef
-      #     dotnet ef migrations bundle --project src/ExpenseSplitter.Api.Infrastructure --output bundle
-      
-      # - name: Run EF Migrations
-      #   run: ./bundle --connection "${{ secrets.DB_CONNECTION_STRING }}"
