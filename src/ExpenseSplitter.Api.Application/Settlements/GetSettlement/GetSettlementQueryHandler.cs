@@ -11,7 +11,6 @@ namespace ExpenseSplitter.Api.Application.Settlements.GetSettlement;
 internal sealed class GetSettlementQueryHandler(
     ISettlementRepository settlementRepository,
     ISettlementUserRepository settlementUserRepository,
-    IParticipantRepository participantRepository,
     IExpenseRepository expenseRepository,
     IEtagService etagService
 ) : IQueryHandler<GetSettlementQuery, GetSettlementQueryResult>
@@ -37,8 +36,6 @@ internal sealed class GetSettlementQueryHandler(
             return SettlementErrors.IfNoneMatchNotModified;
         }
 
-        var participants = await participantRepository.GetAllBySettlementId(settlementId, cancellationToken);
-
         var expenses = await expenseRepository.GetAllBySettlementId(settlementId, cancellationToken);
         var (totalCost, yourCost) = CalculateTotalAndUserCost(expenses, settlementUser.ParticipantId);
 
@@ -48,7 +45,7 @@ internal sealed class GetSettlementQueryHandler(
             settlement.InviteCode,
             totalCost,
             yourCost,
-            participants.Select(x => new GetSettlementQueryResultParticipant(
+            settlement.Participants.Select(x => new GetSettlementQueryResultParticipant(
                 x.Id.Value,
                 x.Nickname
             ))

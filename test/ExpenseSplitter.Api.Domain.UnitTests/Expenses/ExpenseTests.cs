@@ -7,24 +7,37 @@ namespace ExpenseSplitter.Api.Domain.UnitTests.Expenses;
 
 public class ExpenseTests
 {
+    private readonly Fixture fixture = new();
+
     [Fact]
     public void Create_ShouldReturnSuccess()
     {
-        var name = new Fixture().Create<string>();
-        var amount = new Fixture().Create<Amount>();
-        var dateTime = new Fixture().Create<DateTime>();
-        var settlementId = new Fixture().Create<SettlementId>();
-        var participantId = new Fixture().Create<ParticipantId>();
+        var title = fixture.Create<string>();
+        var dateTime = fixture.Create<DateTime>();
+        var settlementId = fixture.Create<SettlementId>();
+        var participantIds = fixture.CreateMany<ParticipantId>().ToList();
+        var allocations = participantIds.ToDictionary(
+            x => x,
+            _ => fixture.Create<decimal>()
+        );
 
-        var expense = Expense.Create(name, amount, DateOnly.FromDateTime(dateTime), settlementId, participantId);
-        
+        var expense = Expense.Create(
+            title,
+            DateOnly.FromDateTime(dateTime),
+            settlementId,
+            participantIds[0],
+            allocations
+        );
+
+        var expectedTotalAmount = Amount.Create(allocations.Sum(x => x.Value)).Value;
+
         expense.IsSuccess.Should().BeTrue();
         expense.Value.Id.Value.Should().NotBeEmpty();
-        expense.Value.Title.Should().Be(name);
-        expense.Value.Amount.Should().Be(amount);
+        expense.Value.Title.Should().Be(title);
+        expense.Value.Amount.Should().Be(expectedTotalAmount);
         expense.Value.PaymentDate.Should().Be(DateOnly.FromDateTime(dateTime));
         expense.Value.SettlementId.Should().Be(settlementId);
-        expense.Value.PayingParticipantId.Should().Be(participantId);
+        expense.Value.PayingParticipantId.Should().Be(participantIds[0]);
     }
 
     [Fact]

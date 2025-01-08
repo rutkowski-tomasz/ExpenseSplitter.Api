@@ -8,7 +8,7 @@ namespace ExpenseSplitter.Api.Application.Participants.ClaimParticipant;
 
 internal sealed class ClaimParticipantCommandHandler(
     ISettlementUserRepository settlementUserRepository,
-    IParticipantRepository participantRepository,
+    ISettlementRepository settlementRepository,
     IUnitOfWork unitOfWork
 ) : ICommandHandler<ClaimParticipantCommand>
 {
@@ -23,7 +23,8 @@ internal sealed class ClaimParticipantCommandHandler(
             return SettlementErrors.Forbidden;
         }
 
-        if (!await participantRepository.IsParticipantInSettlement(settlementId, participantId, cancellationToken))
+        var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
+        if (!settlement!.IsParticipantInSettlement(participantId))
         {
             return ParticipantErrors.NotFound;
         }

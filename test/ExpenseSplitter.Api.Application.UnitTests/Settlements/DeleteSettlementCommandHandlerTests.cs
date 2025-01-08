@@ -9,31 +9,28 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class DeleteSettlementCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementRepository> settlementRepositoryMock;
-    private readonly Mock<IUserContext> userContext;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly IUserContext userContext = Substitute.For<IUserContext>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IEtagService etagService = Substitute.For<IEtagService>();
     private readonly DeleteSettlementCommandHandler handler;
+    private readonly Settlement settlement;
 
     public DeleteSettlementCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementRepositoryMock = new Mock<ISettlementRepository>();
-        userContext = new Mock<IUserContext>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var etagServiceMock = new Mock<IEtagService>();
+        settlement = fixture.Create<Settlement>();
+        userContext.UserId.Returns(settlement.CreatorUserId);
 
-        var settlement = fixture.Create<Settlement>();
-        userContext.Setup(x => x.UserId).Returns(settlement.CreatorUserId);
-
-        settlementRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlement);
+        settlementRepository
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(settlement);
 
         handler = new DeleteSettlementCommandHandler(
-            settlementRepositoryMock.Object,
-            userContext.Object,
-            unitOfWorkMock.Object,
-            etagServiceMock.Object
+            settlementRepository,
+            userContext,
+            unitOfWork,
+            etagService
         );
     }
 
@@ -54,11 +51,11 @@ public class DeleteSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenSettlementWitIdDoesNotExist()
     {
-        settlementRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Settlement) null!);
+        settlementRepository
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns((Settlement) default);
 
-        var command = fixture.Create<DeleteSettlementCommand>();
+        var command = BuildCommand();
 
         var response = await handler.Handle(command, default);
 
@@ -69,9 +66,9 @@ public class DeleteSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenUserIsNotSettlementCreator()
     {
-        userContext.Setup(x => x.UserId).Returns(UserId.New());
+        userContext.UserId.Returns(UserId.New());
 
-        var command = fixture.Create<DeleteSettlementCommand>();
+        var command = BuildCommand();
 
         var response = await handler.Handle(command, default);
 
@@ -80,12 +77,20 @@ public class DeleteSettlementCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShoulSuccess()
+    public async Task Handle_ShouldSuccess()
     {
-        var command = fixture.Create<DeleteSettlementCommand>();
+        var command = BuildCommand();
 
         var response = await handler.Handle(command, default);
 
         response.IsSuccess.Should().BeTrue();
+    }
+
+    private DeleteSettlementCommand BuildCommand()
+    {
+        return fixture
+            .Build<DeleteSettlementCommand>()
+            .With(x => x.Id, settlement.Id.Value)
+            .Create();
     }
 }

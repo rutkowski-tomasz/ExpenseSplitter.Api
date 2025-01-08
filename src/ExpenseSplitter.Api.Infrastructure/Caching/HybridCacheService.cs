@@ -86,15 +86,14 @@ public class HybridCacheService(HybridCache cache) : ICacheService
             _ => ValueTask.FromResult<T?>(default),
             new HybridCacheEntryOptions
             {
-                Expiration = TimeSpan.Zero,
-                LocalCacheExpiration = TimeSpan.Zero
+                Expiration = TimeSpan.FromMicroseconds(1),
+                LocalCacheExpiration = TimeSpan.FromMicroseconds(1)
             },
             cancellationToken: cancellationToken
         );
 
-        return result is not null
-            ? (false, default)
-            : (true, result);
+        var isFound = result is not null;
+        return (isFound, result);
     }
     
     public Task Set<T>(string key, T value, TimeSpan? expiration = null, CancellationToken cancellationToken = default)

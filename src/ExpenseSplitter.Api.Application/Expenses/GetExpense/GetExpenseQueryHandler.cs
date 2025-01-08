@@ -10,17 +10,14 @@ namespace ExpenseSplitter.Api.Application.Expenses.GetExpense;
 internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, GetExpenseQueryResult>
 {
     private readonly IExpenseRepository expenseRepository;
-    private readonly IAllocationRepository allocationRepository;
     private readonly ISettlementUserRepository settlementUserRepository;
 
     public GetExpenseQueryHandler(
         IExpenseRepository expenseRepository,
-        IAllocationRepository allocationRepository,
         ISettlementUserRepository settlementUserRepository
     )
     {
         this.expenseRepository = expenseRepository;
-        this.allocationRepository = allocationRepository;
         this.settlementUserRepository = settlementUserRepository;
     }
 
@@ -38,15 +35,13 @@ internal sealed class GetExpenseQueryHandler : IQueryHandler<GetExpenseQuery, Ge
             return Result.Failure<GetExpenseQueryResult>(SettlementErrors.Forbidden);
         }
 
-        var allocations = await allocationRepository.GetAllByExpenseId(expenseId, cancellationToken);
-
         var response = new GetExpenseQueryResult(
             expense.Id.Value,
             expense.Title,
             expense.PayingParticipantId.Value,
             expense.PaymentDate,
             expense.Amount.Value,
-            allocations.Select(x => new GetExpenseQueryResultAllocation(
+            expense.Allocations.Select(x => new GetExpenseQueryResultAllocation(
                 x.Id.Value,
                 x.ParticipantId.Value,
                 x.Amount.Value

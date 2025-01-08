@@ -9,8 +9,8 @@ namespace ExpenseSplitter.Api.Application.Settlements.CalculateReimbursement;
 
 internal sealed class CalculateReimbursementQueryHandler(
     ISettlementUserRepository settlementUserRepository,
-    IExpenseRepository expenseRepository,
-    IParticipantRepository participantRepository
+    ISettlementRepository settlementRepository,
+    IExpenseRepository expenseRepository
 ) : IQueryHandler<CalculateReimbursementQuery, CalculateReimbursementQueryResult>
 {
     public async Task<Result<CalculateReimbursementQueryResult>> Handle(CalculateReimbursementQuery request, CancellationToken cancellationToken)
@@ -21,10 +21,10 @@ internal sealed class CalculateReimbursementQueryHandler(
             return SettlementErrors.Forbidden;
         }
 
+        var settlement = await settlementRepository.GetById(settlementId, cancellationToken);
         var expenses = await expenseRepository.GetAllBySettlementId(settlementId, cancellationToken);
-        var participants = await participantRepository.GetAllBySettlementId(settlementId, cancellationToken);
 
-        var balances = CalculateBalances(expenses, participants);
+        var balances = CalculateBalances(settlement, expenses);
         var suggestedReimbursements = CalculateSuggestedReimbursements(balances);
 
         return new CalculateReimbursementQueryResult(
@@ -34,11 +34,11 @@ internal sealed class CalculateReimbursementQueryHandler(
     }
 
     private static List<CalculateReimbursementQueryResultBalance> CalculateBalances(
-        IEnumerable<Expense> expenses,
-        IEnumerable<Participant> participants
+        Settlement settlement,
+        IEnumerable<Expense> expenses
     )
     {
-        var balances = participants.ToDictionary(x => x.Id, _ => 0m);
+        var balances = settlement.Participants.ToDictionary(x => x.Id, _ => 0m);
         foreach (var expense in expenses)
         {
             balances[expense.PayingParticipantId] += expense.Amount.Value;

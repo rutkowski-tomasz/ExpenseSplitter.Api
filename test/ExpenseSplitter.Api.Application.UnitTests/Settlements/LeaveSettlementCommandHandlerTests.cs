@@ -7,23 +7,20 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Settlements;
 
 public class LeaveSettlementCommandHandlerTests
 {
-    private readonly Fixture fixture;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
+    private readonly Fixture fixture = CustomFixture.Create();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly IUnitOfWork unitOfWorkMock = Substitute.For<IUnitOfWork>();
     private readonly LeaveSettlementCommandHandler handler;
 
     public LeaveSettlementCommandHandlerTests()
     {
-        fixture = CustomFixture.Create();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(fixture.Create<SettlementUser>());
+        settlementUserRepository
+            .GetBySettlementId(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(fixture.Create<SettlementUser>());
 
         handler = new LeaveSettlementCommandHandler(
-            settlementUserRepositoryMock.Object,
-            unitOfWorkMock.Object
+            settlementUserRepository,
+            unitOfWorkMock
         );
     }
 
@@ -44,9 +41,9 @@ public class LeaveSettlementCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldFail_WhenSettlementWithInviteCodeDoesNotExist()
     {
-        settlementUserRepositoryMock
-            .Setup(x => x.GetBySettlementId(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((SettlementUser) null!);
+        settlementUserRepository
+            .GetBySettlementId(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns((SettlementUser) default);
 
         var command = fixture.Create<LeaveSettlementCommand>();
 
@@ -57,7 +54,7 @@ public class LeaveSettlementCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShoulSuccess()
+    public async Task Handle_ShouldSuccess()
     {
         var command = fixture.Create<LeaveSettlementCommand>();
 

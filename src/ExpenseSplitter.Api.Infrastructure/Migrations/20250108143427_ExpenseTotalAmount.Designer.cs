@@ -3,6 +3,7 @@ using System;
 using ExpenseSplitter.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseSplitter.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250108143427_ExpenseTotalAmount")]
+    partial class ExpenseTotalAmount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,11 +127,18 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("settlement_id");
 
+                    b.Property<Guid?>("SettlementId1")
+                        .HasColumnType("uuid")
+                        .HasColumnName("settlement_id1");
+
                     b.HasKey("Id")
                         .HasName("pk_participants");
 
                     b.HasIndex("SettlementId")
                         .HasDatabaseName("ix_participants_settlement_id");
+
+                    b.HasIndex("SettlementId1")
+                        .HasDatabaseName("ix_participants_settlement_id1");
 
                     b.ToTable("participants", (string)null);
                 });
@@ -285,17 +295,22 @@ namespace ExpenseSplitter.Api.Infrastructure.Migrations
                         .HasForeignKey("SettlementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_expenses_settlement_settlement_id");
+                        .HasConstraintName("fk_expenses_settlements_settlement_id");
                 });
 
             modelBuilder.Entity("ExpenseSplitter.Api.Domain.Participants.Participant", b =>
                 {
                     b.HasOne("ExpenseSplitter.Api.Domain.Settlements.Settlement", null)
-                        .WithMany("Participants")
+                        .WithMany()
                         .HasForeignKey("SettlementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_participants_settlement_settlement_id");
+                        .HasConstraintName("fk_participants_settlements_settlement_id");
+
+                    b.HasOne("ExpenseSplitter.Api.Domain.Settlements.Settlement", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("SettlementId1")
+                        .HasConstraintName("fk_participants_settlements_settlement_id1");
                 });
 
             modelBuilder.Entity("ExpenseSplitter.Api.Domain.SettlementUsers.SettlementUser", b =>

@@ -7,26 +7,24 @@ namespace ExpenseSplitter.Api.Application.UnitTests.Abstractions.Idempotency;
 
 public class IdempotentBehaviorTests
 {
-    private readonly Mock<IIdempotencyService> idempotencyService;
+    private readonly IIdempotencyService idempotencyService;
     private readonly IdempotentBehavior<TestCommand, Result<int>> behavior;
     private readonly Guid idempotencyKey;
 
     public IdempotentBehaviorTests()
     {
-        idempotencyService = new Mock<IIdempotencyService>();
-
+        idempotencyService = Substitute.For<IIdempotencyService>();
         idempotencyKey = Guid.CreateVersion7();
-        idempotencyService
-            .Setup(x => x.GetIdempotencyKeyFromHeaders())
+        
+        idempotencyService.GetIdempotencyKeyFromHeaders()
             .Returns(idempotencyKey);
         
-        idempotencyService
-            .Setup(x => x.GetProcessedRequest<string>(idempotencyKey, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((true, "{\"IsSuccess\":true,\"Value\":43,\"AppError\":null}"));
+        idempotencyService.GetProcessedRequest<string>(
+            idempotencyKey, 
+            Arg.Any<CancellationToken>()
+        ).Returns((true, "{\"IsSuccess\":true,\"Value\":43,\"AppError\":null}"));
 
-        behavior = new IdempotentBehavior<TestCommand, Result<int>>(
-            idempotencyService.Object
-        );
+        behavior = new IdempotentBehavior<TestCommand, Result<int>>(idempotencyService);
     }
 
     private sealed class TestCommand : IBaseCommand;
@@ -34,8 +32,7 @@ public class IdempotentBehaviorTests
     [Fact]
     public async Task Handle_ShouldReturnNextValue_WhenIdempotencyKeyIsNotHeaders()
     {
-        idempotencyService
-            .Setup(x => x.GetIdempotencyKeyFromHeaders())
+        idempotencyService.GetIdempotencyKeyFromHeaders()
             .Returns(Result.Failure<Guid>(new AppError(ErrorType.NotFound, "Idempotency key not found")));
 
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(3)));
@@ -49,8 +46,7 @@ public class IdempotentBehaviorTests
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenIdempotencyKeyIsNotParseable()
     {
-        idempotencyService
-            .Setup(x => x.GetIdempotencyKeyFromHeaders())
+        idempotencyService.GetIdempotencyKeyFromHeaders()
             .Returns(Result.Failure<Guid>(new AppError(ErrorType.NotFound, "Idempotency key not found")));
 
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
@@ -64,9 +60,10 @@ public class IdempotentBehaviorTests
     [Fact]
     public async Task Handle_ShouldSuccess()
     {
-        idempotencyService
-            .Setup(x => x.GetProcessedRequest<string>(idempotencyKey, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((false, null));
+        idempotencyService.GetProcessedRequest<string>(
+            idempotencyKey, 
+            Arg.Any<CancellationToken>()
+        ).Returns((false, null));
 
         var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
 
@@ -75,8 +72,10 @@ public class IdempotentBehaviorTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(43);
         
-        idempotencyService.Verify(x =>
-            x.SaveIdempotentRequest(idempotencyKey, It.IsAny<string?>(), It.IsAny<CancellationToken>())
+        await idempotencyService.Received(1).SaveIdempotentRequest(
+            idempotencyKey, 
+            Arg.Any<string?>(), 
+            Arg.Any<CancellationToken>()
         );
     }
 }

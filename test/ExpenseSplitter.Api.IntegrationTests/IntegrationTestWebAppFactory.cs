@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Testcontainers.PostgreSql;
 
 namespace ExpenseSplitter.Api.IntegrationTests;
@@ -66,7 +65,7 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
 
         services.Remove(httpContextAccessorDescriptor);
 
-        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        var mockHttpContextAccessor = Substitute.For<IHttpContextAccessor>();
         var context = new DefaultHttpContext();
         
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
@@ -75,9 +74,9 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsy
         }));
 
         context.User = claimsPrincipal;
-        mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(context);
+        mockHttpContextAccessor.HttpContext.Returns(context);
 
-        services.AddTransient(_ => mockHttpContextAccessor.Object);
+        services.AddTransient(_ => mockHttpContextAccessor);
     }
 
     public new Task DisposeAsync()

@@ -7,6 +7,7 @@ using ExpenseSplitter.Api.Domain.Common;
 using ExpenseSplitter.Api.Domain.Expenses;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
+using NSubstitute.ExceptionExtensions;
 
 namespace ExpenseSplitter.Api.Application.UnitTests.Expenses;
 
@@ -14,42 +15,51 @@ public class UpdateExpenseCommandHandlerTests
 {
     private readonly Fixture fixture;
     private readonly UpdateExpenseCommandHandler handler;
-    private readonly Mock<IExpenseRepository> expenseRepositoryMock;
-    private readonly Mock<ISettlementUserRepository> settlementUserRepositoryMock;
-    private readonly Mock<IAllocationRepository> allocationRepositoryMock;
-    private readonly Mock<IUnitOfWork> unitOfWorkMock;
+    private readonly IExpenseRepository expenseRepository = Substitute.For<IExpenseRepository>();
+    private readonly ISettlementUserRepository settlementUserRepository = Substitute.For<ISettlementUserRepository>();
+    private readonly ISettlementRepository settlementRepository = Substitute.For<ISettlementRepository>();
+    private readonly IDateTimeProvider dateTimeProvider = Substitute.For<IDateTimeProvider>();
+    private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly Expense expense;
+    private readonly Settlement settlement;
 
     public UpdateExpenseCommandHandlerTests()
     {
         fixture = CustomFixture.Create();
-        expenseRepositoryMock = new Mock<IExpenseRepository>();
-        allocationRepositoryMock = new Mock<IAllocationRepository>();
-        settlementUserRepositoryMock = new Mock<ISettlementUserRepository>();
-        Mock<ISettlementRepository> settlementRepositoryMock = new();
-        var dateTimeProviderMock = new Mock<IDateTimeProvider>();
-        unitOfWorkMock = new Mock<IUnitOfWork>();
 
-        var expense = fixture.Create<Expense>();
-        var settlement = fixture.Create<Settlement>();
+        settlement = fixture.Create<Settlement>();
+        settlement.AddParticipant(fixture.Create<string>());
+        settlement.AddParticipant(fixture.Create<string>());
 
-        settlementRepositoryMock
-            .Setup(x => x.GetById(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(settlement);
+        expense = Expense.Create(
+            fixture.Create<string>(),
+            fixture.Create<DateOnly>(),
+            settlement.Id,
+            settlement.Participants[0].Id,
+            settlement.Participants.ToDictionary(
+                x => x.Id,
+                _ => fixture.Create<decimal>()
+            )
+        ).Value;
 
-        expenseRepositoryMock
-            .Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expense);
+        settlementRepository
+            .GetById(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(settlement);
 
-        settlementUserRepositoryMock.Setup(repo => repo.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        expenseRepository
+            .GetById(Arg.Any<ExpenseId>(), Arg.Any<CancellationToken>())
+            .Returns(expense);
+
+        settlementUserRepository
+            .CanUserAccessSettlement(settlement.Id, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         handler = new UpdateExpenseCommandHandler(
-            expenseRepositoryMock.Object,
-            settlementUserRepositoryMock.Object,
-            allocationRepositoryMock.Object,
-            settlementRepositoryMock.Object,
-            dateTimeProviderMock.Object,
-            unitOfWorkMock.Object
+            expenseRepository,
+            settlementUserRepository,
+            settlementRepository,
+            dateTimeProvider,
+            unitOfWork
         );
     }
 
@@ -74,8 +84,9 @@ public class UpdateExpenseCommandHandlerTests
     public async Task Handle_ShouldFail_WhenExpenseNotFound()
     {
         var request = fixture.Create<UpdateExpenseCommand>();
-        expenseRepositoryMock.Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(null as Expense);
+        expenseRepository
+            .GetById(Arg.Any<ExpenseId>(), Arg.Any<CancellationToken>())
+            .Returns(null as Expense);
 
         var result = await handler.Handle(request, default);
 
@@ -87,12 +98,10 @@ public class UpdateExpenseCommandHandlerTests
     public async Task Handle_ShouldFail_WhenUserCannotAccessSettlement()
     {
         var request = fixture.Create<UpdateExpenseCommand>();
-        var expense = fixture.Create<Expense>();
 
-        expenseRepositoryMock.Setup(repo => repo.GetById(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expense);
-        settlementUserRepositoryMock.Setup(repo => repo.CanUserAccessSettlement(It.IsAny<SettlementId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+        settlementUserRepository
+            .CanUserAccessSettlement(Arg.Any<SettlementId>(), Arg.Any<CancellationToken>())
+            .Returns(false);
 
         var result = await handler.Handle(request, default);
 
@@ -134,27 +143,23 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldUpdateExistingAllocations()
     {
-        var allocation1 = fixture.Create<Allocation>();
-        var allocation2 = fixture.Create<Allocation>();
-
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[0].Id);
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[1].Id);
+            
         var request = fixture
             .Build<UpdateExpenseCommand>()
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
-                new (allocation1.Id.Value, allocation1.ParticipantId.Value, 1M),
-                new (allocation2.Id.Value, allocation2.ParticipantId.Value, 3M)
+                new (expense.Allocations[1].Id.Value, settlement.Participants[1].Id.Value, 3M),
+                new (expense.Allocations[0].Id.Value, settlement.Participants[0].Id.Value, 1M)
             })
             .Create();
-
-        allocationRepositoryMock
-            .Setup(x => x.GetAllByExpenseId(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Allocation> { allocation1, allocation2 });
 
         var result = await handler.Handle(request, default);
 
         result.IsSuccess.Should().BeTrue();
-        allocation1.Amount.Value.Should().Be(1M);
-        allocation2.Amount.Value.Should().Be(3M);
+        expense.Allocations[0].Amount.Value.Should().Be(1M);
+        expense.Allocations[1].Amount.Value.Should().Be(3M);
     }
 
     [Fact]
@@ -178,21 +183,17 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenTryingToUpdateWithNegativeAmount()
     {
-        var allocation1 = fixture.Create<Allocation>();
-        var allocation2 = fixture.Create<Allocation>();
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[0].Id);
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[1].Id);
 
         var request = fixture
             .Build<UpdateExpenseCommand>()
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
-                new (allocation1.Id.Value, allocation1.ParticipantId.Value, -1M),
-                new (allocation2.Id.Value, allocation2.ParticipantId.Value, 3M)
+                new (expense.Allocations[0].Id.Value, expense.Allocations[0].ParticipantId.Value, -1M),
+                new (expense.Allocations[1].Id.Value, expense.Allocations[1].ParticipantId.Value, 3M)
             })
             .Create();
-
-        allocationRepositoryMock
-            .Setup(x => x.GetAllByExpenseId(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Allocation> { allocation1, allocation2 });
 
         var result = await handler.Handle(request, default);
 
@@ -203,35 +204,42 @@ public class UpdateExpenseCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldRemoveAllocation_WhenIsNotPresentInUpdateCommand()
     {
-        var allocation1 = fixture.Create<Allocation>();
-        var allocation2 = fixture.Create<Allocation>();
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[0].Id);
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[1].Id);
 
         var request = fixture
             .Build<UpdateExpenseCommand>()
             .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
             {
-                new (allocation2.Id.Value, allocation2.ParticipantId.Value, allocation2.Amount.Value)
+                new (expense.Allocations[1].Id.Value, expense.Allocations[1].ParticipantId.Value, expense.Allocations[1].Amount.Value)
             })
             .Create();
-
-        allocationRepositoryMock
-            .Setup(x => x.GetAllByExpenseId(It.IsAny<ExpenseId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Allocation> { allocation1, allocation2 });
 
         var result = await handler.Handle(request, default);
 
         result.IsSuccess.Should().BeTrue();
-        allocationRepositoryMock.Verify(x => x.Remove(It.Is<Allocation>(y => y.Id == allocation1.Id)), Times.Once);
+        expense.Allocations.Should().HaveCount(1);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnFailure_WhenDbConcurrencyExceptionOccurs()
     {
-        unitOfWorkMock
-            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new ConcurrencyException("concurrency", new Exception()));
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[0].Id);
+        expense.AddAllocation(Amount.Create(2M).Value, settlement.Participants[1].Id);
         
-        var request = fixture.Create<UpdateExpenseCommand>();
+        var request = fixture
+            .Build<UpdateExpenseCommand>()
+            .With(x => x.Allocations, new List<UpdateExpenseCommandAllocation>
+            {
+                new (expense.Allocations[0].Id.Value, expense.Allocations[0].ParticipantId.Value, 1M),
+                new (expense.Allocations[1].Id.Value, expense.Allocations[1].ParticipantId.Value, 3M)
+            })
+            .Create();
+
+        unitOfWork
+            .SaveChangesAsync(Arg.Any<CancellationToken>())
+            .ThrowsAsync(new ConcurrencyException("concurrency", new Exception()));
+
         var result = await handler.Handle(request, default);
 
         result.IsFailure.Should().BeTrue();
