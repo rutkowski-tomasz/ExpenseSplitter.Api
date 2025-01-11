@@ -364,8 +364,13 @@ dotnet_diagnostic.S4136.severity = none
 # S6605: Collection-specific "Exists" method should be used instead of the "Any" extension
 dotnet_diagnostic.S6605.severity = none
 
+# IDE0058: Expression value is never used
 dotnet_diagnostic.IDE0058.severity = suggestion
+
+# IDE0055: Fix formatting
 dotnet_diagnostic.IDE0055.severity = suggestion
+
+# CA1515: Consider making public types internal
 dotnet_diagnostic.CA1515.severity = suggestion
 
 [**/Migrations/**]
