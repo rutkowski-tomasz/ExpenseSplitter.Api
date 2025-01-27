@@ -63,8 +63,8 @@ jobs:
       - name: Publish coverage in build summary
         run: cat CoverageReports/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
-  scan:
-    name: Scan
+  code-scan:
+    name: Code scan
     runs-on: ubuntu-latest
 
     steps:
@@ -76,6 +76,23 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+
+  vulnerability-scan:
+    name: Vulnerability scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: 'fs'
+          scan-ref: .
+          format: 'table'
+          image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'HIGH,CRITICAL'
 
   version:
     name: Version
@@ -136,7 +153,7 @@ jobs:
         
   image:
     name: Container Image
-    needs: [test, scan, version, migrate]
+    needs: [test, code-scan, vulnerability-scan, version, migrate]
     permissions:
       packages: write
     runs-on: ubuntu-latest
@@ -172,13 +189,3 @@ jobs:
             ${{ env.PushImage && format('{0}:latest', steps.image_tag.outputs.image_tag) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'HIGH,CRITICAL'
