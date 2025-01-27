@@ -90,8 +90,8 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          scan-type: 'fs'
-          scan-ref: .
+          scan-type: 'repo'
+          scan-ref: '.'
           format: 'table'
           image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
           exit-code: '1'
