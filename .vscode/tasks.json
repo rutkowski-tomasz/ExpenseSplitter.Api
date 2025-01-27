@@ -36,6 +36,15 @@
                 "${workspaceFolder}/ExpenseSplitter.Api.sln"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "type": "shell",
+            "label": "compose-dependencies",
+            "command": "docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --build expensesplitter-db expensesplitter-idp expensesplitter-cache",
+            "presentation": {
+              "reveal": "always",
+              "panel": "new"
+            }
         }
-	]
+    ]
 }

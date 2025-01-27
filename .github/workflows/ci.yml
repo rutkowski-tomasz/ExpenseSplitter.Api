@@ -95,7 +95,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
-        if: ${{ env.PushImage }}
+        if: ${{ env.PushImage == 'true' }}
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.version.outputs.new_tag }}
@@ -105,7 +105,7 @@ jobs:
       - name: Ouput version in summary
         run: |
           echo "🏷️ Version: ${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          if ${{ env.PushImage }}; then
+          if ${{ env.PushImage == 'true' }}; then
             echo "📌 Release Tag: ${{ steps.version.outputs.new_tag }}" >> $GITHUB_STEP_SUMMARY
           fi
 
@@ -148,7 +148,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to image registry
-        if: ${{ env.PushImage }}
+        if: ${{ env.PushImage == 'true' }}
         uses: docker/login-action@v3
         with:
           registry: ${{ env.Registry }}
@@ -166,17 +166,16 @@ jobs:
         with:
           context: ${{ env.BuildContext }}
           file: ${{ env.Dockerfile }}
-          push: ${{ env.PushImage }}
-          tags: |
-            ${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}
-            ${{ env.PushImage && format('{0}:latest', steps.image_tag.outputs.image_tag) || '' }}
+          push: ${{ env.PushImage == 'true' }}
+          tags: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.29.0
+        if: ${{ env.PushImage == 'true' }}
         with:
-          image-ref: ${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}
+          image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
