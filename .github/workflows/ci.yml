@@ -93,7 +93,7 @@ jobs:
           scan-type: 'repo'
           scan-ref: '.'
           format: 'table'
-          image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
+          # image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
