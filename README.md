@@ -1,4 +1,4 @@
-﻿[![Continuous integration](https://github.com/rutkowski-tomasz/ExpenseSplitter/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/rutkowski-tomasz/ExpenseSplitter/actions/workflows/continuous-integration.yml)
+﻿[![Continuous Integration](https://github.com/rutkowski-tomasz/ExpenseSplitter.Api/actions/workflows/ci.yml/badge.svg)](https://github.com/rutkowski-tomasz/ExpenseSplitter.Api/actions/workflows/ci.yml)
 
 # 💵 ExpenseSplitter
 
