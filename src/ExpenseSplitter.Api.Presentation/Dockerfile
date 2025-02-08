@@ -22,6 +22,7 @@ RUN dotnet publish "src/${PROJECT_NAME}/${PROJECT_NAME}.csproj" -c Release -o /a
 
 FROM base AS final
 ARG PROJECT_NAME
+ENV PROJECT_DLL=${PROJECT_NAME}.dll
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "${PROJECT_NAME}.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet $PROJECT_DLL"]
