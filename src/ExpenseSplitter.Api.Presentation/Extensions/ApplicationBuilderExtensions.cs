@@ -29,6 +29,11 @@ public static class ApplicationBuilderExtensions
         app.UseMiddleware<TraceIdMiddleware>();
     }
 
+    public static void UseUserContextMiddleware(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<UserContextMiddleware>();
+    }
+
     public static void UseEndpoints(this IApplicationBuilder app)
     {
         var webApplication = (WebApplication) app;
