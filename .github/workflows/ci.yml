@@ -39,7 +39,7 @@ jobs:
         run: dotnet test --collect:"XPlat Code Coverage" *.sln
 
       - name: Generate report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
         with:
           reports: 'test/*Test*/TestResults/*/coverage.cobertura.xml'
           targetdir: 'CoverageReports'
@@ -72,7 +72,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v4.2.1
+        uses: sonarsource/sonarqube-scan-action@v5.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
@@ -172,7 +172,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@0.30.0
         if: ${{ env.PushImage == 'true' }}
         with:
           image-ref: '${{ steps.image_tag.outputs.image_tag }}:${{ needs.version.outputs.new_version }}'
