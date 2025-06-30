@@ -1,11 +1,13 @@
 ﻿ARG PROJECT_NAME=ExpenseSplitter.Api.Presentation
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-bookworm-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim AS build
 ARG PROJECT_NAME
 WORKDIR /build
 COPY [".editorconfig", "./"]
