@@ -36,7 +36,7 @@ jobs:
         continue-on-error: true
 
       - name: Test
-        run: dotnet test --collect:"XPlat Code Coverage" *.sln
+        run: dotnet test --collect:"XPlat Code Coverage" --collect:"OpenCover" *.sln
 
       - name: Generate report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
@@ -53,6 +53,12 @@ jobs:
           name: CoverageReports
           path: CoverageReports
 
+      - name: Upload OpenCover reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenCoverReports
+          path: test/*Test*/TestResults/*/coverage.opencover.xml
+
       - name: Save coverage history
         uses: actions/cache/save@v4
         with:
@@ -66,16 +72,30 @@ jobs:
   scan:
     name: Scan
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Download OpenCover reports
+        uses: actions/download-artifact@v4
+        with:
+          name: OpenCoverReports
+          path: test/*Test*/TestResults/*/
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v4.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >
+            -Dsonar.projectKey=rutkowski-tomasz_ExpenseSplitter.Api
+            -Dsonar.organization=rutkowski-tomasz
+            -Dsonar.sources=src
+            -Dsonar.tests=test
+            -Dsonar.cs.opencover.reportsPaths=test/*Test*/TestResults/*/coverage.opencover.xml
+            -Dsonar.coverage.exclusions=**/Migrations/**,**/obj/**,**/bin/**
 
   version:
     name: Version
