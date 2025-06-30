@@ -68,14 +68,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
         with:
-          fetch-depth: 0
+          dotnet-version: '9.0.x'
+
+      - name: Test
+        run: dotnet test --collect:"XPlat Code Coverage;Format=opencover" *.sln
+
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v4.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >
+            -Dsonar.projectKey=rutkowski-tomasz_ExpenseSplitter.Api
+            -Dsonar.organization=rutkowski-tomasz
+            -Dsonar.sources=src
+            -Dsonar.tests=test
+            -Dsonar.cs.opencover.reportsPaths=CoverageReports/coverage.opencover.xml
+            -Dsonar.coverage.exclusions=**/*Test*/**,**/Migrations/**,**/Program.cs,**/Startup.cs
+            -Dsonar.test.inclusions=test/**/*
+            -Dsonar.test.exclusions=**/bin/**,**/obj/**
 
   version:
     name: Version
