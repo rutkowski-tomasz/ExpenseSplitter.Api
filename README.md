@@ -14,6 +14,8 @@ ExpenseSplitter is a Domain-Driven Design (DDD) implemented API, meticulously cr
 6. **Testing**: Automated testing in CI, code coverage collection and history comparison, Architecture tests, testcontainers integration testing
 7. **CI/CD**: Dependabot integration, auto weekly nuget packages updates, Trivy scanning, SonarQube static-code analysis, automatic semantic-release, docker image publishing
 7. Docker support with docker-compose orchestration
+8. **Observability**: OpenTelemetry integration for comprehensive monitoring, tracing, and logging with Grafana Cloud
+
 
 # 🛹 Big picture
 
@@ -50,7 +52,15 @@ To let you quickly understand the domain and relationships of the project entiti
 3. Outbox pattern
 4. Model diagram
 
-# 👨🏻‍💻 Development
+# 👨‍💻 Development
+
+## Environment Configuration
+
+The application uses environment variables for configuration. Copy the example environment file and configure it with your values:
+
+```sh
+cp .env.example .env
+```
 
 ## Start services locally
 

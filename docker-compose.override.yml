@@ -5,9 +5,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__Database=Host=expensesplitter-db;Port=5432;Database=expensesplitter;Username=admin;Password=admin;
+      - ConnectionStrings__Database=Host=expensesplitter-db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
       - Authentication__BaseUrl=http://expensesplitter-idp:18080
       - Keycloak__BaseUrl=http://expensesplitter-idp:18080
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_EXPORTER_OTLP_PROTOCOL=${OTEL_EXPORTER_OTLP_PROTOCOL}
+      - OTEL_EXPORTER_OTLP_HEADERS=${OTEL_EXPORTER_OTLP_HEADERS}
     ports:
       - "80"
       - 5001:443

@@ -4,8 +4,20 @@ using ExpenseSplitter.Api.Presentation.Extensions;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
+using DotNetEnv;
+using OpenTelemetry.Logs;
+
+Env.Load("../../.env");
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+
+builder.Services.AddSerilog(config => config
+    .ReadFrom.Configuration(builder.Configuration), writeToProviders: true
+);
+
+builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter());
 
 builder.Services.AddOpenApi();
 
@@ -18,10 +30,6 @@ builder.Services.AddHealthChecks()
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
 builder.Services.AddRateLimiting();
-
-builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration)
-);
 
 var app = builder.Build();
 

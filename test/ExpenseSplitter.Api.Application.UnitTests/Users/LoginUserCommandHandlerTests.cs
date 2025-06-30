@@ -1,4 +1,5 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Metrics;
 using ExpenseSplitter.Api.Application.Users.LoginUser;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Users;
@@ -10,10 +11,11 @@ public class LoginUserCommandHandlerTests
     private readonly LoginUserCommandHandler handler;
     private readonly Fixture fixture = CustomFixture.Create();
     private readonly IJwtService jwtService = Substitute.For<IJwtService>();
+    private readonly IMetricsService metricsService = Substitute.For<IMetricsService>();
 
     public LoginUserCommandHandlerTests()
     {
-        handler = new LoginUserCommandHandler(jwtService);
+        handler = new LoginUserCommandHandler(jwtService, metricsService);
     }
 
     [Fact]

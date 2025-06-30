@@ -1,5 +1,6 @@
 ﻿using System.Net.Mail;
 using ExpenseSplitter.Api.Application.Abstractions.Authentication;
+using ExpenseSplitter.Api.Application.Abstractions.Metrics;
 using ExpenseSplitter.Api.Application.Users.RegisterUser;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Users;
@@ -13,13 +14,15 @@ public class RegisterUserCommandHandlerTests
     private readonly IAuthenticationService authenticationService = Substitute.For<IAuthenticationService>();
     private readonly IUserRepository userRepository = Substitute.For<IUserRepository>();
     private readonly IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IMetricsService metricsService = Substitute.For<IMetricsService>();
 
     public RegisterUserCommandHandlerTests()
     {
         handler = new RegisterUserCommandHandler(
             authenticationService,
             userRepository,
-            unitOfWork
+            unitOfWork,
+            metricsService
         );
     }
 

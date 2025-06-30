@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Cqrs;
+using ExpenseSplitter.Api.Application.Abstractions.Metrics;
 using ExpenseSplitter.Api.Domain.Abstractions;
 using ExpenseSplitter.Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,8 @@ namespace ExpenseSplitter.Api.Application.Users.RegisterUser;
 internal sealed class RegisterUserCommandHandler(
     IAuthenticationService authenticationService,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork
+    IUnitOfWork unitOfWork,
+    IMetricsService metricsService
 ) : ICommandHandler<RegisterUserCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(
@@ -51,6 +53,8 @@ internal sealed class RegisterUserCommandHandler(
         {
             return UserErrors.UserExists;
         }
+
+        metricsService.RecordRegisteredUser();
 
         var result = Result.Success(user.Id.Value);
         return result;

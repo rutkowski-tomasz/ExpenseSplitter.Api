@@ -48,3 +48,6 @@ TestResults
 
 # Serilog
 logs/
+
+# Environment files
+.env

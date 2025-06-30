@@ -16,9 +16,9 @@ services:
     image: postgres:latest
     container_name: expensesplitter-db
     environment:
-      - POSTGRES_DB=expensesplitter
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./.containers/expensesplitter-db:/var/lib/postgresql/data
     ports:
@@ -29,8 +29,8 @@ services:
     command: ["start-dev", "--import-realm"]
     container_name: expensesplitter-idp
     environment:
-      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_ADMIN_USERNAME}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     volumes:
       - ./.containers/expensesplitter-idp:/opt/jboss/keycloak/standalone/data
       - ./.files/expensesplitter-idp-realm-export.json:/opt/keycloak/data/import/realm.json:ro

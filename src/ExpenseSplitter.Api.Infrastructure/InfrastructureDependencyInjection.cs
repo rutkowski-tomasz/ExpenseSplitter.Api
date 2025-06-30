@@ -1,15 +1,15 @@
 ﻿using ExpenseSplitter.Api.Application.Abstractions.Authentication;
 using ExpenseSplitter.Api.Application.Abstractions.Caching;
+using ExpenseSplitter.Api.Application.Abstractions.Metrics;
 using ExpenseSplitter.Api.Application.Settlements.CreateSettlement;
 using ExpenseSplitter.Api.Domain.Abstractions;
-using ExpenseSplitter.Api.Domain.Allocations;
 using ExpenseSplitter.Api.Domain.Expenses;
-using ExpenseSplitter.Api.Domain.Participants;
 using ExpenseSplitter.Api.Domain.Settlements;
 using ExpenseSplitter.Api.Domain.SettlementUsers;
 using ExpenseSplitter.Api.Domain.Users;
 using ExpenseSplitter.Api.Infrastructure.Authentication;
 using ExpenseSplitter.Api.Infrastructure.Caching;
+using ExpenseSplitter.Api.Infrastructure.Metrics;
 using ExpenseSplitter.Api.Infrastructure.Repositories;
 using ExpenseSplitter.Api.Infrastructure.Settlements;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +26,10 @@ using ExpenseSplitter.Api.Infrastructure.Clock;
 using ExpenseSplitter.Api.Infrastructure.Etag;
 using ExpenseSplitter.Api.Infrastructure.Serializer;
 using Microsoft.Extensions.Caching.Hybrid;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 
 namespace ExpenseSplitter.Api.Infrastructure;
 
@@ -43,7 +47,28 @@ public static class InfrastructureDependencyInjection
 
         AddVersioning(services);
 
+        AddOpenTelemetry(services);
+
         services.AddScoped<IIdempotencyService, IdempotencyService>();
+        services.AddScoped<IMetricsService, MetricsService>();
+    }
+
+    private static void AddOpenTelemetry(IServiceCollection services)
+    {
+        services
+            .AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(MetricsService.ServiceName))
+            .WithMetrics(metrics => metrics
+                .AddMeter(MetricsService.ServiceName)
+                .AddOtlpExporter()
+            )
+            .WithTracing(tracing => tracing
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
+                .AddRedisInstrumentation()
+                .AddOtlpExporter()
+            );
     }
 
     private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
