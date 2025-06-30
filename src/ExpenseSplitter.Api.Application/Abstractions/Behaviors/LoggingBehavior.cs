@@ -17,7 +17,7 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<TRequest> logger) : IP
 
         logger.LogInformation("Processing request {RequestName}", name);
 
-        var result = await next();
+        var result = await next(cancellationToken);
 
         if (result.IsFailure)
         {

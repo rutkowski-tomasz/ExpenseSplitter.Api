@@ -23,7 +23,7 @@ internal sealed class CachingBehavior<TRequest, TResponse>
         var key = request.Key;
         var cachedResponse = await cacheService.GetOrCreate(
             key,
-            _ => next(),
+            _ => next(cancellationToken),
             request.Expiration,
             cancellationToken
         );
