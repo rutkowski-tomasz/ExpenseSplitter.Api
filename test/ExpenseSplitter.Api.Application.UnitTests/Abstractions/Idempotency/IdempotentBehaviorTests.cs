@@ -35,7 +35,7 @@ public class IdempotentBehaviorTests
         idempotencyService.GetIdempotencyKeyFromHeaders()
             .Returns(Result.Failure<Guid>(new AppError(ErrorType.NotFound, "Idempotency key not found")));
 
-        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(3)));
+        var next = new RequestHandlerDelegate<Result<int>>(cancellationToken => Task.FromResult(Result.Success(3)));
 
         var result = await behavior.Handle(new TestCommand(), next, default);
 
@@ -49,7 +49,7 @@ public class IdempotentBehaviorTests
         idempotencyService.GetIdempotencyKeyFromHeaders()
             .Returns(Result.Failure<Guid>(new AppError(ErrorType.NotFound, "Idempotency key not found")));
 
-        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
+        var next = new RequestHandlerDelegate<Result<int>>(cancellationToken => Task.FromResult(Result.Success(43)));
 
         var result = await behavior.Handle(new TestCommand(), next, default);
 
@@ -65,7 +65,7 @@ public class IdempotentBehaviorTests
             Arg.Any<CancellationToken>()
         ).Returns((false, null));
 
-        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(43)));
+        var next = new RequestHandlerDelegate<Result<int>>(cancellationToken => Task.FromResult(Result.Success(43)));
 
         var result = await behavior.Handle(new TestCommand(), next, default);
 

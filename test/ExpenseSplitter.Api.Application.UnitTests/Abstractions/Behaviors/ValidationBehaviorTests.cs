@@ -15,12 +15,12 @@ public class ValidationBehaviorTests
         var behavior = new ValidationBehavior<IBaseCommand, int>(validators);
         var request = Substitute.For<IBaseCommand>();
         var nextDelegate = Substitute.For<RequestHandlerDelegate<int>>();
-        nextDelegate().Returns(Task.FromResult(1337));
+        nextDelegate(Arg.Any<CancellationToken>()).Returns(Task.FromResult(1337));
 
         var result = await behavior.Handle(request, nextDelegate, default);
 
         result.Should().Be(1337);
-        await nextDelegate.Received(1)();
+        await nextDelegate.Received(1)(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -60,11 +60,11 @@ public class ValidationBehaviorTests
         var behavior = new ValidationBehavior<IBaseCommand, int>(validators);
         var request = Substitute.For<IBaseCommand>();
         var nextDelegate = Substitute.For<RequestHandlerDelegate<int>>();
-        nextDelegate().Returns(Task.FromResult(1337));
+        nextDelegate(Arg.Any<CancellationToken>()).Returns(Task.FromResult(1337));
 
         var result = await behavior.Handle(request, nextDelegate, default);
 
         result.Should().Be(1337);
-        await nextDelegate.Received(1)();
+        await nextDelegate.Received(1)(Arg.Any<CancellationToken>());
     }
 }

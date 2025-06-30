@@ -52,6 +52,8 @@ public abstract class EndpointBase(
             ErrorType.BadGateway => Results.Problem(appError.Description, statusCode: StatusCodes.Status502BadGateway),
             ErrorType.Unauthorized => Results.Unauthorized(),
             ErrorType.NotModified => Results.StatusCode(StatusCodes.Status304NotModified),
+            ErrorType.None => throw new NotImplementedException(),
+            ErrorType.ServerInternalError => throw new NotImplementedException(),
             _ => Results.Problem(appError.Description, statusCode: StatusCodes.Status500InternalServerError)
         };
     }

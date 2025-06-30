@@ -24,7 +24,7 @@ public class LoggingBehaviorTests
     [Fact]
     public async Task Handle_ShouldLogProcessingInformation()
     {
-        var next = new RequestHandlerDelegate<Result<int>>(() => Task.FromResult(Result.Success(1)));
+        var next = new RequestHandlerDelegate<Result<int>>(cancellationToken => Task.FromResult(Result.Success(1)));
 
         var result = await loggingBehavior.Handle(request, next, default);
 
@@ -51,7 +51,7 @@ public class LoggingBehaviorTests
     [Fact]
     public async Task Handle_ShouldLogError_WhenDelegateThrowsAnException()
     {
-        var next = new RequestHandlerDelegate<Result<int>>(() => 
+        var next = new RequestHandlerDelegate<Result<int>>(cancellationToken => 
             Task.FromResult(Result.Failure<int>(SettlementErrors.Forbidden)));
 
         var result = await loggingBehavior.Handle(request, next, default);

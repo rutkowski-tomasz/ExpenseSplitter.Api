@@ -26,7 +26,7 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyServic
         var getIdempotencyKey = service.GetIdempotencyKeyFromHeaders();
         if (getIdempotencyKey.IsFailure)
         {
-            return await next();
+            return await next(cancellationToken);
         }
         
         var parsedIdempotencyKey = getIdempotencyKey.Value;
@@ -41,7 +41,7 @@ internal sealed class IdempotentBehavior<TRequest, TResponse>(IIdempotencyServic
             return deserialized;
         }
         
-        var response = await next();
+        var response = await next(cancellationToken);
 
         var serialized = JsonSerializer.Serialize(response, JsonSerializerConfig.JsonSerializerOptions);
         await service.SaveIdempotentRequest(parsedIdempotencyKey, serialized, cancellationToken);
