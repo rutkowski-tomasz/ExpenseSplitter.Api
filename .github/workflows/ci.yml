@@ -76,24 +76,34 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Test
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Test with coverage
         run: dotnet test --collect:"XPlat Code Coverage;Format=opencover" *.sln
 
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v4.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
-        with:
-          args: >
-            -Dsonar.projectKey=rutkowski-tomasz_ExpenseSplitter.Api
-            -Dsonar.organization=rutkowski-tomasz
-            -Dsonar.sources=src
-            -Dsonar.tests=test
-            -Dsonar.cs.opencover.reportsPaths=CoverageReports/coverage.opencover.xml
-            -Dsonar.coverage.exclusions=**/*Test*/**,**/Migrations/**,**/Program.cs,**/Startup.cs
-            -Dsonar.test.inclusions=test/**/*
-            -Dsonar.test.exclusions=**/bin/**,**/obj/**
+        run: |
+          dotnet sonarscanner begin \
+            /k:"rutkowski-tomasz_ExpenseSplitter.Api" \
+            /o:"rutkowski-tomasz" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="test/*Test*/TestResults/*/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/*Test*/**,**/Migrations/**,**/Program.cs,**/Startup.cs" \
+            /d:sonar.test.inclusions="test/**/*" \
+            /d:sonar.test.exclusions="**/bin/**,**/obj/**"
+
+      - name: Build
+        run: dotnet build --no-restore *.sln
+
+      - name: SonarQube End
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
   version:
     name: Version
