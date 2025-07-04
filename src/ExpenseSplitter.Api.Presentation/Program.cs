@@ -30,6 +30,7 @@ builder.Services.AddHealthChecks()
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
 builder.Services.AddRateLimiting();
+builder.Services.AddCorsPolicy();
 
 var app = builder.Build();
 
@@ -47,6 +48,8 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowLocalhost8080");
 
 app.UseTraceIdMiddleware();
 
