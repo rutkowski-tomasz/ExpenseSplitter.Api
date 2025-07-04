@@ -62,7 +62,13 @@ The application uses environment variables for configuration. Copy the example e
 cp .env.example .env
 ```
 
-## Start services locally
+## Run API
+
+```sh
+dotnet run --project src/ExpenseSplitter.Api.Presentation/ExpenseSplitter.Api.Presentation.csproj
+```
+
+## Start API dependencies
 
 ```sh
 docker-compose up -d expensesplitter-db expensesplitter-idp expensesplitter-cache

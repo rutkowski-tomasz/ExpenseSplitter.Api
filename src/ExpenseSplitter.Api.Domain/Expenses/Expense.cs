@@ -8,7 +8,7 @@ namespace ExpenseSplitter.Api.Domain.Expenses;
 
 public sealed class Expense : AggregateRoot<ExpenseId>
 {
-    private readonly List<Allocation> allocations = new();
+    private readonly List<Allocation> allocations = [];
 
     private Expense(
         ExpenseId id,
