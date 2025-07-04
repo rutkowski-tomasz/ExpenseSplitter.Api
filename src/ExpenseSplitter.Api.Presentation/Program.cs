@@ -19,7 +19,7 @@ builder.Services.AddSerilog(config => config
 
 builder.Logging.AddOpenTelemetry(logging => logging.AddOtlpExporter());
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -37,7 +37,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwaggerUI(options => options.SwaggerEndpoint(
-        "/openapi/v1/swagger.json",
+        "/openapi/v1.json",
         "ExpenseSplitter.Api v1"
     ));
 
