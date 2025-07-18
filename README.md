@@ -59,13 +59,13 @@ To let you quickly understand the domain and relationships of the project entiti
 The application uses environment variables for configuration. Copy the example environment file and configure it with your values:
 
 ```sh
-cp .env.example .env
+cp api/.env.example api/.env
 ```
 
 ## Run API
 
 ```sh
-dotnet run --project src/ExpenseSplitter.Api.Presentation/ExpenseSplitter.Api.Presentation.csproj
+dotnet run --project api/src/ExpenseSplitter.Api.Presentation/ExpenseSplitter.Api.Presentation.csproj
 ```
 
 ## Start API dependencies
@@ -77,5 +77,5 @@ docker-compose up -d expensesplitter-db expensesplitter-idp expensesplitter-cach
 ## Create migration
 
 ```sh
-dotnet ef migrations add --startup-project src/ExpenseSplitter.Api.Presentation --project src/ExpenseSplitter.Api.Infrastructure ...
+dotnet ef migrations add --startup-project api/src/ExpenseSplitter.Api.Presentation --project api/src/ExpenseSplitter.Api.Infrastructure ...
 ```
